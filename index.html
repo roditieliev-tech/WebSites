@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIXVOL | Quantitative Prediction Markets & Algorithmic Trading Infrastructure</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter, IBM Plex Sans & IBM Plex Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', '"IBM Plex Sans"', 'sans-serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        binance: {
+                            bg: '#0B0E11',            /* Core exchange dark canvas */
+                            card: '#181A20',          /* Primary panel card background */
+                            cardHover: '#1E2329',     /* Hover card surface */
+                            input: '#2B313A',         /* Inputs, badges, borders */
+                            border: '#23272E',        /* Structural border */
+                            borderLight: '#2E3540',
+                            gold: '#F0B90B',          /* Binance Signature Gold */
+                            goldHover: '#FCD535',     /* Active hover yellow */
+                            goldDim: '#B28808',
+                            green: '#0ECB81',         /* Binance Buy / Bull green */
+                            greenMuted: '#0b4a32',
+                            red: '#F6465D',           /* Binance Sell / Bear red */
+                            redMuted: '#521d25',
+                            textMain: '#EAECEF',      /* High contrast primary text */
+                            textMuted: '#848E9C',     /* Secondary meta text */
+                            textDark: '#5E6673',
+                        }
+                    },
+                    boxShadow: {
+                        'binance-gold': '0 4px 20px -2px rgba(240, 185, 11, 0.32)',
+                        'binance-card': '0 8px 32px rgba(0, 0, 0, 0.55)',
+                        'binance-glow': '0 0 35px -5px rgba(240, 185, 11, 0.18)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0E11;
+            color: #EAECEF;
+            overflow-x: hidden;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+
+        .binance-grid {
+            background-size: 36px 36px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        .gold-glow-gradient {
+            background: radial-gradient(circle 750px at 50% 0%, rgba(240, 185, 11, 0.09), transparent 80%);
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #11141A;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #2B313A;
+            border-radius: 3px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #F0B90B;
+        }
+
+        .anchor-section {
+            scroll-margin-top: 140px;
+        }
+
+        /* Animated Pulsing Radar Indicator */
+        @keyframes radar-pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .radar-anim {
+            animation: radar-pulse 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="selection:bg-binance-gold selection:text-black">
+
+    <!-- Global Subtle Gold Ambient Lighting -->
+    <div class="fixed inset-0 gold-glow-gradient pointer-events-none z-0"></div>
+
+    <!-- Primary Binance-Style Header -->
+    <header class="sticky top-0 z-40 bg-binance-bg/95 backdrop-blur-md border-b border-binance-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 py-3.5 flex items-center justify-between">
+            
+            <!-- Brand & Theme Title -->
+            <a href="#" class="flex items-center gap-3.5 group">
+                <div class="w-11 h-11 rounded-xl bg-binance-card border border-binance-gold/30 flex items-center justify-center text-binance-gold group-hover:border-binance-gold transition-all shadow-sm">
+                    <i class="fa-solid fa-cubes-stacked text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl font-black tracking-tight text-white font-sans">RIXVOL</span>
+                    </div>
+                    <span class="text-[11px] block font-mono text-binance-textMuted tracking-wider uppercase font-semibold">
+                        Prediction Markets & Trading Bots
+                    </span>
+                </div>
+            </a>
+
+            <!-- Quick Jump Dropdown for Mobile / Direct CTA for Desktop -->
+            <div class="flex items-center gap-3.5">
+                <div class="hidden lg:flex items-center gap-5 text-xs font-mono text-binance-textMuted mr-2">
+                    <a href="#product-1" class="hover:text-binance-gold transition-colors">Polymarket</a>
+                    <a href="#product-2" class="hover:text-binance-gold transition-colors">Kalshi</a>
+                    <a href="#product-5" class="hover:text-binance-gold transition-colors">Analytics</a>
+                    <a href="#product-7" class="hover:text-binance-gold transition-colors">Custom Bots</a>
+                </div>
+
+                <a href="#quick-consult" class="px-5 py-2.5 rounded-md text-xs font-bold font-mono uppercase tracking-wider bg-binance-gold text-slate-950 hover:bg-binance-goldHover shadow-binance-gold transition-all flex items-center gap-2">
+                    <span>Deploy Architecture</span>
+                    <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- STICKY SUB-NAV: ALL 8 PRODUCT SPECIFICATION TABS -->
+        <div class="bg-[#12151B] border-t border-binance-border overflow-x-auto custom-scroll shadow-inner">
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-1.5 text-xs font-mono py-2 whitespace-nowrap" id="productTabsNav">
+                <a href="#product-1" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-1">
+                    <span class="text-binance-gold font-bold">#1</span> Polymarket Bot
+                </a>
+                <a href="#product-2" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-2">
+                    <span class="text-binance-gold font-bold">#2</span> Kalshi Bot
+                </a>
+                <a href="#product-3" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-3">
+                    <span class="text-binance-gold font-bold">#3</span> Polymarket API
+                </a>
+                <a href="#product-4" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-4">
+                    <span class="text-binance-gold font-bold">#4</span> Kalshi API
+                </a>
+                <a href="#product-5" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-5">
+                    <span class="text-binance-gold font-bold">#5</span> Prediction Analytics
+                </a>
+                <a href="#product-6" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-6">
+                    <span class="text-binance-gold font-bold">#6</span> Cross-Platform Arb
+                </a>
+                <a href="#product-7" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-7">
+                    <span class="text-binance-gold font-bold">#7</span> Custom Python Bots
+                </a>
+                <a href="#product-8" class="tab-link px-3.5 py-1.5 rounded font-semibold text-binance-textMuted hover:text-white hover:bg-binance-card transition-all flex items-center gap-1.5" data-target="product-8">
+                    <span class="text-binance-gold font-bold">#8</span> Strategy Automation
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10">
+
+        <!-- HERO SECTION -->
+        <section class="relative pt-14 pb-24 binance-grid border-b border-binance-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Left Hero Core Info -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-md bg-binance-card border border-binance-gold/40 text-xs font-mono">
+                            <i class="fa-solid fa-bolt-lightning text-binance-gold"></i>
+                            <span class="text-white font-semibold">Prediction Markets & Trading Bots</span>
+                            <span class="text-binance-textMuted">|</span>
+                            <span class="text-binance-green font-bold">Binance Quant Standard</span>
+                        </div>
+
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-sans leading-[1.12]">
+                            High-Frequency Bots & <br/>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-binance-gold via-yellow-200 to-amber-400">
+                                Event Prediction Engines
+                            </span> <br/>
+                            Built for Systematic Funds.
+                        </h1>
+
+                        <p class="text-sm sm:text-base text-binance-textMuted max-w-2xl font-sans leading-relaxed">
+                            Rixvol builds institutional-grade execution algorithms, continuous market-making engines, cross-venue statistical arbitrage tools, and high-throughput API middleware for <strong>Polymarket (CLOB)</strong> and <strong>Kalshi (CFTC)</strong>. Designed with pure zero-custody safety, sub-millisecond Python/C++ backbones, and mathematical risk governors.
+                        </p>
+
+                        <!-- Key Pillars -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 font-mono text-xs">
+                            <div class="p-3.5 rounded-lg bg-binance-card border border-binance-border">
+                                <span class="text-binance-textMuted text-[10px] block uppercase">Execution Latency</span>
+                                <span class="text-lg font-bold text-binance-green">&lt; 9.8 ms</span>
+                                <span class="text-[9.5px] text-binance-textDark block mt-0.5">L2 Polygon/Kalshi</span>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-binance-card border border-binance-border">
+                                <span class="text-binance-textMuted text-[10px] block uppercase">Custody Model</span>
+                                <span class="text-lg font-bold text-binance-gold">100% Non-Custodial</span>
+                                <span class="text-9.5px text-binance-textDark block mt-0.5">Client VPC & KMS</span>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-binance-card border border-binance-border">
+                                <span class="text-binance-textMuted text-[10px] block uppercase">Throughput</span>
+                                <span class="text-lg font-bold text-white">4,500 req/s</span>
+                                <span class="text-[9.5px] text-binance-textDark block mt-0.5">Asyncio Uvloop</span>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-binance-card border border-binance-border">
+                                <span class="text-binance-textMuted text-[10px] block uppercase">Products Built</span>
+                                <span class="text-lg font-bold text-binance-green">8 Standard Suites</span>
+                                <span class="text-[9.5px] text-binance-textDark block mt-0.5">Ready to Deploy</span>
+                            </div>
+                        </div>
+
+                        <!-- CTA Actions -->
+                        <div class="flex flex-wrap items-center gap-4 pt-3">
+                            <a href="#quick-consult" class="px-7 py-3.5 rounded-md bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all flex items-center gap-2">
+                                <span>Request System Audit & Pricing</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                            <a href="#product-1" class="px-6 py-3.5 rounded-md bg-binance-card border border-binance-border text-binance-textMain font-mono text-xs uppercase tracking-wider hover:border-binance-gold transition-all flex items-center gap-2">
+                                <span>Explore 8 Comprehensive Products</span>
+                                <i class="fa-solid fa-chevron-down text-binance-gold text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Hero Visual: Binance Depth & Cross-Venue Arbitrage Scanner -->
+                    <div class="lg:col-span-5">
+                        <div class="rounded-xl bg-binance-card border border-binance-border shadow-binance-card overflow-hidden font-mono text-xs">
+                            
+                            <div class="bg-[#12151B] px-4 py-3 border-b border-binance-border flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-binance-green radar-anim"></span>
+                                    <span class="text-white font-bold tracking-wider">RIXVOL MULTI-VENUE EXECUTION FEED</span>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-binance-green/10 text-binance-green font-bold border border-binance-green/30">HFT READY</span>
+                            </div>
+
+                            <!-- Live Depth Simulation -->
+                            <div class="p-3.5 bg-binance-bg border-b border-binance-border">
+                                <div class="flex justify-between items-center text-[11px] mb-2">
+                                    <span class="text-white font-bold">CONTRACT: FED-FUNDS-TARGET-50BPS</span>
+                                    <span class="text-binance-gold font-bold bg-binance-gold/10 px-2 py-0.5 rounded border border-binance-gold/30">ARB DETECTED: +3.6%</span>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2 text-[10.5px]">
+                                    <div class="p-2.5 rounded bg-binance-card border border-binance-border">
+                                        <div class="text-binance-textMuted uppercase flex justify-between">
+                                            <span>Polymarket (CLOB)</span>
+                                            <span class="text-binance-green">ASK</span>
+                                        </div>
+                                        <div class="text-base font-bold text-white mt-1">$0.610 <span class="text-xs text-binance-textMuted">USDC</span></div>
+                                        <div class="text-[10px] text-binance-textMuted">Depth: 45,000 Yes Shares</div>
+                                    </div>
+                                    <div class="p-2.5 rounded bg-binance-card border border-binance-border">
+                                        <div class="text-binance-textMuted uppercase flex justify-between">
+                                            <span>Kalshi (CFTC)</span>
+                                            <span class="text-binance-gold">BID</span>
+                                        </div>
+                                        <div class="text-base font-bold text-white mt-1">$0.646 <span class="text-xs text-binance-textMuted">USD</span></div>
+                                        <div class="text-[10px] text-binance-textMuted">Depth: 60,000 Contracts</div>
+                                    </div>
+                                </div>
+
+                                <!-- SVG Candlestick / Volatility Curve -->
+                                <div class="mt-3 pt-3 border-t border-binance-border">
+                                    <div class="flex justify-between text-[10px] text-binance-textMuted mb-1 font-bold">
+                                        <span>PROBABILITY SPREAD SURFACE (REAL-TIME)</span>
+                                        <span class="text-binance-green">+0.036 BPS Net</span>
+                                    </div>
+                                    <svg viewBox="0 0 400 90" class="w-full h-20 bg-[#0B0E12] rounded border border-binance-border">
+                                        <defs>
+                                            <linearGradient id="heroGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#F0B90B" stop-opacity="0.3"/>
+                                                <stop offset="100%" stop-color="#F0B90B" stop-opacity="0.0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <line x1="0" y1="45" x2="400" y2="45" stroke="#23272E" stroke-dasharray="3,3"/>
+                                        <path d="M 0 65 Q 40 50, 80 60 T 160 40 T 240 50 T 320 20 T 400 15 L 400 90 L 0 90 Z" fill="url(#heroGradient)"/>
+                                        <path d="M 0 65 Q 40 50, 80 60 T 160 40 T 240 50 T 320 20 T 400 15" fill="none" stroke="#F0B90B" stroke-width="2"/>
+                                        <circle cx="400" cy="15" r="4" fill="#0ECB81" class="animate-ping"/>
+                                        <circle cx="400" cy="15" r="3" fill="#0ECB81"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Live Execution Ticker Stream -->
+                            <div class="p-3.5 bg-[#080A0E]">
+                                <div class="text-[10px] text-binance-textMuted uppercase font-bold mb-2 flex justify-between">
+                                    <span>SUB-SECOND EXECUTION TELEMETRY</span>
+                                    <span class="text-binance-green"><i class="fa-solid fa-circle text-[6px] animate-ping mr-1"></i>STREAMING</span>
+                                </div>
+                                <div class="h-28 custom-scroll overflow-y-auto space-y-1.5 text-[10.5px]" id="heroTicker">
+                                    <div class="text-binance-textMuted">[11:04:12] EIP-712 signer verified nonce #88491 for Polygon CTF.</div>
+                                    <div class="text-binance-gold font-semibold">[11:04:13] Arbitrage signal verified: PM ($0.610) vs Kalshi ($0.646).</div>
+                                    <div class="text-binance-green font-bold">[11:04:13] HEDGE FILLED: Bought 15k Yes @ 0.610, Sold Kalshi @ 0.646.</div>
+                                    <div class="text-white">[11:04:14] Net Capital PnL: +$540.00 locked (Zero Directional Risk).</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- DETAILED 8 PRODUCTS: 1.5 - 2 FULL PAGES OF RICH DOCUMENTATION PER PRODUCT -->
+        <!-- ========================================================================= -->
+        <div class="divide-y divide-binance-border">
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 1: Polymarket Trading Bot Development                        -->
+            <!-- ===================================================================== -->
+            <section id="product-1" class="anchor-section py-24 bg-binance-bg relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <!-- Section Header -->
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #1</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/polymarket-bot</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Polymarket Trading Bot Development
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                High-Frequency Market-Making, Sub-Second News Sniping, and Automated CLOB Execution
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Polymarket Trading Bot Development')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <!-- Part 1: Quantitative Edge & Detailed Overview -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-brain text-binance-gold"></i>
+                                <span>Algorithmic Foundation & Market-Making Edge</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Polymarket has transformed prediction markets by transitioning from legacy Automated Market Makers (CPMM AMMs) to a hybrid, off-chain Central Limit Order Book (CLOB) with on-chain settlement on Polygon. Rixvol designs custom high-speed trading engines that operate directly on this CLOB architecture, quoting tight two-sided markets, absorbing volume, and earning maker rebates without incurring on-chain gas costs for order placement or cancellations.
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                Our Polymarket bots implement modified <strong>Avellaneda-Stoikov</strong> volatility-spread equations adapted for bounded binary outcome assets ($0.00 &le; P &le; $1.00). Rather than relying on simple linear order books, the pricing engine models inventory risk dynamically—adjusting reservation quotes as inventory skews toward either "YES" or "NO" outcomes to guarantee continuous risk-neutrality.
+                            </p>
+                            
+                            <!-- Math Formula Callout -->
+                            <div class="p-4 rounded-lg bg-binance-card border border-binance-border font-mono text-xs space-y-2">
+                                <div class="text-binance-gold font-bold uppercase text-[11px] flex justify-between">
+                                    <span>Avellaneda-Stoikov Binary Inventory Equation</span>
+                                    <span class="text-binance-green">ADAPTED FOR BINARY TOKENS</span>
+                                </div>
+                                <div class="bg-[#0D1016] p-3 rounded text-white text-[12px] overflow-x-auto">
+                                    r(s, q, t) = s - q &times; &gamma; &times; &sigma;&sup2; &times; (T - t) &times; [s &times; (1 - s)]
+                                </div>
+                                <div class="text-[11px] text-binance-textMuted leading-normal">
+                                    Where <code class="text-white">s</code> is the current midpoint probability, <code class="text-white">q</code> is net outcome token inventory, <code class="text-white">&gamma;</code> is the fund's risk aversion coefficient, and <code class="text-white">s(1 - s)</code> incorporates binary variance bounds.
+                                </div>
+                            </div>
+
+                            <!-- Core Highlights List -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-card border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">Gasless EIP-712 Signing</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Zero MATIC/POL gas spend on limit orders & cancels.</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">CTF Mint & Merge Router</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Instant atomic split of USDC into Yes/No conditional pairs.</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">Low-Latency Polygon RPCs</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Dedicated co-located nodes with fallback failover.</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">Anti-Toxic Flow Filters</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Instant order cancellation if whale orders breach spread limits.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Part 2: Interactive High-Fidelity UI Terminal -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-card border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-4">
+                                <div class="flex items-center justify-between border-b border-binance-border pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-terminal text-binance-gold"></i>
+                                        <span class="font-bold text-white uppercase">Polymarket CLOB Trading Station</span>
+                                    </div>
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-binance-green/20 text-binance-green font-bold">LIVE BOT ENGINE</span>
+                                </div>
+
+                                <!-- Live Interactive Order Depth Table -->
+                                <div>
+                                    <div class="flex justify-between text-[10px] text-binance-textMuted uppercase font-bold mb-1">
+                                        <span>Price (USDC)</span>
+                                        <span>Size (YES)</span>
+                                        <span>Cumulative</span>
+                                    </div>
+                                    
+                                    <!-- Asks -->
+                                    <div class="space-y-0.5 text-[11px]">
+                                        <div class="flex justify-between text-binance-red relative py-0.5">
+                                            <div class="absolute right-0 top-0 bottom-0 bg-binance-red/10 w-4/5"></div>
+                                            <span class="font-bold">0.685</span> <span>45,000</span> <span>$30,825</span>
+                                        </div>
+                                        <div class="flex justify-between text-binance-red relative py-0.5">
+                                            <div class="absolute right-0 top-0 bottom-0 bg-binance-red/10 w-1/2"></div>
+                                            <span class="font-bold">0.680</span> <span>22,500</span> <span>$15,300</span>
+                                        </div>
+                                        <div class="flex justify-between text-binance-red relative py-0.5">
+                                            <div class="absolute right-0 top-0 bottom-0 bg-binance-red/20 w-1/4"></div>
+                                            <span class="font-bold">0.675</span> <span>10,000</span> <span>$6,750</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mid-Spread Indicator -->
+                                    <div class="my-2 py-1.5 px-3 rounded bg-binance-bg border border-binance-border flex justify-between items-center text-[11px] font-bold">
+                                        <span class="text-binance-gold">Spread: 0.005 (0.74%)</span>
+                                        <span class="text-binance-green font-mono">Fair Value: $0.6725</span>
+                                    </div>
+
+                                    <!-- Bids -->
+                                    <div class="space-y-0.5 text-[11px]">
+                                        <div class="flex justify-between text-binance-green relative py-0.5">
+                                            <div class="absolute right-0 top-0 bottom-0 bg-binance-green/20 w-1/3"></div>
+                                            <span class="font-bold">0.670</span> <span>15,000</span> <span>$10,050</span>
+                                        </div>
+                                        <div class="flex justify-between text-binance-green relative py-0.5">
+                                            <div class="absolute right-0 top-0 bottom-0 bg-binance-green/10 w-3/5"></div>
+                                            <span class="font-bold">0.665</span> <span>32,000</span> <span>$21,280</span>
+                                        </div>
+                                        <div class="flex justify-between text-binance-green relative py-0.5">
+                                            <div class="absolute right-0 top-0 bottom-0 bg-binance-green/10 w-4/5"></div>
+                                            <span class="font-bold">0.660</span> <span>58,000</span> <span>$38,280</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bot Parameters Live Gauge -->
+                                <div class="p-3 bg-[#0A0D12] rounded border border-binance-border space-y-2">
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-binance-textMuted">Active Quoted Depth:</span>
+                                        <span class="text-white font-bold">$122,485 USDC</span>
+                                    </div>
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-binance-textMuted">Avg Quote Latency:</span>
+                                        <span class="text-binance-green font-bold">8.4 ms (AWS us-east)</span>
+                                    </div>
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-binance-textMuted">Current Inventory Ratio:</span>
+                                        <span class="text-binance-gold font-bold">52% YES / 48% NO</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Architecture Flow Diagram (SVG) -->
+                            <div class="rounded-xl bg-binance-card border border-binance-border p-4 font-mono text-xs">
+                                <span class="text-[11px] font-bold text-white block mb-2 uppercase">Execution Pipeline: Ingestion &rarr; Signing</span>
+                                <svg viewBox="0 0 400 90" class="w-full h-20 bg-[#0B0E11] rounded border border-binance-border">
+                                    <!-- Flow nodes -->
+                                    <rect x="10" y="25" width="75" height="40" rx="4" fill="#181A20" stroke="#F0B90B"/>
+                                    <text x="47" y="44" fill="#EAECEF" font-size="9" text-anchor="middle" font-weight="bold">POLY CLOB</text>
+                                    <text x="47" y="55" fill="#848E9C" font-size="7.5" text-anchor="middle">WS Feed</text>
+
+                                    <line x1="85" y1="45" x2="115" y2="45" stroke="#F0B90B" stroke-width="1.5" stroke-dasharray="2,2"/>
+                                    
+                                    <rect x="115" y="25" width="85" height="40" rx="4" fill="#181A20" stroke="#0ECB81"/>
+                                    <text x="157" y="44" fill="#EAECEF" font-size="9" text-anchor="middle" font-weight="bold">RISK FILTER</text>
+                                    <text x="157" y="55" fill="#848E9C" font-size="7.5" text-anchor="middle">Avellaneda Model</text>
+
+                                    <line x1="200" y1="45" x2="230" y2="45" stroke="#0ECB81" stroke-width="1.5"/>
+
+                                    <rect x="230" y="25" width="80" height="40" rx="4" fill="#181A20" stroke="#F0B90B"/>
+                                    <text x="270" y="44" fill="#EAECEF" font-size="9" text-anchor="middle" font-weight="bold">EIP-712</text>
+                                    <text x="270" y="55" fill="#848E9C" font-size="7.5" text-anchor="middle">Local KMS Signer</text>
+
+                                    <line x1="310" y1="45" x2="340" y2="45" stroke="#F0B90B" stroke-width="1.5"/>
+
+                                    <rect x="340" y="25" width="50" height="40" rx="4" fill="#181A20" stroke="#0ECB81"/>
+                                    <text x="365" y="44" fill="#0ECB81" font-size="9" text-anchor="middle" font-weight="bold">REST</text>
+                                    <text x="365" y="55" fill="#848E9C" font-size="7.5" text-anchor="middle">POST</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Part 3: Deep Technical Specifications & Performance Metrics -->
+                    <div class="rounded-xl bg-binance-card border border-binance-border overflow-hidden">
+                        <div class="bg-[#12151B] px-6 py-4 border-b border-binance-border flex items-center justify-between">
+                            <span class="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                                <i class="fa-solid fa-server mr-2 text-binance-gold"></i> Polymarket Bot Production Engineering Specifications
+                            </span>
+                            <span class="text-xs font-mono text-binance-green font-bold">Polygon Mainnet Native</span>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+                            <div class="space-y-3">
+                                <h4 class="text-binance-gold font-bold uppercase text-[11px]">Order & Protocol Logic</h4>
+                                <ul class="space-y-2 text-binance-textMuted text-[11.5px]">
+                                    <li><strong class="text-white">Order Format:</strong> Polymarket CTF Exchange EIP-712</li>
+                                    <li><strong class="text-white">Cancellation Latency:</strong> &lt; 15 ms via Batch DELETE</li>
+                                    <li><strong class="text-white">Tick Size Granularity:</strong> 0.001 USDC (0.1 cent ticks)</li>
+                                    <li><strong class="text-white">Token Standard:</strong> ERC-1155 Conditional Tokens</li>
+                                </ul>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-binance-gold font-bold uppercase text-[11px]">Risk & Circuit Breakers</h4>
+                                <ul class="space-y-2 text-binance-textMuted text-[11.5px]">
+                                    <li><strong class="text-white">Max Single Market Delta:</strong> Configurable ($10k - $250k)</li>
+                                    <li><strong class="text-white">Skew Boundary Stop:</strong> Auto-pull quotes if skew &gt; 80/20</li>
+                                    <li><strong class="text-white">Oracle Lag Protection:</strong> Freeze quoting on UMA challenge</li>
+                                    <li><strong class="text-white">Flash Crash Guard:</strong> Hard bid floors at 0.02 and ceilings at 0.98</li>
+                                </ul>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-binance-gold font-bold uppercase text-[11px]">System Architecture</h4>
+                                <ul class="space-y-2 text-binance-textMuted text-[11.5px]">
+                                    <li><strong class="text-white">Engine Runtime:</strong> AsyncIO Python 3.12 + Rust bindings</li>
+                                    <li><strong class="text-white">Signing Engine:</strong> In-memory HSM / AWS CloudHSM</li>
+                                    <li><strong class="text-white">Database Engine:</strong> Redis L1 cache + TimescaleDB</li>
+                                    <li><strong class="text-white">Delivery Model:</strong> Full Dockerized Git Repository</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 2: Kalshi Trading Bot Development                            -->
+            <!-- ===================================================================== -->
+            <section id="product-2" class="anchor-section py-24 bg-binance-card relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #2</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/kalshi-bot</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Kalshi Trading Bot Development
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                CFTC-Regulated Event Execution, Macro Release Sniping, and Fedwire Automated Clearing
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Kalshi Trading Bot Development')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-scale-balanced text-binance-gold"></i>
+                                <span>Design for Regulated Institutional Event Derivatives</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Kalshi is a Designated Contract Market (DCM) regulated by the US Commodity Futures Trading Commission (CFTC). Unlike decentralized smart contracts, Kalshi requires strict compliance with US regulatory regimes, RSA 4096-bit cryptographic API request signatures, precise position accountability limits, and bank-grade wire settlement in pure US Dollars.
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                Rixvol's Kalshi bot engines are purpose-built for macroeconomic event contract trading: US CPI, nonfarm payrolls (NFP), FOMC interest rate announcements, GDP forecasts, and target treasury spreads. The bots incorporate our proprietary <strong>Macro Release Sniping Module</strong>—synchronizing with federal agency data clocks down to the microsecond, parsing direct government RSS/JSON feeds, and executing trades before the broader market reprices the curve.
+                            </p>
+
+                            <!-- Case Study / High-Yield Scenario -->
+                            <div class="p-4 rounded-lg bg-binance-bg border border-binance-border font-mono text-xs space-y-2">
+                                <div class="text-binance-gold font-bold uppercase text-[11px] flex justify-between">
+                                    <span>Real-World Scenario: CPI Print Execution</span>
+                                    <span class="text-binance-green">99.8% SUBMISSION SPEED</span>
+                                </div>
+                                <p class="text-binance-textMain text-xs font-sans">
+                                    At 08:30:00.040 AM EST, the Bureau of Labor Statistics publishes CPI figures. The Rixvol engine extracts core CPI numbers in under 12ms, evaluates implied contracts vs actual figures, cancels existing maker quotes on stale price levels, and fills Kalshi Yes contracts across 4 target strike bands before latency arbitrageurs can sweep the book.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">RSA 4096 Signature Automation</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Hardware-accelerated cryptographic auth handling.</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">Regulatory Position Limit Watchdog</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Hard stops at CFTC market contract thresholds.</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">Dynamic 429 Rate Governor</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Zero-ban guarantee with adaptive exponential backoff.</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border flex items-start gap-2.5">
+                                    <i class="fa-solid fa-check text-binance-green mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-white block font-bold">Automated USD Cash Management</strong>
+                                        <span class="text-binance-textMuted text-[11px]">Margin threshold monitoring & automated balance reporting.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right UI Terminal Visual Mockup -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-bg border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-4">
+                                <div class="flex items-center justify-between border-b border-binance-border pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-building-columns text-binance-gold"></i>
+                                        <span class="font-bold text-white uppercase">Kalshi V2 Trading Console</span>
+                                    </div>
+                                    <span class="text-[10px] text-binance-green font-bold">CFTC ACTIVE</span>
+                                </div>
+
+                                <div class="p-3 bg-[#0D1016] rounded border border-binance-border space-y-3">
+                                    <div class="flex justify-between items-center text-xs">
+                                        <span class="text-white font-bold">TICKER: FED-26DEC-T4.75</span>
+                                        <span class="text-binance-green font-bold">$0.78 &uarr; 3.2%</span>
+                                    </div>
+
+                                    <div class="space-y-1.5 text-[11px]">
+                                        <div class="flex justify-between">
+                                            <span class="text-binance-textMuted">Kalshi Member ID:</span>
+                                            <span class="text-white">mem_9921_institutional</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-binance-textMuted">Available USD Cash:</span>
+                                            <span class="text-white font-bold">$482,900.00</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-binance-textMuted">Current Open Positions:</span>
+                                            <span class="text-binance-gold font-bold">140,000 Contracts ($109,200)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full bg-binance-input h-2 rounded-full overflow-hidden">
+                                        <div class="bg-binance-gold h-full w-2/5"></div>
+                                    </div>
+                                    <div class="text-[10px] text-binance-textMuted flex justify-between">
+                                        <span>Utilized Collateral: 22.6%</span>
+                                        <span>CFTC Limit: 250,000 Contracts</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 bg-[#080A0E] rounded border border-binance-border text-[11px] space-y-1 text-binance-textMuted">
+                                    <div class="text-binance-gold font-bold"># Kalshi Engine Log</div>
+                                    <div>[KALSHI_WS] Subscribed to channel: <code class="text-white">orderbook_delta</code></div>
+                                    <div>[NTP_SYNC] US Naval Observatory time drift: <strong>+0.21ms</strong></div>
+                                    <div class="text-binance-green">[TRIGGER_ARMED] Event ID: CPI-JAN-26-YOY armed for execution.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Specs Table -->
+                    <div class="rounded-xl bg-binance-bg border border-binance-border overflow-hidden font-mono text-xs">
+                        <div class="bg-[#12151B] px-6 py-3 border-b border-binance-border text-white font-bold">
+                            KALSHI TRADING ENGINE SYSTEM SPECIFICATIONS
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4 text-[11.5px] text-binance-textMuted">
+                            <div><strong class="text-white block mb-1">API Protocol</strong>REST V2 + WebSockets</div>
+                            <div><strong class="text-white block mb-1">Auth Protocol</strong>RSA-SHA256 (4096-bit key)</div>
+                            <div><strong class="text-white block mb-1">Max In-Flight Orders</strong>50 concurrent requests</div>
+                            <div><strong class="text-white block mb-1">Reconciliation</strong>Automated sub-minute audit</div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 3: Polymarket API Integration                                -->
+            <!-- ===================================================================== -->
+            <section id="product-3" class="anchor-section py-24 bg-binance-bg relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #3</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/polymarket-api</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Polymarket API Integration
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                Institutional CLOB Connectors, Low-Latency WebSocket Streams, and Auto-Reconnecting Middleware
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Polymarket API Integration')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-network-wired text-binance-gold"></i>
+                                <span>Zero-Drop Enterprise Middleware for Polymarket</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Connecting institutional algorithmic desks to Polymarket presents unique technical challenges: WebSockets frequently drop during high-volatility event resolutions, nonce conflicts occur when placing multiple concurrent orders from the same proxy wallet, and Polygon RPC latency can inject deadly execution slippage.
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                Rixvol's Polymarket API Integration is a turnkey, enterprise-grade middleware pipeline. It wraps Polymarket's Gamma Markets API and CLOB endpoints with connection multiplexing, automatic local nonce management, sub-millisecond Level 2/Level 3 order book reconstruction, and a standardized REST/WebSocket/FIX interface that matches institutional exchange standards.
+                            </p>
+
+                            <!-- 4 Core API Modules -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Local Nonce Allocator</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Eliminates transaction replacement collisions across multi-threaded workers.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">In-Memory Book Builder</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Reassembles delta stream snapshots into instantaneous L2 memory arrays.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Vault Key Signing Gateway</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Orders signed inside secure enclaves; zero private key leakage.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Automatic Reconnect & Buffer</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Sub-50ms seamless socket reconnection with zero missed trade events.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right API Terminal / JSON Inspector -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-card border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-3">
+                                <div class="flex items-center justify-between border-b border-binance-border pb-2.5">
+                                    <span class="text-binance-gold font-bold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-code"></i> Rixvol CLOB Dispatcher SDK
+                                    </span>
+                                    <span class="text-[10px] text-binance-green font-bold">LATENCY: 4.8ms</span>
+                                </div>
+
+                                <pre class="p-3.5 bg-[#080B10] rounded border border-binance-border text-[11px] text-binance-textMain overflow-x-auto custom-scroll leading-relaxed">
+<span class="text-binance-textMuted">// Python AsyncIO SDK Sample</span>
+<span class="text-binance-gold">from</span> rixvol_clob <span class="text-binance-gold">import</span> PolymarketClient
+
+client = PolymarketClient(
+    api_key=<span class="text-white">"rix_pk_live_8829"</span>,
+    vault_mode=<span class="text-binance-green">True</span>,
+    polygon_rpc=<span class="text-white">"https://polygon.internal.rixvol.com"</span>
+)
+
+order = <span class="text-binance-gold">await</span> client.create_order(
+    token_id=<span class="text-white">"0x98124f...11a"</span>,
+    side=<span class="text-binance-green">"BUY_YES"</span>,
+    price=<span class="text-white">0.645</span>,
+    size=<span class="text-white">25000</span>,
+    order_type=<span class="text-white">"POST_ONLY"</span>
+)
+<span class="text-binance-textMuted"># Dispatched in 4.2ms | Signature verified</span></pre>
+
+                                <div class="p-3 bg-binance-bg rounded border border-binance-border flex items-center justify-between text-[11px]">
+                                    <span class="text-binance-textMuted">Max Validated Throughput:</span>
+                                    <span class="text-white font-bold">5,000 WebSocket msgs / sec</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 4: Kalshi API Integration                                    -->
+            <!-- ===================================================================== -->
+            <section id="product-4" class="anchor-section py-24 bg-binance-card relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #4</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/kalshi-api</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Kalshi API Integration
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                Direct Market Access (DMA), Order Gateway Adapters, and Real-Time Position Streamers
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Kalshi API Integration')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-plug-circle-bolt text-binance-gold"></i>
+                                <span>Institutional Direct Market Access to Kalshi V2</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Kalshi’s modern exchange architecture provides rich REST and WebSocket V2 endpoints, but executing at scale requires custom protocol translation, low-overhead cryptographic request builders, and automated synchronization with internal general ledgers.
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                Our Kalshi API Integration bridges your hedge fund's execution management systems (EMS) or proprietary trading stack to Kalshi with zero friction. We deliver high-concurrency connection pools, microsecond timestamp synchronization, real-time portfolio margin monitors, and automated settlement reconciliation that automatically records winning contracts directly into your fund’s accounting framework.
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">RSA Key Auth Pipeline</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Pre-computes cryptographic signature headers to slash API latency.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Portfolio Valuation Sync</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Live equity, cash balance, and unrealized PnL streamed over Redis.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Order Batching Sub-Engine</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Submits multi-contract basket orders in a single HTTP payload.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">FIX Protocol Bridge</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Optional FIX 4.4 / 5.0 bridge for traditional Wall Street desks.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Live Monitor Mockup -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-bg border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-3">
+                                <div class="flex items-center justify-between border-b border-binance-border pb-2.5">
+                                    <span class="text-binance-gold font-bold">KALSHI V2 GATEWAY TELEMETRY</span>
+                                    <span class="text-[10px] text-binance-green font-bold">UPTIME 99.998%</span>
+                                </div>
+
+                                <div class="space-y-2 text-[11px]">
+                                    <div class="p-2.5 rounded bg-binance-card border border-binance-border flex justify-between items-center">
+                                        <div>
+                                            <span class="text-binance-green font-bold mr-2">GET</span>
+                                            <span class="text-white">/v2/portfolio/balance</span>
+                                        </div>
+                                        <span class="text-binance-textMuted">9.1ms</span>
+                                    </div>
+                                    <div class="p-2.5 rounded bg-binance-card border border-binance-border flex justify-between items-center">
+                                        <div>
+                                            <span class="text-binance-gold font-bold mr-2">WS</span>
+                                            <span class="text-white">/v2/market_ticker/all</span>
+                                        </div>
+                                        <span class="text-binance-green font-bold">STREAMING</span>
+                                    </div>
+                                    <div class="p-2.5 rounded bg-binance-card border border-binance-border flex justify-between items-center">
+                                        <div>
+                                            <span class="text-binance-green font-bold mr-2">POST</span>
+                                            <span class="text-white">/v2/portfolio/orders/batch</span>
+                                        </div>
+                                        <span class="text-binance-textMuted">12.8ms</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 bg-[#07090C] rounded border border-binance-border text-[10.5px] text-binance-textMuted space-y-1">
+                                    <div class="text-white font-bold">Rate Limit Status:</div>
+                                    <div>Tier 4 Institutional: 600 requests / 10 sec (Current: 44 req / 10 sec)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 5: Prediction Market Analytics Platform                     -->
+            <!-- ===================================================================== -->
+            <section id="product-5" class="anchor-section py-24 bg-binance-bg relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #5</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/prediction-market-analytics</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Prediction Market Analytics Platform
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                Implied Probability Surfaces, Whale Wallet Accumulation Trackers, and Historical Tick Data Stores
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Prediction Market Analytics Platform')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-chart-line text-binance-gold"></i>
+                                <span>Quant Intelligence: Turning Event Odds into Alpha</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Prediction markets represent collective real-time probability distributions on macro events, regulatory changes, and elections. However, the raw data is scattered, noisy, and distorted by low-liquidity tails.
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                The Rixvol Analytics Platform is an institutional big-data intelligence suite. Powered by an ultra-fast columnar <strong>ClickHouse</strong> database, it ingests every order tick, cancellation, and trade across prediction exchanges. The platform models implied probability surfaces, flags large smart-money whale accumulation, tracks off-market OTC block fills, and reconstructs historical order books with sub-millisecond precision.
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Whale & Smart Money Radar</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Clustered wallet heuristics identify informed traders and front-running flows.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Probability Volatility Surface</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Computes implied event volatility and term structures over contract horizons.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Full Historical Tick Warehouse</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Over 500 million historical trade ticks ready for Python backtesting.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Spot Market Cross-Correlation</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Calculates real-time beta between prediction odds and BTC / S&P 500 prices.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Analytics Dashboard Mockup (Candlestick / Implied Odds Chart) -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-card border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-4">
+                                <div class="flex items-center justify-between border-b border-binance-border pb-3">
+                                    <span class="text-white font-bold uppercase">Whale Accumulation Tracker</span>
+                                    <span class="text-binance-gold text-[10px] font-bold">CLICKHOUSE BACKEND</span>
+                                </div>
+
+                                <!-- SVG Candlestick & Volume Chart -->
+                                <div class="bg-[#0A0D12] p-3 rounded border border-binance-border space-y-2">
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-white font-bold">Implied Probability: 72.4%</span>
+                                        <span class="text-binance-green font-bold">+$1.84M Net Inflow (24h)</span>
+                                    </div>
+                                    <svg viewBox="0 0 400 120" class="w-full h-28 bg-[#07090C] rounded">
+                                        <!-- Grid lines -->
+                                        <line x1="0" y1="30" x2="400" y2="30" stroke="#181A20"/>
+                                        <line x1="0" y1="60" x2="400" y2="60" stroke="#181A20"/>
+                                        <line x1="0" y1="90" x2="400" y2="90" stroke="#181A20"/>
+                                        
+                                        <!-- Candlestick elements -->
+                                        <!-- Bar 1 -->
+                                        <line x1="40" y1="70" x2="40" y2="95" stroke="#F6465D" stroke-width="1.5"/>
+                                        <rect x="34" y="75" width="12" height="15" fill="#F6465D"/>
+                                        <!-- Bar 2 -->
+                                        <line x1="90" y1="50" x2="90" y2="85" stroke="#0ECB81" stroke-width="1.5"/>
+                                        <rect x="84" y="55" width="12" height="25" fill="#0ECB81"/>
+                                        <!-- Bar 3 -->
+                                        <line x1="140" y1="40" x2="140" y2="70" stroke="#0ECB81" stroke-width="1.5"/>
+                                        <rect x="134" y="45" width="12" height="20" fill="#0ECB81"/>
+                                        <!-- Bar 4 (Whale Breakout) -->
+                                        <line x1="190" y1="20" x2="190" y2="55" stroke="#0ECB81" stroke-width="1.5"/>
+                                        <rect x="184" y="25" width="12" height="25" fill="#0ECB81"/>
+                                        <circle cx="190" cy="20" r="3" fill="#F0B90B"/>
+                                        <text x="190" y="14" fill="#F0B90B" font-size="7.5" text-anchor="middle">WHALE</text>
+                                        <!-- Bar 5 -->
+                                        <line x1="240" y1="18" x2="240" y2="40" stroke="#0ECB81" stroke-width="1.5"/>
+                                        <rect x="234" y="20" width="12" height="16" fill="#0ECB81"/>
+                                        <!-- Bar 6 -->
+                                        <line x1="290" y1="22" x2="290" y2="45" stroke="#F6465D" stroke-width="1.5"/>
+                                        <rect x="284" y="26" width="12" height="12" fill="#F6465D"/>
+                                        <!-- Bar 7 -->
+                                        <line x1="340" y1="15" x2="340" y2="35" stroke="#0ECB81" stroke-width="1.5"/>
+                                        <rect x="334" y="18" width="12" height="14" fill="#0ECB81"/>
+                                    </svg>
+                                </div>
+
+                                <div class="p-3 bg-binance-surface rounded border border-binance-gold/30 text-[11px] space-y-1">
+                                    <div class="text-binance-gold font-bold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-bell"></i> SIGNAL ALERT: MULTI-WALLET CONVERGENCE
+                                    </div>
+                                    <div class="text-white">5 linked wallets initiated concurrent $50,000 Yes allocations within 4 seconds.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 6: Cross-Platform Trading Analytics                         -->
+            <!-- ===================================================================== -->
+            <section id="product-6" class="anchor-section py-24 bg-binance-card relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #6</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/cross-platform-trading</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Cross-Platform Trading Analytics
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                Multi-Venue Discrepancy Matrices, Synthetic Dutch-Book Engines, and Fee-Adjusted Arbitrage Signals
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Cross-Platform Trading Analytics')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-arrows-split-up-and-left text-binance-gold"></i>
+                                <span>Pure Arbitrage: Polymarket vs Kalshi vs PredictIt</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Due to segmented capital pools, regulatory firewalls, and geographical restrictions, identical real-world event contracts trade at widely divergent prices across exchanges. For example, a contract predicting a 25bps interest rate cut may trade at $0.62 on Polymarket (crypto native) while simultaneously trading at $0.67 on Kalshi (US dollar native).
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                Rixvol's Cross-Platform Trading Analytics continuously maps matching market contracts across venues, computes exact transaction costs (including exchange maker/taker fees, gas fees, and fiat withdrawal friction), and triggers instant risk-free basis arbitrage signals. It also computes <strong>Synthetic Dutch Books</strong> where buying Yes on Venue A and No on Venue B guarantees a positive payoff regardless of event outcome.
+                            </p>
+
+                            <!-- Math Callout -->
+                            <div class="p-4 rounded-lg bg-binance-bg border border-binance-border font-mono text-xs space-y-2">
+                                <div class="text-binance-gold font-bold uppercase text-[11px] flex justify-between">
+                                    <span>Negative-Risk Arbitrage Formula</span>
+                                    <span class="text-binance-green">ZERO DIRECTIONAL RISK</span>
+                                </div>
+                                <div class="bg-[#090C10] p-3 rounded text-white text-[12px]">
+                                    Spread = 1.0000 - [ Ask_{VenueA}(YES) + Ask_{VenueB}(NO) + Fee_{A} + Fee_{B} ]
+                                </div>
+                                <div class="text-[11px] text-binance-textMuted">
+                                    Whenever Spread &gt; 0, purchasing both legs locks in guaranteed deterministic capital yield at contract settlement.
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Contract Entity Resolution</strong>
+                                    <span class="text-binance-textMuted text-[11px]">AI-assisted semantic resolver matches contracts with varying textual terms.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Fee-Adjusted Net Basis</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Calculates net yields after factoring in Kalshi maker/taker schedules and gas.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Automated Leg Fill Protection</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Cancels Leg B instantly if Leg A is not 100% matched within 80ms.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Capital Rebalancer Webhooks</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Notifies treasury desks when collateral requires rebalancing between crypto/fiat.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Live Arbitrage Matrix Mockup -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-bg border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-3">
+                                <div class="flex items-center justify-between border-b border-binance-border pb-3">
+                                    <span class="text-white font-bold">CROSS-VENUE SPREAD SCANNER</span>
+                                    <span class="text-binance-green font-bold text-[10px]">6 ACTIVE ARB SIGNALS</span>
+                                </div>
+
+                                <div class="space-y-2 text-[11px]">
+                                    <!-- Signal 1 -->
+                                    <div class="p-3 rounded bg-binance-card border border-binance-border space-y-1.5">
+                                        <div class="flex justify-between font-bold">
+                                            <span class="text-white">FED-RATE-CUT-NOV</span>
+                                            <span class="text-binance-green">+4.1% NET SPREAD</span>
+                                        </div>
+                                        <div class="flex justify-between text-binance-textMuted text-[10.5px]">
+                                            <span>Polymarket Ask: $0.620</span>
+                                            <span>Kalshi Bid: $0.665</span>
+                                        </div>
+                                        <div class="text-[10px] text-binance-gold font-bold">Available Liquid Capacity: $140,000 USDC</div>
+                                    </div>
+
+                                    <!-- Signal 2 -->
+                                    <div class="p-3 rounded bg-binance-card border border-binance-border space-y-1.5">
+                                        <div class="flex justify-between font-bold">
+                                            <span class="text-white">US-CPI-ANNUALIZED</span>
+                                            <span class="text-binance-green">+2.9% NET SPREAD</span>
+                                        </div>
+                                        <div class="flex justify-between text-binance-textMuted text-[10.5px]">
+                                            <span>Polymarket Ask: $0.485</span>
+                                            <span>Kalshi Bid: $0.518</span>
+                                        </div>
+                                        <div class="text-[10px] text-binance-gold font-bold">Available Liquid Capacity: $65,000 USDC</div>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 bg-[#080B10] rounded border border-binance-border flex items-center justify-between text-[11px]">
+                                    <span class="text-binance-textMuted">Average Arb Window Duration:</span>
+                                    <span class="text-white font-bold">4.2 to 18.6 seconds</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 7: Automated Trading Bot Development                         -->
+            <!-- ===================================================================== -->
+            <section id="product-7" class="anchor-section py-24 bg-binance-bg relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #7</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/trading-bot-development</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Automated Trading Bot Development
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                Custom Python Quantitative Engines, Event-Driven Architectures, and Non-Custodial Deployment
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Automated Trading Bot Development')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-brands fa-python text-binance-gold"></i>
+                                <span>Bespoke Algorithmic Systems Built to Your Exact Thesis</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Every trading fund possesses a distinct competitive advantage—whether in proprietary sentiment scraping, machine-learning election models, statistical parimutuel modeling, or microsecond latency execution. Off-the-shelf bots fail because they lack the specific routing, custom risk tolerances, and asset class support you need.
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                Rixvol builds fully custom, production-hardened algorithmic systems. Written in asynchronous Python (using <code class="text-white font-mono">uvloop</code>, <code class="text-white font-mono">cython</code>, and native C++ shared memory extensions), our bots are deployed into your own isolated Virtual Private Cloud (AWS / GCP / Bare Metal). You receive 100% full source-code ownership, comprehensive test suites, and ongoing quantitative support.
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">High-Throughput Uvloop Core</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Executes up to 12,000 internal state calculations per second per core.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Integrated Grafana & Prometheus</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Pre-configured telemetry dashboard for Sharpe ratio, drawdowns, and latency.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Hard Drawdown Governors</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Automated kill-switches halt quoting if daily loss limits are exceeded.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-card border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Full IP & Source Code Transfer</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Client owns 100% of the repository, algorithms, and deployment scripts.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Bot Monitoring Mockup -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-card border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-3">
+                                <div class="flex items-center justify-between border-b border-binance-border pb-3">
+                                    <span class="text-white font-bold uppercase">Grafana Bot Operations Center</span>
+                                    <span class="text-binance-green font-bold text-[10px]">HEALTH: OPTIMAL</span>
+                                </div>
+
+                                <div class="space-y-2.5 text-[11px]">
+                                    <div class="p-2.5 rounded bg-binance-bg border border-binance-border flex justify-between">
+                                        <span class="text-binance-textMuted">CPU Utilization (4 Cores):</span>
+                                        <span class="text-binance-green font-bold">14.2%</span>
+                                    </div>
+                                    <div class="p-2.5 rounded bg-binance-bg border border-binance-border flex justify-between">
+                                        <span class="text-binance-textMuted">Memory Allocation:</span>
+                                        <span class="text-white font-bold">1.4 GB / 16 GB</span>
+                                    </div>
+                                    <div class="p-2.5 rounded bg-binance-bg border border-binance-border flex justify-between">
+                                        <span class="text-binance-textMuted">Active Threads / Tasks:</span>
+                                        <span class="text-binance-gold font-bold">64 Coroutines</span>
+                                    </div>
+                                    <div class="p-2.5 rounded bg-binance-bg border border-binance-border flex justify-between">
+                                        <span class="text-binance-textMuted">Order Confirmation Delay:</span>
+                                        <span class="text-binance-green font-bold">7.2 ms</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 bg-[#080B10] rounded border border-binance-border text-[10.5px] text-binance-textMuted">
+                                    <span class="text-binance-gold font-bold">One-Click Docker Deployment:</span>
+                                    <pre class="text-white mt-1">git clone git@github.com:client-fund/rixvol-engine.git
+docker compose up -d --scale quant_worker=4</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- ===================================================================== -->
+            <!-- PRODUCT 8: Trading Strategy Automation                               -->
+            <!-- ===================================================================== -->
+            <section id="product-8" class="anchor-section py-24 bg-binance-card relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    
+                    <div class="border-b border-binance-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded bg-binance-gold text-slate-950 font-mono text-xs font-black">PRODUCT #8</span>
+                                <span class="text-xs font-mono text-binance-textMuted">Official Specification Page</span>
+                                <span class="text-xs font-mono text-binance-gold font-bold">rixvol.com/trading-strategy-automation</span>
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-sans tracking-tight">
+                                Trading Strategy Automation
+                            </h2>
+                            <p class="text-sm sm:text-base text-binance-textMuted mt-2 font-mono">
+                                Rulebook Digitization, PineScript-to-Python Migration, and Rigorous Monte Carlo Backtesting
+                            </p>
+                        </div>
+                        <button onclick="selectProductForInquiry('Trading Strategy Automation')" class="px-5 py-2.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all self-start md:self-auto flex items-center gap-2">
+                            <span>Inquire for Deployment</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <div class="lg:col-span-7 space-y-5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-code-compare text-binance-gold"></i>
+                                <span>Eliminate Discretionary Latency and Emotional Friction</span>
+                            </h3>
+                            <p class="text-sm text-binance-textMain leading-relaxed font-sans">
+                                Even the most profitable trading thesis fails when executed manually: human fatigue leads to missed entries, slow click times cause severe slippage, and emotional hesitation disrupts risk parameters.
+                            </p>
+                            <p class="text-sm text-binance-textMuted leading-relaxed font-sans">
+                                Rixvol takes your discretionary rules, PineScript scripts, Python research notebooks, or Excel spreadsheets and converts them into production-ready automated algorithms. We stress-test every rule through <strong>Monte Carlo simulations</strong> (permuting order sequence and simulating extreme historical slippage events) to ensure your system performs consistently under live market conditions before a single dollar of real capital is allocated.
+                            </p>
+
+                            <!-- Backtest Summary Metrics Grid -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border text-center">
+                                    <span class="text-binance-textMuted text-[10px] block uppercase">Sharpe Ratio</span>
+                                    <span class="text-lg font-bold text-binance-green">3.48</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border text-center">
+                                    <span class="text-binance-textMuted text-[10px] block uppercase">Profit Factor</span>
+                                    <span class="text-lg font-bold text-binance-gold">2.91</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border text-center">
+                                    <span class="text-binance-textMuted text-[10px] block uppercase">Max Drawdown</span>
+                                    <span class="text-lg font-bold text-white">3.8%</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border text-center">
+                                    <span class="text-binance-textMuted text-[10px] block uppercase">Win Rate</span>
+                                    <span class="text-lg font-bold text-binance-green">76.4%</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">TradingView Webhook Listeners</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Triggers live exchange order placement from TradingView alerts in under 15ms.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Monte Carlo Robustness Engine</strong>
+                                    <span class="text-binance-textMuted text-[11px]">10,000 synthetic market paths run to test ruin probability and tail risks.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Paper Trading Sandbox</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Zero-risk simulated environment mimics real exchange order queues and slippage.</span>
+                                </div>
+                                <div class="p-3 rounded bg-binance-bg border border-binance-border">
+                                    <strong class="text-white block font-bold mb-1">Deterministic Execution Guard</strong>
+                                    <span class="text-binance-textMuted text-[11px]">Strict mathematical parity between backtest results and live production fills.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Strategy Performance Curve Mockup -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="rounded-xl bg-binance-bg border border-binance-border shadow-binance-card p-5 font-mono text-xs space-y-4">
+                                <div class="flex justify-between items-center border-b border-binance-border pb-3">
+                                    <span class="text-white font-bold">CUMULATIVE EQUITY CURVE</span>
+                                    <span class="text-binance-green font-bold text-[10px]">MONTE CARLO PASSED</span>
+                                </div>
+
+                                <!-- Cumulative Equity Chart (SVG) -->
+                                <div class="bg-[#090C10] p-3 rounded border border-binance-border space-y-2">
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-white">Strategy ROI: +184.2%</span>
+                                        <span class="text-binance-gold font-bold">1,820 Trades</span>
+                                    </div>
+                                    <svg viewBox="0 0 400 120" class="w-full h-28 bg-[#07090C] rounded">
+                                        <defs>
+                                            <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#0ECB81" stop-opacity="0.25"/>
+                                                <stop offset="100%" stop-color="#0ECB81" stop-opacity="0.0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <!-- Baseline -->
+                                        <line x1="0" y1="100" x2="400" y2="100" stroke="#23272E" stroke-dasharray="3,3"/>
+                                        <!-- Area -->
+                                        <path d="M 0 95 Q 60 90, 120 70 T 240 45 T 320 25 T 400 10 L 400 120 L 0 120 Z" fill="url(#equityGrad)"/>
+                                        <!-- Line -->
+                                        <path d="M 0 95 Q 60 90, 120 70 T 240 45 T 320 25 T 400 10" fill="none" stroke="#0ECB81" stroke-width="2.5"/>
+                                        <circle cx="400" cy="10" r="4" fill="#F0B90B"/>
+                                    </svg>
+                                </div>
+
+                                <div class="p-3 bg-binance-card rounded border border-binance-border text-[11px] space-y-1">
+                                    <div class="text-white font-bold">Deterministic Parity Verification:</div>
+                                    <div class="text-binance-textMuted">Backtest vs Live Execution Divergence: <strong>&lt; 0.04%</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- INSTITUTIONAL CONSULTATION & ARCHITECTURE AUDIT FORM                      -->
+        <!-- ========================================================================= -->
+        <section id="quick-consult" class="py-24 bg-binance-bg relative border-t border-binance-border">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-binance-gold/20 border border-binance-gold/40 text-binance-gold text-xs font-mono font-bold mb-3">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>Contact & System Deployment</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-black text-white font-sans tracking-tight">
+                        Get In Touch With Rixvol
+                    </h2>
+                    <p class="text-binance-textMuted text-xs sm:text-sm mt-3 font-mono max-w-lg mx-auto">
+                        Leave your contact handle and select the product you are interested in. We will review your requirements and respond promptly.
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-binance-card border border-binance-border shadow-binance-card p-6 sm:p-8">
+                    
+                    <div id="formFeedback" class="hidden mb-6 p-4 rounded bg-binance-green/10 border border-binance-green text-binance-green text-xs font-mono flex items-center gap-3">
+                        <i class="fa-solid fa-circle-check text-2xl"></i>
+                        <div>
+                            <strong class="font-bold block text-sm">Inquiry Received</strong>
+                            <span>Thank you! We have received your request and will reach out to your contact handle shortly.</span>
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleInquiry(event)" class="space-y-5">
+                        
+                        <!-- Contact Info -->
+                        <div>
+                            <label class="block text-[11px] font-mono uppercase tracking-wider text-binance-textMuted mb-2">Your Contacts *</label>
+                            <input type="text" required placeholder="@username (Telegram) or your.email@domain.com" class="w-full px-4 py-3 rounded bg-binance-input border border-binance-border text-white text-xs font-mono focus:outline-none focus:border-binance-gold transition-colors">
+                        </div>
+
+                        <!-- Product Specification Selector -->
+                        <div>
+                            <label class="block text-[11px] font-mono uppercase tracking-wider text-binance-textMuted mb-2">Target Product / Specification *</label>
+                            <select id="productDropdown" class="w-full px-4 py-3 rounded bg-binance-input border border-binance-border text-white text-xs font-mono focus:outline-none focus:border-binance-gold transition-colors">
+                                <option value="Polymarket Trading Bot Development">#1 Polymarket Trading Bot Development (rixvol.com/polymarket-bot)</option>
+                                <option value="Kalshi Trading Bot Development">#2 Kalshi Trading Bot Development (rixvol.com/kalshi-bot)</option>
+                                <option value="Polymarket API Integration">#3 Polymarket API Integration (rixvol.com/polymarket-api)</option>
+                                <option value="Kalshi API Integration">#4 Kalshi API Integration (rixvol.com/kalshi-api)</option>
+                                <option value="Prediction Market Analytics Platform">#5 Prediction Market Analytics Platform (rixvol.com/prediction-market-analytics)</option>
+                                <option value="Cross-Platform Trading Analytics">#6 Cross-Platform Trading Analytics (rixvol.com/cross-platform-trading)</option>
+                                <option value="Automated Trading Bot Development">#7 Automated Trading Bot Development (rixvol.com/trading-bot-development)</option>
+                                <option value="Trading Strategy Automation">#8 Trading Strategy Automation (rixvol.com/trading-strategy-automation)</option>
+                            </select>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-[11px] font-mono uppercase tracking-wider text-binance-textMuted mb-2">Project Details / Description *</label>
+                            <textarea rows="4" required placeholder="Describe what you need built, trading logic, platform requirements, timeline, or any specific questions..." class="w-full px-4 py-3 rounded bg-binance-input border border-binance-border text-white text-xs font-mono focus:outline-none focus:border-binance-gold transition-colors"></textarea>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                            <span class="text-[11px] text-binance-textMuted font-mono flex items-center gap-1.5">
+                                <i class="fa-solid fa-shield-halved text-binance-gold"></i> Fast response & non-disclosure guarantee
+                            </span>
+                            <button type="submit" id="submitBtn" class="w-full sm:w-auto px-8 py-3.5 rounded bg-binance-gold text-slate-950 font-bold font-mono text-xs uppercase tracking-wider hover:bg-binance-goldHover shadow-binance-gold transition-all">
+                                Send Inquiry
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#07090C] border-t border-binance-border text-binance-textMuted text-xs py-14 font-mono">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-binance-border">
+                
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-white font-bold text-base font-sans">
+                        <span class="w-6 h-6 rounded bg-binance-gold text-black flex items-center justify-center font-black text-xs">R</span>
+                        RIXVOL
+                    </div>
+                    <p class="text-[11px] leading-relaxed">
+                        High-frequency trading bots, cross-venue arbitrage engines, and quantitative infrastructure for prediction markets.
+                    </p>
+                    <div class="text-[10px] text-binance-green font-bold">
+                        <i class="fa-solid fa-lock mr-1"></i> Non-Custodial Architecture Standard
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="text-white text-xs font-bold uppercase mb-3">Prediction Bot Suites</h5>
+                    <ul class="space-y-2 text-[11px]">
+                        <li><a href="#product-1" class="hover:text-binance-gold transition-colors">rixvol.com/polymarket-bot</a></li>
+                        <li><a href="#product-2" class="hover:text-binance-gold transition-colors">rixvol.com/kalshi-bot</a></li>
+                        <li><a href="#product-7" class="hover:text-binance-gold transition-colors">rixvol.com/trading-bot-development</a></li>
+                        <li><a href="#product-8" class="hover:text-binance-gold transition-colors">rixvol.com/trading-strategy-automation</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="text-white text-xs font-bold uppercase mb-3">API & Analytics</h5>
+                    <ul class="space-y-2 text-[11px]">
+                        <li><a href="#product-3" class="hover:text-binance-gold transition-colors">rixvol.com/polymarket-api</a></li>
+                        <li><a href="#product-4" class="hover:text-binance-gold transition-colors">rixvol.com/kalshi-api</a></li>
+                        <li><a href="#product-5" class="hover:text-binance-gold transition-colors">rixvol.com/prediction-market-analytics</a></li>
+                        <li><a href="#product-6" class="hover:text-binance-gold transition-colors">rixvol.com/cross-platform-trading</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="text-white text-xs font-bold uppercase mb-3">Institutional Disclaimer</h5>
+                    <p class="text-[10.5px] leading-relaxed text-binance-textDark mb-3">
+                        Rixvol is an algorithmic quantitative technology engineering firm. Rixvol does not solicit investments, provide fiduciary financial advice, or act as an exchange custodian. All codebases operate under client custody.
+                    </p>
+                    <div class="flex gap-4 text-binance-textMuted">
+                        <a href="#" class="hover:text-binance-gold"><i class="fa-brands fa-github text-sm"></i></a>
+                        <a href="#" class="hover:text-binance-gold"><i class="fa-brands fa-telegram text-sm"></i></a>
+                        <a href="#" class="hover:text-binance-gold"><i class="fa-brands fa-x-twitter text-sm"></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row justify-between items-center text-[11px] text-binance-textDark gap-4">
+                <div>
+                    &copy; 2026 RIXVOL. Prediction Markets & Trading Bots. All rights reserved.
+                </div>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-binance-textMuted">Data Protection & Privacy</a>
+                    <a href="#" class="hover:text-binance-textMuted">Terms of Software Delivery</a>
+                    <a href="#" class="hover:text-binance-textMuted">Security & KMS Standard</a>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT: SCROLLSPY, PRODUCT SELECTION & LIVE TELEMETRY -->
+    <script>
+        // Dynamic scroll-spy across all 8 products
+        const sections = document.querySelectorAll('.anchor-section');
+        const tabLinks = document.querySelectorAll('.tab-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const scrollPos = window.scrollY + 180;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tabLinks.forEach(link => {
+                link.classList.remove('bg-binance-card', 'text-binance-gold', 'border-b-2', 'border-binance-gold');
+                if (link.getAttribute('data-target') === current) {
+                    link.classList.add('bg-binance-card', 'text-binance-gold', 'border-b-2', 'border-binance-gold');
+                }
+            });
+        });
+
+        // Function called by each product's CTA: Auto-selects product in dropdown and scrolls to form
+        function selectProductForInquiry(productTitle) {
+            const dropdown = document.getElementById('productDropdown');
+            if (dropdown) {
+                for (let i = 0; i < dropdown.options.length; i++) {
+                    if (dropdown.options[i].value === productTitle || dropdown.options[i].text.includes(productTitle)) {
+                        dropdown.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            const formSection = document.getElementById('quick-consult');
+            if (formSection) {
+                formSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Form Submission handler with visual feedback
+        function handleInquiry(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const feedback = document.getElementById('formFeedback');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Submitting...';
+
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Request Received';
+                btn.classList.remove('bg-binance-gold', 'text-slate-950');
+                btn.classList.add('bg-binance-green', 'text-white');
+
+                if (feedback) {
+                    feedback.classList.remove('hidden');
+                }
+            }, 800);
+        }
+
+        // Real-time simulated execution telemetry feed
+        const heroTicker = document.getElementById('heroTicker');
+        const simulatedLogs = [
+            '<span class="text-binance-green font-semibold">[ORDER_FILL] Kalshi: Matched 12,000 Contracts YES @ $0.645</span>',
+            '<span class="text-binance-gold">[ARB_DETECT] Spread divergence: Polymarket $0.610 vs Kalshi $0.648</span>',
+            '<span class="text-white">[EIP-712] Batch gasless signature dispatched to Polygon CLOB</span>',
+            '<span class="text-binance-green">[PROFIT_LOCK] Zero-delta hedge completed: +$456.00 net yield</span>',
+            '<span class="text-binance-textMuted">[WEBSOCKET] Ping 7.4ms acknowledged by Kalshi gateway</span>',
+            '<span class="text-binance-gold">[WHALE_ALERT] Inflow: 85,000 YES contracts accumulated in single tick</span>'
+        ];
+
+        setInterval(() => {
+            if (heroTicker) {
+                const now = new Date();
+                const time = now.toTimeString().split(' ')[0];
+                const msg = simulatedLogs[Math.floor(Math.random() * simulatedLogs.length)];
+
+                const line = document.createElement('div');
+                line.innerHTML = `[${time}] ${msg}`;
+                heroTicker.appendChild(line);
+                heroTicker.scrollTop = heroTicker.scrollHeight;
+
+                if (heroTicker.children.length > 25) {
+                    heroTicker.removeChild(heroTicker.children[0]);
+                }
+            }
+        }, 3200);
+    </script>
+
+</body>
+</html>
