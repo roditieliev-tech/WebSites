@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Rixvol | Data Engineering &amp; AI Systems Infrastructure</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for Telemetry & Benchmarks -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            midnight: '#0B121C',
+            surface: '#111B29',
+            surfaceHover: '#162233',
+            surfaceInset: '#080E16',
+            borderSubtle: 'rgba(226, 232, 240, 0.09)',
+            borderStrong: 'rgba(226, 232, 240, 0.18)',
+            copper: '#D97757',
+            copperHover: '#E28668',
+            copperTint: 'rgba(217, 119, 87, 0.12)',
+            glacier: '#4EA8DE',
+            sage: '#52B788',
+            inkPrimary: '#F4F6F9',
+            inkSecondary: '#94A3B8',
+            inkMuted: '#64748B'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Deep Oceanic Midnight & Architectural Copper Aesthetic */
+    html, body {
+      background-color: #0B121C;
+      color: #F4F6F9;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Subtle architectural hairline grid */
+    .architectural-grid {
+      background-image: 
+        linear-gradient(to right, rgba(226, 232, 240, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 232, 240, 0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+
+    .surface-card {
+      background: #111B29;
+      border: 1px solid rgba(226, 232, 240, 0.09);
+      box-shadow: 0 4px 24px rgba(3, 7, 14, 0.35);
+      transition: border-color 0.25s ease, background-color 0.25s ease;
+    }
+
+    .surface-card:hover {
+      border-color: rgba(226, 232, 240, 0.18);
+    }
+
+    .form-field {
+      background: #080E16;
+      border: 1px solid rgba(226, 232, 240, 0.12);
+      color: #F4F6F9;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-field::placeholder {
+      color: #64748B;
+    }
+
+    .form-field:focus {
+      outline: none;
+      border-color: #D97757;
+      box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.16);
+    }
+
+    /* Hide scrollbar for mobile horizontal filter strip */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Clean custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B121C;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E2D42;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2C415E;
+    }
+  </style>
+</head>
+
+<body class="font-sans selection:bg-copper selection:text-white">
+
+  <!-- NAVIGATION -->
+  <header class="sticky top-0 z-50 bg-midnight/90 backdrop-blur-xl border-b border-borderSubtle">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+      
+      <!-- Brand Monogram & Wordmark -->
+      <a href="#" class="flex items-center gap-3 group min-h-[44px]">
+        <div class="w-9 h-9 rounded-lg bg-copper flex items-center justify-center group-hover:bg-copperHover transition-colors shrink-0">
+          <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <path d="M5 4h9a4 4 0 0 1 4 4v0a4 4 0 0 1-4 4H5V4z" />
+            <path d="M13 12l6 8" />
+            <path d="M5 12v8" />
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-base sm:text-lg font-bold tracking-[0.15em] text-inkPrimary leading-none">RIXVOL</span>
+          <span class="text-[10px] sm:text-[11px] font-mono text-inkSecondary tracking-wider mt-1">Data Engineering &amp; AI Systems</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-7 text-sm text-inkSecondary font-medium">
+        <a href="#capabilities" class="hover:text-inkPrimary transition-colors">What We Do</a>
+        <a href="#solutions" class="hover:text-inkPrimary transition-colors">Solutions</a>
+        <a href="#methodology" class="hover:text-inkPrimary transition-colors">Methodology</a>
+        <a href="#architecture" class="hover:text-inkPrimary transition-colors">Stack</a>
+        <a href="#faq" class="hover:text-inkPrimary transition-colors">FAQ</a>
+      </nav>
+
+      <!-- Desktop CTA -->
+      <div class="hidden md:flex items-center">
+        <a href="#contact" class="px-5 py-2.5 rounded-lg bg-copper hover:bg-copperHover text-white font-semibold text-sm transition-colors">
+          Contact Us
+        </a>
+      </div>
+
+      <!-- Mobile Menu Toggle (44x44px touch target) -->
+      <button id="mobileMenuBtn" aria-label="Toggle Menu" class="md:hidden w-11 h-11 flex items-center justify-center rounded-lg border border-borderSubtle bg-surface text-inkPrimary active:bg-surfaceHover">
+        <i data-lucide="menu" id="menuIconOpen" class="w-5 h-5"></i>
+        <i data-lucide="x" id="menuIconClose" class="w-5 h-5 hidden"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileMenu" class="hidden md:hidden bg-surface border-b border-borderSubtle px-4 pt-3 pb-6 space-y-1 shadow-2xl">
+      <a href="#capabilities" class="mobile-nav-link block px-3 py-3 rounded-lg text-base font-medium text-inkPrimary hover:bg-surfaceHover">What We Do</a>
+      <a href="#solutions" class="mobile-nav-link block px-3 py-3 rounded-lg text-base font-medium text-inkPrimary hover:bg-surfaceHover">Solutions &amp; Systems</a>
+      <a href="#methodology" class="mobile-nav-link block px-3 py-3 rounded-lg text-base font-medium text-inkPrimary hover:bg-surfaceHover">Engagement Process</a>
+      <a href="#architecture" class="mobile-nav-link block px-3 py-3 rounded-lg text-base font-medium text-inkPrimary hover:bg-surfaceHover">Technology Stack</a>
+      <a href="#faq" class="mobile-nav-link block px-3 py-3 rounded-lg text-base font-medium text-inkPrimary hover:bg-surfaceHover">Technical FAQ</a>
+      <div class="pt-3">
+        <a href="#contact" class="mobile-nav-link flex items-center justify-center w-full min-h-[48px] rounded-lg bg-copper hover:bg-copperHover text-white font-semibold text-sm transition-colors">
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative pt-14 pb-20 sm:pt-24 sm:pb-28 border-b border-borderSubtle architectural-grid">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-4xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-copperTint border border-copper/25 mb-5">
+          <span class="w-1.5 h-1.5 rounded-full bg-copper"></span>
+          <span class="text-xs font-mono uppercase tracking-[0.16em] text-copper font-semibold">
+            Data Engineering &amp; AI Systems
+          </span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-inkPrimary leading-[1.12]">
+          Data Engineering &amp; AI Systems Built for Institutional Scale.
+        </h1>
+        <p class="mt-6 text-base sm:text-lg text-inkSecondary leading-relaxed max-w-3xl">
+          Rixvol designs, builds, and deploys mission-critical data infrastructure and production software. From high-throughput Python lakehouse pipelines, sub-second streaming networks, and resilient web data extraction to deterministic AI document processing, multi-tenant SaaS platforms, and low-latency quantitative execution engines—we turn complex data bottlenecks into reliable, self-healing systems inside your own cloud perimeter.
+        </p>
+
+        <!-- Primary & Secondary Actions (Touch optimized >= 48px height) -->
+        <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+          <a href="#contact" class="min-h-[48px] px-7 py-3.5 rounded-lg bg-copper hover:bg-copperHover text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
+            <span>Contact Us</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+          <a href="#solutions" class="min-h-[48px] px-7 py-3.5 rounded-lg bg-surface hover:bg-surfaceHover border border-borderSubtle text-inkPrimary font-medium text-sm flex items-center justify-center gap-2 transition-colors">
+            <span>Explore Solutions</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Executive Performance Overview Card -->
+      <div class="mt-14 sm:mt-20 rounded-2xl surface-card overflow-hidden">
+        
+        <!-- Key Architectural Benchmarks -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-borderSubtle border-b border-borderSubtle">
+          <div class="p-5 sm:p-7">
+            <div class="text-xs font-mono text-inkMuted uppercase tracking-wider">Monthly Volume</div>
+            <div class="text-2xl sm:text-3xl font-bold text-inkPrimary font-mono mt-2">100B+</div>
+            <div class="text-xs text-inkSecondary mt-1">Validated events processed</div>
+          </div>
+          <div class="p-5 sm:p-7">
+            <div class="text-xs font-mono text-inkMuted uppercase tracking-wider">Stream Transit</div>
+            <div class="text-2xl sm:text-3xl font-bold text-copper font-mono mt-2">&lt; 15 ms</div>
+            <div class="text-xs text-inkSecondary mt-1">P99 wire-to-sink latency</div>
+          </div>
+          <div class="p-5 sm:p-7">
+            <div class="text-xs font-mono text-inkMuted uppercase tracking-wider">Data Integrity</div>
+            <div class="text-2xl sm:text-3xl font-bold text-inkPrimary font-mono mt-2">100%</div>
+            <div class="text-xs text-inkSecondary mt-1">Idempotent delivery guarantee</div>
+          </div>
+          <div class="p-5 sm:p-7">
+            <div class="text-xs font-mono text-inkMuted uppercase tracking-wider">Inference Efficiency</div>
+            <div class="text-2xl sm:text-3xl font-bold text-glacier font-mono mt-2">-74%</div>
+            <div class="text-xs text-inkSecondary mt-1">Via semantic prompt caching</div>
+          </div>
+        </div>
+
+        <!-- Production Telemetry Chart Area -->
+        <div class="p-5 sm:p-8 bg-surfaceInset/60">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+            <div>
+              <h2 class="text-sm font-semibold text-inkPrimary">Production Pipeline Throughput &amp; Latency Stability</h2>
+              <p class="text-xs text-inkMuted mt-0.5">Sustained ingestion load across distributed cluster nodes (24-hour production telemetry)</p>
+            </div>
+            <div class="flex items-center gap-5 text-xs font-mono text-inkSecondary">
+              <span class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-copper"></span> Throughput (k/sec)
+              </span>
+              <span class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-glacier"></span> P99 Latency (ms)
+              </span>
+            </div>
+          </div>
+          <div class="w-full h-52 sm:h-64">
+            <canvas id="heroTelemetryChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHAT WE DO: CORE CAPABILITIES OVERVIEW -->
+  <section id="capabilities" class="py-20 sm:py-28 border-b border-borderSubtle bg-surfaceInset/40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-3xl mb-12 sm:mb-16">
+        <p class="text-xs font-mono uppercase tracking-[0.2em] text-copper font-semibold mb-3">
+          Data Engineering &amp; AI Systems
+        </p>
+        <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-inkPrimary">
+          End-to-End Engineering Across the Entire Data Lifecycle
+        </h2>
+        <p class="mt-4 text-sm sm:text-base text-inkSecondary leading-relaxed">
+          Modern enterprises struggle with fragmented data silos, brittle scraping scripts, unpredictable LLM hallucinations, and slow backend APIs. Rixvol solves the full stack—from raw data acquisition and real-time event transport to cognitive AI enrichment and customer-facing SaaS delivery.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <div class="p-6 sm:p-7 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-copperTint border border-copper/25 flex items-center justify-center text-copper mb-5">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-inkPrimary mb-2.5">
+              Data Ingestion &amp; Lakehouse Warehousing
+            </h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We replace fragile legacy ETL scripts with vectorized Python (Polars/PyArrow) pipelines, Change Data Capture (CDC) replication, and ACID-compliant Apache Iceberg or ClickHouse warehouses governed by strict schema contracts.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle flex items-center justify-between text-xs font-mono text-inkMuted">
+            <span>Zero silent data drift</span>
+            <a href="#etl-pipeline" class="text-copper hover:text-copperHover font-semibold">Details &rarr;</a>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-7 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-copperTint border border-copper/25 flex items-center justify-center text-copper mb-5">
+              <i data-lucide="activity" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-inkPrimary mb-2.5">
+              Real-Time Distributed Event Streaming
+            </h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We architect fault-tolerant Apache Kafka and Redpanda event buses paired with stateful stream processors to compute rolling metrics, detect fraud, and push live telemetry to dashboards in milliseconds.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle flex items-center justify-between text-xs font-mono text-inkMuted">
+            <span>Sub-15ms P99 transit</span>
+            <a href="#real-time" class="text-copper hover:text-copperHover font-semibold">Details &rarr;</a>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-7 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-copperTint border border-copper/25 flex items-center justify-center text-copper mb-5">
+              <i data-lucide="globe" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-inkPrimary mb-2.5">
+              Enterprise Web Data Acquisition
+            </h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We engineer distributed Playwright and async HTTPX extraction fleets capable of navigating complex dynamic web applications, managing residential proxy rotation, and delivering normalized datasets directly to your warehouse.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle flex items-center justify-between text-xs font-mono text-inkMuted">
+            <span>25M+ pages/day capacity</span>
+            <a href="#web-extraction" class="text-copper hover:text-copperHover font-semibold">Details &rarr;</a>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-7 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-copperTint border border-copper/25 flex items-center justify-center text-copper mb-5">
+              <i data-lucide="cpu" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-inkPrimary mb-2.5">
+              Production AI &amp; Cognitive Workflows
+            </h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We embed LLMs and embedding models into production pipelines for structured document parsing, hybrid RAG retrieval, and multi-agent verification—enforcing Pydantic schemas and semantic caching to slash token costs.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle flex items-center justify-between text-xs font-mono text-inkMuted">
+            <span>Audited JSON outputs</span>
+            <a href="#ai-processing" class="text-copper hover:text-copperHover font-semibold">Details &rarr;</a>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-7 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-copperTint border border-copper/25 flex items-center justify-center text-copper mb-5">
+              <i data-lucide="layers" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-inkPrimary mb-2.5">
+              Multi-Tenant SaaS &amp; Cloud Backends
+            </h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We build high-concurrency FastAPI backends with PostgreSQL Row-Level Security, Stripe metered billing, enterprise SSO/RBAC, and automated Kubernetes/Terraform deployments ready for SOC2 compliance.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle flex items-center justify-between text-xs font-mono text-inkMuted">
+            <span>100% tenant isolation</span>
+            <a href="#saas-development" class="text-copper hover:text-copperHover font-semibold">Details &rarr;</a>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-7 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-copperTint border border-copper/25 flex items-center justify-center text-copper mb-5">
+              <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-inkPrimary mb-2.5">
+              Algorithmic &amp; Quantitative Systems
+            </h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We construct low-latency market data ingestion pipelines, L2/L3 order-book archives, bias-free strategy backtesting engines, and deterministic execution routers with hardware-speed pre-trade risk controls.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle flex items-center justify-between text-xs font-mono text-inkMuted">
+            <span>Sub-2ms tick-to-order</span>
+            <a href="#quant-systems" class="text-copper hover:text-copperHover font-semibold">Details &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EXPANDED SOLUTIONS SECTION (ALL 6 DOMAINS, UNNUMBERED) -->
+  <section id="solutions" class="py-20 sm:py-28 border-b border-borderSubtle">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="max-w-3xl mb-10 sm:mb-14">
+        <p class="text-xs font-mono uppercase tracking-[0.2em] text-copper font-semibold mb-3">
+          Product &amp; Architecture Specifications
+        </p>
+        <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-inkPrimary">
+          Specialized Engineering Domains
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-inkSecondary leading-relaxed">
+          Explore the technical architecture, operational guarantees, and concrete deliverables across each of our six core engineering practices. Every system is deployed inside your cloud perimeter with complete source-code and IP ownership.
+        </p>
+      </div>
+
+      <!-- Mobile-Friendly Category Filter Tabs (No numbers) -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 mb-8 border-b border-borderSubtle" role="tablist">
+        <button onclick="filterSolutions('all', this)" class="filter-tab shrink-0 min-h-[40px] px-4 py-2 rounded-lg text-xs font-semibold bg-copper text-white transition-colors">
+          All Systems
+        </button>
+        <button onclick="filterSolutions('data', this)" class="filter-tab shrink-0 min-h-[40px] px-4 py-2 rounded-lg text-xs font-medium bg-surface text-inkSecondary border border-borderSubtle hover:text-inkPrimary transition-colors">
+          Data &amp; Streaming
+        </button>
+        <button onclick="filterSolutions('extraction', this)" class="filter-tab shrink-0 min-h-[40px] px-4 py-2 rounded-lg text-xs font-medium bg-surface text-inkSecondary border border-borderSubtle hover:text-inkPrimary transition-colors">
+          Web Extraction
+        </button>
+        <button onclick="filterSolutions('ai', this)" class="filter-tab shrink-0 min-h-[40px] px-4 py-2 rounded-lg text-xs font-medium bg-surface text-inkSecondary border border-borderSubtle hover:text-inkPrimary transition-colors">
+          Applied AI
+        </button>
+        <button onclick="filterSolutions('platforms', this)" class="filter-tab shrink-0 min-h-[40px] px-4 py-2 rounded-lg text-xs font-medium bg-surface text-inkSecondary border border-borderSubtle hover:text-inkPrimary transition-colors">
+          SaaS &amp; Quant Systems
+        </button>
+      </div>
+
+      <!-- Solutions Stack -->
+      <div class="space-y-8" id="solutionsGrid">
+
+        <!-- CUSTOM PYTHON ETL PIPELINE -->
+        <article data-category="data" id="etl-pipeline" class="solution-card rounded-2xl surface-card p-6 sm:p-10 scroll-mt-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            <div class="lg:col-span-7 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-mono font-semibold uppercase tracking-wider text-copper">Data Engineering</span>
+                <span class="text-xs font-mono text-inkMuted">rixvol.com/etl-pipeline</span>
+              </div>
+              
+              <h3 class="text-xl sm:text-2xl font-bold text-inkPrimary">
+                Custom Python ETL &amp; Lakehouse Pipelines
+              </h3>
+              
+              <p class="text-sm sm:text-base text-inkSecondary leading-relaxed">
+                High-velocity ingestion and transformation architectures engineered to extract, normalize, validate, and load multi-terabyte datasets from operational databases, SaaS APIs, and object stores into analytics-ready warehouses—with automated schema drift recovery and zero silent data corruption.
+              </p>
+
+              <!-- Architectural Deliverables -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Polars &amp; PyArrow SIMD Core</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Vectorized Rust-backed execution and zero-copy Apache Arrow memory layouts achieving 15x–30x faster throughput than legacy Pandas scripts.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">CDC &amp; Incremental Replication</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Low-impact Change Data Capture (Debezium / WAL) from PostgreSQL, MySQL, and MongoDB with watermarks for exact incremental syncs.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Schema Contracts &amp; DLQ Quarantine</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Strict Pydantic v2 and Pandera validation automatically isolates malformed payloads into Dead-Letter Queues without halting production runs.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Idempotent Lakehouse Commits</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Deterministic hash deduplication and ACID transactions across Apache Iceberg, Delta Lake, ClickHouse, Snowflake, and BigQuery.</p>
+                </div>
+              </div>
+
+              <!-- Key Use Cases & Deliverables -->
+              <div class="p-4 rounded-xl bg-surfaceInset/80 border border-borderSubtle space-y-2 text-xs">
+                <div class="font-mono uppercase tracking-wider text-inkPrimary font-semibold">Primary Use Cases &amp; Deliverables</div>
+                <p class="text-inkSecondary leading-relaxed">
+                  Legacy Pandas/Airflow modernization, multi-source financial &amp; ERP consolidation, automated historical backfills, containerized Dagster/Airflow DAGs, and Prometheus/Grafana SLA alerting.
+                </p>
+              </div>
+
+              <!-- Stack & CTA -->
+              <div class="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-borderSubtle">
+                <div class="flex flex-wrap gap-1.5 font-mono text-[11px] text-inkSecondary">
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Python 3.12</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Polars / Arrow</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Apache Iceberg</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">ClickHouse</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Dagster / Airflow</span>
+                </div>
+                <a href="#contact" onclick="selectSolutionOption('etl')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-copper hover:text-copperHover py-2 shrink-0">
+                  <span>Contact Us</span>
+                  <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Benchmark Visualization -->
+            <div class="lg:col-span-5 rounded-xl bg-surfaceInset border border-borderSubtle p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono font-medium text-inkPrimary">10M Row Processing Benchmark</span>
+                <span class="text-xs font-mono font-semibold text-copper bg-copperTint px-2 py-0.5 rounded">-92% Time</span>
+              </div>
+              <div class="h-56 w-full">
+                <canvas id="etlBenchmarkChart"></canvas>
+              </div>
+              <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-borderSubtle text-center font-mono text-[10px]">
+                <div class="p-2 rounded bg-surface border border-borderSubtle">
+                  <div class="text-copper font-semibold">EXTRACT</div>
+                  <div class="text-inkMuted mt-0.5">CDC / APIs</div>
+                </div>
+                <div class="p-2 rounded bg-surface border border-borderSubtle">
+                  <div class="text-inkPrimary font-semibold">VECTORIZE</div>
+                  <div class="text-inkMuted mt-0.5">Polars SIMD</div>
+                </div>
+                <div class="p-2 rounded bg-surface border border-borderSubtle">
+                  <div class="text-inkPrimary font-semibold">VALIDATE</div>
+                  <div class="text-inkMuted mt-0.5">Pandera DLQ</div>
+                </div>
+                <div class="p-2 rounded bg-surface border border-borderSubtle">
+                  <div class="text-glacier font-semibold">COMMIT</div>
+                  <div class="text-inkMuted mt-0.5">ACID Sink</div>
+                </div>
+              </div>
+              <p class="text-[11px] text-inkMuted font-mono">
+                Measured on 8-vCPU worker node: 10,000,000 rows ingested, type-checked, deduplicated, and committed to ClickHouse.
+              </p>
+            </div>
+
+          </div>
+        </article>
+
+        <!-- REAL-TIME EVENT STREAMING -->
+        <article data-category="data" id="real-time" class="solution-card rounded-2xl surface-card p-6 sm:p-10 scroll-mt-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            <div class="lg:col-span-7 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-mono font-semibold uppercase tracking-wider text-copper">Distributed Streaming</span>
+                <span class="text-xs font-mono text-inkMuted">rixvol.com/real-time-data-processing</span>
+              </div>
+              
+              <h3 class="text-xl sm:text-2xl font-bold text-inkPrimary">
+                Real-Time Event Streaming Systems
+              </h3>
+              
+              <p class="text-sm sm:text-base text-inkSecondary leading-relaxed">
+                Sub-second event buses and stateful stream processors designed for mission-critical telemetry, real-time fraud scoring, live operational analytics, and instant multi-client synchronization under heavy burst loads.
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Kafka &amp; Redpanda Clusters</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Tuned partition topologies and exactly-once consumer semantics sustaining hundreds of thousands of events per second.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Stateful Window Aggregations</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Tumbling, sliding, and session window computations via Bytewax and Faust for instant anomaly and SLA triggers.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Adaptive Backpressure Control</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Dynamic memory buffers and rate-shedding protect downstream OLAP sinks from cascading failures during traffic surges.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">WebSocket &amp; gRPC Fanout</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Sub-second delivery from Redis Streams directly to authenticated enterprise dashboards with automatic reconnects.</p>
+                </div>
+              </div>
+
+              <!-- Key Use Cases & Deliverables -->
+              <div class="p-4 rounded-xl bg-surfaceInset/80 border border-borderSubtle space-y-2 text-xs">
+                <div class="font-mono uppercase tracking-wider text-inkPrimary font-semibold">Primary Use Cases &amp; Deliverables</div>
+                <p class="text-inkSecondary leading-relaxed">
+                  Live fintech ledger &amp; payment risk scoring, IoT fleet telemetry ingestion, real-time clickstream personalization, distributed OpenTelemetry tracing, and auto-scaling consumer groups.
+                </p>
+              </div>
+
+              <div class="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-borderSubtle">
+                <div class="flex flex-wrap gap-1.5 font-mono text-[11px] text-inkSecondary">
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Apache Kafka</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Redpanda</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Redis Streams</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Bytewax / Faust</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">OpenTelemetry</span>
+                </div>
+                <a href="#contact" onclick="selectSolutionOption('stream')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-copper hover:text-copperHover py-2 shrink-0">
+                  <span>Contact Us</span>
+                  <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Latency Distribution & Live Feed Panel -->
+            <div class="lg:col-span-5 rounded-xl bg-surfaceInset border border-borderSubtle p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono font-medium text-inkPrimary">End-to-End Transit Percentiles</span>
+                <span class="text-xs font-mono font-semibold text-glacier bg-glacier/10 px-2 py-0.5 rounded">8.4 ms Median</span>
+              </div>
+              <div class="h-44 w-full">
+                <canvas id="streamPercentileChart"></canvas>
+              </div>
+              <!-- Clean Event Log Stream -->
+              <div class="pt-3 border-t border-borderSubtle">
+                <div class="flex items-center justify-between text-[11px] font-mono text-inkMuted mb-2">
+                  <span>Live Topic Partition Telemetry</span>
+                  <span class="text-sage">Zero Consumer Lag</span>
+                </div>
+                <div class="space-y-2 font-mono text-[11px]" id="streamEventFeed">
+                  <!-- Populated cleanly via JS -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+        <!-- ENTERPRISE WEB SCRAPING & DATA EXTRACTION -->
+        <article data-category="extraction" id="web-extraction" class="solution-card rounded-2xl surface-card p-6 sm:p-10 scroll-mt-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            <div class="lg:col-span-7 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-mono font-semibold uppercase tracking-wider text-copper">Data Acquisition</span>
+                <span class="text-xs font-mono text-inkMuted">rixvol.com/web-data-extraction</span>
+              </div>
+              
+              <h3 class="text-xl sm:text-2xl font-bold text-inkPrimary">
+                Enterprise Web Scraping &amp; Data Extraction
+              </h3>
+              
+              <p class="text-sm sm:text-base text-inkSecondary leading-relaxed">
+                Fault-tolerant, distributed data acquisition pipelines engineered to harvest, normalize, verify, and deliver clean structured datasets from complex dynamic web sources at multi-million-page scale without manual intervention.
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Headless Browser &amp; XHR Fleets</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Orchestrated Playwright/Chromium pools and direct GraphQL/XHR protocol interceptors for high-speed SPA extraction.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Fingerprint &amp; Proxy Hygiene</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Automated residential/ISP proxy rotation, TLS/JA3 signature consistency, and stateful session/cookie management.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Self-Healing Schema &amp; DOM Guards</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Automated field-completeness checks, fallback extraction selectors, and instant alerts when target layouts evolve.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Direct Warehouse &amp; API Delivery</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Entity-resolved, deduplicated Parquet, JSONL, or direct Snowflake/PostgreSQL feeds delivered on strict SLAs.</p>
+                </div>
+              </div>
+
+              <!-- Key Use Cases & Deliverables -->
+              <div class="p-4 rounded-xl bg-surfaceInset/80 border border-borderSubtle space-y-2 text-xs">
+                <div class="font-mono uppercase tracking-wider text-inkPrimary font-semibold">Primary Use Cases &amp; Deliverables</div>
+                <p class="text-inkSecondary leading-relaxed">
+                  Real-time competitive pricing &amp; catalog intelligence, alternative financial &amp; macroeconomic datasets, B2B lead enrichment, LLM pre-training corpus collection, and automated QA monitoring.
+                </p>
+              </div>
+
+              <div class="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-borderSubtle">
+                <div class="flex flex-wrap gap-1.5 font-mono text-[11px] text-inkSecondary">
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Playwright</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">HTTPX / AsyncIO</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Residential Proxies</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Parquet / S3</span>
+                </div>
+                <a href="#contact" onclick="selectSolutionOption('scraping')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-copper hover:text-copperHover py-2 shrink-0">
+                  <span>Contact Us</span>
+                  <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Extraction Specification Matrix -->
+            <div class="lg:col-span-5 rounded-xl bg-surfaceInset border border-borderSubtle p-5 space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-borderSubtle">
+                <span class="text-xs font-mono font-medium text-inkPrimary">Extraction Pipeline SLA Metrics</span>
+                <span class="text-xs font-mono font-semibold text-sage bg-sage/10 px-2 py-0.5 rounded">99.6% Yield</span>
+              </div>
+              
+              <div class="space-y-2.5 font-mono text-xs">
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Daily Page Throughput</span>
+                  <span class="text-inkPrimary font-semibold">Up to 25M+ pages</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Schema Validation</span>
+                  <span class="text-inkPrimary font-semibold">100% Field Coverage</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Delivery Destinations</span>
+                  <span class="text-inkPrimary font-semibold">S3 / Snowflake / API</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Auto-Retry &amp; Backoff</span>
+                  <span class="text-copper font-semibold">Exponential + Jitter</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-lg bg-surface border border-borderSubtle font-mono text-[11px] space-y-1.5">
+                <div class="text-inkMuted uppercase text-[10px]">Automated Quality Pipeline</div>
+                <div class="text-inkPrimary">Raw HTML/XHR &rarr; Selector/LLM Fallback &rarr; Pydantic Sanitization &rarr; Hash Deduplication &rarr; S3 Parquet</div>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+        <!-- APPLIED AI & COGNITIVE DATA PIPELINES -->
+        <article data-category="ai" id="ai-processing" class="solution-card rounded-2xl surface-card p-6 sm:p-10 scroll-mt-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            <div class="lg:col-span-7 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-mono font-semibold uppercase tracking-wider text-copper">Applied AI Systems</span>
+                <span class="text-xs font-mono text-inkMuted">rixvol.com/ai-data-processing</span>
+              </div>
+              
+              <h3 class="text-xl sm:text-2xl font-bold text-inkPrimary">
+                Applied AI &amp; Cognitive Data Pipelines
+              </h3>
+              
+              <p class="text-sm sm:text-base text-inkSecondary leading-relaxed">
+                Deterministic LLM and multi-modal AI integration for high-volume document extraction, entity resolution, classification, and hybrid vector retrieval—engineered with strict schema guardrails, audit trails, and unit-economics control.
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Multi-Modal Document Parsing</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Convert complex PDFs, scanned invoices, bills of lading, and legal contracts into audited, strictly typed JSON records.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Deterministic Schema Guardrails</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Constrained decoding, Pydantic verification loops, and mathematical cross-checks eliminate hallucinations and malformed outputs.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Hybrid RAG &amp; Vector Search</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Dense + lexical BM25 indexing on Qdrant and pgvector with reranking and source-citation grounding.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Model Routing &amp; Prompt Caching</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Semantic caching and tiered routing between self-hosted vLLM models and frontier APIs cut inference spend by up to 74%.</p>
+                </div>
+              </div>
+
+              <!-- Key Use Cases & Deliverables -->
+              <div class="p-4 rounded-xl bg-surfaceInset/80 border border-borderSubtle space-y-2 text-xs">
+                <div class="font-mono uppercase tracking-wider text-inkPrimary font-semibold">Primary Use Cases &amp; Deliverables</div>
+                <p class="text-inkSecondary leading-relaxed">
+                  Automated accounts-payable &amp; logistics document ingestion, enterprise knowledge base RAG assistants, catalog taxonomy normalization, and confidence-scored human-in-the-loop review queues.
+                </p>
+              </div>
+
+              <div class="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-borderSubtle">
+                <div class="flex flex-wrap gap-1.5 font-mono text-[11px] text-inkSecondary">
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">vLLM / OpenAI</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Qdrant / pgvector</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Instructor</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Pydantic v2</span>
+                </div>
+                <a href="#contact" onclick="selectSolutionOption('ai')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-copper hover:text-copperHover py-2 shrink-0">
+                  <span>Contact Us</span>
+                  <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Inference Cost Breakdown Chart & Typed Output Preview -->
+            <div class="lg:col-span-5 rounded-xl bg-surfaceInset border border-borderSubtle p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono font-medium text-inkPrimary">Inference Workload Allocation</span>
+                <span class="text-xs font-mono font-semibold text-glacier bg-glacier/10 px-2 py-0.5 rounded">-74% Spend</span>
+              </div>
+              <div class="h-48 w-full">
+                <canvas id="aiCostChart"></canvas>
+              </div>
+              <div class="p-3.5 rounded-lg bg-surface border border-borderSubtle font-mono text-[11px] space-y-1">
+                <div class="flex items-center justify-between text-inkMuted text-[10px]">
+                  <span>VERIFIED PYDANTIC OUTPUT</span>
+                  <span class="text-sage">CHECKSUM PASSED</span>
+                </div>
+                <pre class="text-inkSecondary overflow-x-auto leading-relaxed">{ "doc_id": "INV-9812", "total": 14920.50, "tax": 1193.64, "verified": true }</pre>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+        <!-- CUSTOM SAAS & BACKEND ENGINEERING -->
+        <article data-category="platforms" id="saas-development" class="solution-card rounded-2xl surface-card p-6 sm:p-10 scroll-mt-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            <div class="lg:col-span-7 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-mono font-semibold uppercase tracking-wider text-copper">Cloud Platforms</span>
+                <span class="text-xs font-mono text-inkMuted">rixvol.com/saas-development</span>
+              </div>
+              
+              <h3 class="text-xl sm:text-2xl font-bold text-inkPrimary">
+                Custom SaaS &amp; Backend Engineering
+              </h3>
+              
+              <p class="text-sm sm:text-base text-inkSecondary leading-relaxed">
+                Production-grade SaaS platforms, high-concurrency APIs, and multi-tenant backend architectures engineered with institutional security, usage-based billing, and horizontal cloud scalability from day one.
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">AsyncIO &amp; FastAPI Microservices</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">High-throughput REST and GraphQL APIs with strict OpenAPI contracts, rate limiting, and sub-25ms P95 response times.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Multi-Tenant Isolation (RLS)</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">PostgreSQL Row-Level Security policies enforcing cryptographic and kernel-level tenant data isolation.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Billing, Webhooks &amp; Enterprise Auth</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Turnkey Stripe metered billing, idempotent webhook engines, OAuth2/SAML SSO, and granular RBAC permissions.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Kubernetes &amp; Terraform IaC</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Zero-downtime rolling CI/CD pipelines with complete Infrastructure-as-Code reproducibility on AWS or GCP.</p>
+                </div>
+              </div>
+
+              <!-- Key Use Cases & Deliverables -->
+              <div class="p-4 rounded-xl bg-surfaceInset/80 border border-borderSubtle space-y-2 text-xs">
+                <div class="font-mono uppercase tracking-wider text-inkPrimary font-semibold">Primary Use Cases &amp; Deliverables</div>
+                <p class="text-inkSecondary leading-relaxed">
+                  Data-intensive B2B SaaS products, customer-facing analytics portals, high-volume API monetization platforms, monolith-to-microservice migrations, and SOC2-ready infrastructure hardening.
+                </p>
+              </div>
+
+              <div class="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-borderSubtle">
+                <div class="flex flex-wrap gap-1.5 font-mono text-[11px] text-inkSecondary">
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">FastAPI</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">PostgreSQL RLS</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Kubernetes</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Terraform</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Stripe</span>
+                </div>
+                <a href="#contact" onclick="selectSolutionOption('saas')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-copper hover:text-copperHover py-2 shrink-0">
+                  <span>Contact Us</span>
+                  <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Multi-Tenant Architecture Summary -->
+            <div class="lg:col-span-5 rounded-xl bg-surfaceInset border border-borderSubtle p-5 space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-borderSubtle">
+                <span class="text-xs font-mono font-medium text-inkPrimary">Core Platform Guarantees</span>
+                <span class="text-xs font-mono font-semibold text-sage bg-sage/10 px-2 py-0.5 rounded">SOC2-Ready</span>
+              </div>
+              
+              <div class="space-y-2.5 font-mono text-xs">
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">API Response (P95)</span>
+                  <span class="text-inkPrimary font-semibold">&lt; 24 ms</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Tenant Data Isolation</span>
+                  <span class="text-inkPrimary font-semibold">DB-Level RLS</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Background Workers</span>
+                  <span class="text-inkPrimary font-semibold">Celery / Temporal</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Deployment Model</span>
+                  <span class="text-copper font-semibold">AWS / GCP / Bare Metal</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-lg bg-surface border border-borderSubtle font-mono text-[11px] space-y-1">
+                <div class="text-inkMuted uppercase text-[10px]">Security &amp; Audit Architecture</div>
+                <div class="text-inkSecondary">JWT/SAML Auth &rarr; Tenant Context Middleware &rarr; RLS Policy Enforcement &rarr; Immutable Audit Log</div>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+        <!-- ALGORITHMIC & QUANTITATIVE INFRASTRUCTURE -->
+        <article data-category="platforms" id="quant-systems" class="solution-card rounded-2xl surface-card p-6 sm:p-10 scroll-mt-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            <div class="lg:col-span-7 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-mono font-semibold uppercase tracking-wider text-copper">Quantitative Systems</span>
+                <span class="text-xs font-mono text-inkMuted">rixvol.com/quant-systems</span>
+              </div>
+              
+              <h3 class="text-xl sm:text-2xl font-bold text-inkPrimary">
+                Algorithmic &amp; Quantitative Infrastructure
+              </h3>
+              
+              <p class="text-sm sm:text-base text-inkSecondary leading-relaxed">
+                Low-latency execution engines, tick-level historical market data lakes, and deterministic backtesting frameworks engineered for proprietary trading desks, market makers, and quantitative research teams.
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Exchange &amp; Venue Connectivity</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Async WebSocket and FIX protocol adapters with automated L2/L3 order-book reconstruction and state reconciliation.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Bias-Free Strategy Backtesting</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Vectorized and event-driven simulation engines modeling realistic slippage, queue position, and maker/taker fees.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Pre-Trade Risk &amp; Circuit Breakers</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">Sub-millisecond exposure checks, max-drawdown kill switches, position caps, and real-time PnL attribution.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-surfaceInset border border-borderSubtle">
+                  <div class="text-sm font-semibold text-inkPrimary">Tick-Level Market Data Lakes</div>
+                  <p class="text-xs text-inkSecondary mt-1 leading-relaxed">High-compression L2/L3 tick archiving in ClickHouse and ArcticDB enabling multi-year research queries in seconds.</p>
+                </div>
+              </div>
+
+              <!-- Key Use Cases & Deliverables -->
+              <div class="p-4 rounded-xl bg-surfaceInset/80 border border-borderSubtle space-y-2 text-xs">
+                <div class="font-mono uppercase tracking-wider text-inkPrimary font-semibold">Primary Use Cases &amp; Deliverables</div>
+                <p class="text-inkSecondary leading-relaxed">
+                  Automated cross-venue execution &amp; smart order routing (TWAP/VWAP), unified historical tick research environments, portfolio risk dashboards, and colocated bare-metal deployment.
+                </p>
+              </div>
+
+              <div class="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-borderSubtle">
+                <div class="flex flex-wrap gap-1.5 font-mono text-[11px] text-inkSecondary">
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Python / Numba</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">WebSocket / FIX</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">ClickHouse</span>
+                  <span class="px-2.5 py-1 rounded bg-surfaceInset border border-borderSubtle">Redis</span>
+                </div>
+                <a href="#contact" onclick="selectSolutionOption('quant')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-copper hover:text-copperHover py-2 shrink-0">
+                  <span>Contact Us</span>
+                  <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Execution & Data Architecture Summary -->
+            <div class="lg:col-span-5 rounded-xl bg-surfaceInset border border-borderSubtle p-5 space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-borderSubtle">
+                <span class="text-xs font-mono font-medium text-inkPrimary">Execution Engine Telemetry</span>
+                <span class="text-xs font-mono font-semibold text-sage bg-sage/10 px-2 py-0.5 rounded">Deterministic</span>
+              </div>
+              
+              <div class="space-y-2.5 font-mono text-xs">
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Tick-to-Order Loop</span>
+                  <span class="text-inkPrimary font-semibold">&lt; 1.8 ms (Python/C)</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Order-Book Depth</span>
+                  <span class="text-inkPrimary font-semibold">Full L2 / L3 Tick</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Risk Guardrails</span>
+                  <span class="text-inkPrimary font-semibold">Sub-millisecond Kill</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-borderSubtle">
+                  <span class="text-inkSecondary">Colocation Ready</span>
+                  <span class="text-copper font-semibold">AWS / Equinix Bare Metal</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-lg bg-surface border border-borderSubtle font-mono text-[11px] space-y-1">
+                <div class="text-inkMuted uppercase text-[10px]">Deterministic Execution Pipeline</div>
+                <div class="text-inkSecondary">L2/L3 Feed &rarr; Signal Engine &rarr; Pre-Trade Risk Gate &rarr; Smart Order Router &rarr; Fill Reconciliation</div>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ENGAGEMENT METHODOLOGY & OWNERSHIP -->
+  <section id="methodology" class="py-20 sm:py-28 border-b border-borderSubtle bg-surfaceInset/50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-2xl mb-14">
+        <p class="text-xs font-mono uppercase tracking-[0.2em] text-copper font-semibold mb-3">
+          Delivery Standard
+        </p>
+        <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-inkPrimary">
+          Transparent Engineering Execution
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-inkSecondary leading-relaxed">
+          We operate as an extension of your principal engineering team. Every line of code, Terraform module, and architectural specification belongs 100% to your organization.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div class="p-6 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono font-semibold text-copper uppercase tracking-wider mb-4">Discovery</div>
+            <h3 class="text-base font-bold text-inkPrimary mb-2">Technical Audit &amp; Blueprint</h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We analyze data volumes, latency SLAs, failure modes, and unit economics to produce an exact system architecture document before writing production code.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle text-xs font-mono text-inkMuted">
+            Deliverable: Architecture RFC
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono font-semibold text-copper uppercase tracking-wider mb-4">Engineering</div>
+            <h3 class="text-base font-bold text-inkPrimary mb-2">Core Infrastructure Build</h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              Iterative weekly sprints delivering clean, type-checked Python services, automated schema validation, and reproducible Docker/Terraform environments.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle text-xs font-mono text-inkMuted">
+            Deliverable: Git Repository &amp; CI
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono font-semibold text-copper uppercase tracking-wider mb-4">Verification</div>
+            <h3 class="text-base font-bold text-inkPrimary mb-2">Load &amp; Failure Validation</h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              We stress-test pipelines under 3x peak projected traffic, verifying Dead-Letter Queue recovery, backpressure handling, and zero-data-loss guarantees.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle text-xs font-mono text-inkMuted">
+            Deliverable: Benchmark Report
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl surface-card flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono font-semibold text-copper uppercase tracking-wider mb-4">Production</div>
+            <h3 class="text-base font-bold text-inkPrimary mb-2">Handover &amp; IP Ownership</h3>
+            <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed">
+              Full production deployment in your AWS/GCP perimeter, complete operational runbooks, observability dashboards, and optional ongoing SLA support.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-borderSubtle text-xs font-mono text-inkMuted">
+            Deliverable: 100% Client IP
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TECHNICAL STACK MATRIX -->
+  <section id="architecture" class="py-20 sm:py-28 border-b border-borderSubtle">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-2xl mb-14">
+        <p class="text-xs font-mono uppercase tracking-[0.2em] text-copper font-semibold mb-3">
+          Technology Matrix
+        </p>
+        <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-inkPrimary">
+          Battle-Tested Open Standards
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-inkSecondary leading-relaxed">
+          We select proven, high-performance technologies with deep ecosystem support—avoiding fragile abstractions and unnecessary licensing overhead.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
+        
+        <div class="p-6 rounded-2xl surface-card">
+          <div class="text-xs font-semibold text-copper uppercase tracking-wider mb-4">Batch &amp; Storage</div>
+          <ul class="space-y-3 text-xs text-inkSecondary">
+            <li class="flex items-center justify-between"><span>Polars / PyArrow</span><span class="text-inkPrimary font-medium">Compute</span></li>
+            <li class="flex items-center justify-between"><span>ClickHouse</span><span class="text-inkPrimary font-medium">OLAP</span></li>
+            <li class="flex items-center justify-between"><span>Apache Iceberg</span><span class="text-inkPrimary font-medium">Lakehouse</span></li>
+            <li class="flex items-center justify-between"><span>Dagster / Airflow</span><span class="text-inkPrimary font-medium">Orchestrator</span></li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl surface-card">
+          <div class="text-xs font-semibold text-copper uppercase tracking-wider mb-4">Streaming &amp; Bus</div>
+          <ul class="space-y-3 text-xs text-inkSecondary">
+            <li class="flex items-center justify-between"><span>Apache Kafka</span><span class="text-inkPrimary font-medium">Event Log</span></li>
+            <li class="flex items-center justify-between"><span>Redpanda</span><span class="text-inkPrimary font-medium">Low-Latency</span></li>
+            <li class="flex items-center justify-between"><span>Redis Streams</span><span class="text-inkPrimary font-medium">In-Memory</span></li>
+            <li class="flex items-center justify-between"><span>Bytewax / Faust</span><span class="text-inkPrimary font-medium">Windowing</span></li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl surface-card">
+          <div class="text-xs font-semibold text-copper uppercase tracking-wider mb-4">AI &amp; Extraction</div>
+          <ul class="space-y-3 text-xs text-inkSecondary">
+            <li class="flex items-center justify-between"><span>vLLM / Triton</span><span class="text-inkPrimary font-medium">Inference</span></li>
+            <li class="flex items-center justify-between"><span>Qdrant / pgvector</span><span class="text-inkPrimary font-medium">Vectors</span></li>
+            <li class="flex items-center justify-between"><span>Pydantic v2</span><span class="text-inkPrimary font-medium">Validation</span></li>
+            <li class="flex items-center justify-between"><span>Playwright</span><span class="text-inkPrimary font-medium">Extraction</span></li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl surface-card">
+          <div class="text-xs font-semibold text-copper uppercase tracking-wider mb-4">Backend &amp; Cloud</div>
+          <ul class="space-y-3 text-xs text-inkSecondary">
+            <li class="flex items-center justify-between"><span>FastAPI / AsyncIO</span><span class="text-inkPrimary font-medium">APIs</span></li>
+            <li class="flex items-center justify-between"><span>PostgreSQL (RLS)</span><span class="text-inkPrimary font-medium">Primary DB</span></li>
+            <li class="flex items-center justify-between"><span>Kubernetes / EKS</span><span class="text-inkPrimary font-medium">Runtime</span></li>
+            <li class="flex items-center justify-between"><span>Terraform / OTel</span><span class="text-inkPrimary font-medium">IaC &amp; Logs</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TECHNICAL FAQ SECTION -->
+  <section id="faq" class="py-20 sm:py-28 border-b border-borderSubtle">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="mb-12">
+        <p class="text-xs font-mono uppercase tracking-[0.2em] text-copper font-semibold mb-3">
+          Due Diligence
+        </p>
+        <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-inkPrimary">
+          Frequently Asked Questions
+        </h2>
+      </div>
+
+      <div class="space-y-3">
+        
+        <div class="rounded-xl surface-card overflow-hidden">
+          <button type="button" class="w-full min-h-[56px] px-6 py-4 flex items-center justify-between gap-4 text-left font-semibold text-inkPrimary text-sm sm:text-base focus:outline-none" onclick="toggleFaq(this)">
+            <span>How do you guarantee zero data loss in high-throughput pipelines?</span>
+            <i data-lucide="plus" class="w-4 h-4 text-copper shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div class="hidden px-6 pb-5 text-sm text-inkSecondary leading-relaxed border-t border-borderSubtle pt-3">
+            We implement idempotent transaction hashes, atomic offset commits, and Change Data Capture (CDC) watermarks. If an upstream source changes schema or a destination warehouse experiences downtime, malformed or unroutable payloads are quarantined into Dead-Letter Queues (DLQ) for automated replay once resolved.
+          </div>
+        </div>
+
+        <div class="rounded-xl surface-card overflow-hidden">
+          <button type="button" class="w-full min-h-[56px] px-6 py-4 flex items-center justify-between gap-4 text-left font-semibold text-inkPrimary text-sm sm:text-base focus:outline-none" onclick="toggleFaq(this)">
+            <span>Is the entire infrastructure deployed inside our own cloud account?</span>
+            <i data-lucide="plus" class="w-4 h-4 text-copper shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div class="hidden px-6 pb-5 text-sm text-inkSecondary leading-relaxed border-t border-borderSubtle pt-3">
+            Yes. Everything is delivered via containerized Docker images, Kubernetes Helm charts, and Terraform modules deployed directly inside your AWS, GCP, or bare-metal environment. You retain 100% intellectual property ownership, full data custody, and zero ongoing platform fees.
+          </div>
+        </div>
+
+        <div class="rounded-xl surface-card overflow-hidden">
+          <button type="button" class="w-full min-h-[56px] px-6 py-4 flex items-center justify-between gap-4 text-left font-semibold text-inkPrimary text-sm sm:text-base focus:outline-none" onclick="toggleFaq(this)">
+            <span>How do you prevent hallucinations in AI-powered document and data workflows?</span>
+            <i data-lucide="plus" class="w-4 h-4 text-copper shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div class="hidden px-6 pb-5 text-sm text-inkSecondary leading-relaxed border-t border-borderSubtle pt-3">
+            We enforce strict JSON schema constraints using Pydantic v2 and constrained decoding, paired with deterministic cross-field validation rules (e.g., verifying line-item sums against invoice totals). Records failing confidence or mathematical checks are automatically routed to an exception queue.
+          </div>
+        </div>
+
+        <div class="rounded-xl surface-card overflow-hidden">
+          <button type="button" class="w-full min-h-[56px] px-6 py-4 flex items-center justify-between gap-4 text-left font-semibold text-inkPrimary text-sm sm:text-base focus:outline-none" onclick="toggleFaq(this)">
+            <span>How resilient are your web scraping pipelines against layout changes and rate limits?</span>
+            <i data-lucide="plus" class="w-4 h-4 text-copper shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div class="hidden px-6 pb-5 text-sm text-inkSecondary leading-relaxed border-t border-borderSubtle pt-3">
+            Whenever possible, our extractors intercept underlying structured XHR/GraphQL network responses rather than relying solely on fragile CSS selectors. Combined with automated proxy rotation, session pooling, and real-time field-completeness alerts, pipelines recover automatically from transient blocks.
+          </div>
+        </div>
+
+        <div class="rounded-xl surface-card overflow-hidden">
+          <button type="button" class="w-full min-h-[56px] px-6 py-4 flex items-center justify-between gap-4 text-left font-semibold text-inkPrimary text-sm sm:text-base focus:outline-none" onclick="toggleFaq(this)">
+            <span>What is the typical timeline from discovery to production launch?</span>
+            <i data-lucide="plus" class="w-4 h-4 text-copper shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div class="hidden px-6 pb-5 text-sm text-inkSecondary leading-relaxed border-t border-borderSubtle pt-3">
+            Architecture blueprints and working ingestion prototypes are typically delivered within 1 to 2 weeks. Full production systems—complete with automated CI/CD, observability dashboards, and load testing—launch within 4 to 8 weeks depending on integration complexity.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT US SECTION -->
+  <section id="contact" class="py-20 sm:py-28">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="rounded-2xl surface-card p-6 sm:p-12">
+        
+        <div class="mb-8">
+          <p class="text-xs font-mono uppercase tracking-[0.2em] text-copper font-semibold mb-3">
+            Direct Engineering Inquiry
+          </p>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-inkPrimary">
+            Contact Us
+          </h2>
+          <p class="mt-2.5 text-sm sm:text-base text-inkSecondary leading-relaxed">
+            Speak directly with a Principal Systems Architect. Share your current throughput requirements, data bottlenecks, or product specifications.
+          </p>
+        </div>
+
+        <form onsubmit="handleFormSubmission(event)" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="clientName" class="block text-xs font-mono text-inkSecondary uppercase tracking-wider mb-2">Full Name</label>
+              <input id="clientName" type="text" required placeholder="Alex Mercer" class="w-full min-h-[48px] px-4 py-3 rounded-lg form-field text-sm">
+            </div>
+            <div>
+              <label for="clientEmail" class="block text-xs font-mono text-inkSecondary uppercase tracking-wider mb-2">Work Email</label>
+              <input id="clientEmail" type="email" required placeholder="alex@company.com" class="w-full min-h-[48px] px-4 py-3 rounded-lg form-field text-sm">
+            </div>
+          </div>
+
+          <div>
+            <label for="solutionSelect" class="block text-xs font-mono text-inkSecondary uppercase tracking-wider mb-2">Primary Engineering Domain</label>
+            <select id="solutionSelect" class="w-full min-h-[48px] px-4 py-3 rounded-lg form-field text-sm">
+              <option value="etl">Custom Python ETL &amp; Lakehouse Pipelines</option>
+              <option value="stream">Real-Time Event Streaming Systems</option>
+              <option value="scraping">Enterprise Web Scraping &amp; Data Extraction</option>
+              <option value="ai">Applied AI &amp; Cognitive Data Pipelines</option>
+              <option value="saas">Custom SaaS &amp; Backend Engineering</option>
+              <option value="quant">Algorithmic &amp; Quantitative Infrastructure</option>
+              <option value="multi">End-to-End Modern Data Stack Architecture</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="projectScope" class="block text-xs font-mono text-inkSecondary uppercase tracking-wider mb-2">Technical Requirements &amp; Scale</label>
+            <textarea id="projectScope" rows="4" required placeholder="Outline your data sources, daily volume, latency targets, or existing infrastructure..." class="w-full px-4 py-3 rounded-lg form-field text-sm"></textarea>
+          </div>
+
+          <!-- Inline Confirmation Banner -->
+          <div id="formSuccessAlert" class="hidden p-4 rounded-lg bg-copperTint border border-copper/30 text-inkPrimary text-sm flex items-start gap-3">
+            <i data-lucide="check-circle-2" class="w-5 h-5 text-copper shrink-0 mt-0.5"></i>
+            <div>
+              <div class="font-semibold text-inkPrimary">Message received.</div>
+              <p class="text-xs text-inkSecondary mt-0.5">A Principal Engineer will review your specifications and respond within 4 business hours.</p>
+            </div>
+          </div>
+
+          <button type="submit" id="submitFormBtn" class="w-full min-h-[50px] px-6 py-3.5 rounded-lg bg-copper hover:bg-copperHover text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2">
+            <span>Contact Us</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-borderSubtle bg-surfaceInset py-14 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-borderSubtle">
+        
+        <div class="md:col-span-5 space-y-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded bg-copper flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                <path d="M5 4h9a4 4 0 0 1 4 4v0a4 4 0 0 1-4 4H5V4z" />
+                <path d="M13 12l6 8" />
+                <path d="M5 12v8" />
+              </svg>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-base font-bold tracking-[0.15em] text-inkPrimary leading-none">RIXVOL</span>
+              <span class="text-[10px] font-mono text-inkMuted tracking-wider mt-0.5">Data Engineering &amp; AI Systems</span>
+            </div>
+          </div>
+          <p class="text-xs sm:text-sm text-inkSecondary leading-relaxed max-w-sm">
+            Data Engineering &amp; AI Systems: precision lakehouse pipelines, distributed real-time streaming, enterprise web data acquisition, deterministic AI workflows, multi-tenant SaaS platforms, and quantitative infrastructure.
+          </p>
+        </div>
+
+        <div class="md:col-span-4 space-y-3">
+          <div class="text-xs font-mono font-semibold uppercase tracking-wider text-inkPrimary">Solutions</div>
+          <ul class="space-y-2.5 text-xs sm:text-sm text-inkSecondary">
+            <li><a href="#etl-pipeline" class="hover:text-inkPrimary transition-colors">Custom Python ETL Pipelines</a></li>
+            <li><a href="#real-time" class="hover:text-inkPrimary transition-colors">Real-Time Event Streaming</a></li>
+            <li><a href="#web-extraction" class="hover:text-inkPrimary transition-colors">Enterprise Web Extraction</a></li>
+            <li><a href="#ai-processing" class="hover:text-inkPrimary transition-colors">Applied AI Data Pipelines</a></li>
+            <li><a href="#saas-development" class="hover:text-inkPrimary transition-colors">Custom SaaS Engineering</a></li>
+            <li><a href="#quant-systems" class="hover:text-inkPrimary transition-colors">Quantitative Infrastructure</a></li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-3 space-y-3">
+          <div class="text-xs font-mono font-semibold uppercase tracking-wider text-inkPrimary">Direct Endpoints</div>
+          <ul class="space-y-2.5 text-xs font-mono text-inkMuted">
+            <li>rixvol.com/etl-pipeline</li>
+            <li>rixvol.com/real-time-data-processing</li>
+            <li>rixvol.com/web-data-extraction</li>
+            <li>rixvol.com/ai-data-processing</li>
+            <li>rixvol.com/saas-development</li>
+            <li>rixvol.com/quant-systems</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-inkMuted">
+        <div>&copy; 2026 Rixvol Inc. All rights reserved.</div>
+        <div class="font-mono">Architecture &amp; Systems Engineering</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVITY & RESPONSIVE CHARTS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+      initCharts();
+      initEventFeed();
+    });
+
+    // Mobile Drawer Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIconOpen = document.getElementById('menuIconOpen');
+    const menuIconClose = document.getElementById('menuIconClose');
+
+    function toggleMobileMenu(forceClose = false) {
+      const isHidden = mobileMenu.classList.contains('hidden');
+      if (forceClose || !isHidden) {
+        mobileMenu.classList.add('hidden');
+        menuIconOpen.classList.remove('hidden');
+        menuIconClose.classList.add('hidden');
+      } else {
+        mobileMenu.classList.remove('hidden');
+        menuIconOpen.classList.add('hidden');
+        menuIconClose.classList.remove('hidden');
+      }
+    }
+
+    mobileMenuBtn.addEventListener('click', () => toggleMobileMenu());
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => toggleMobileMenu(true));
+    });
+
+    // Category Filtering for Solutions
+    function filterSolutions(category, btnEl) {
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('bg-copper', 'text-white', 'font-semibold');
+        tab.classList.add('bg-surface', 'text-inkSecondary', 'font-medium', 'border', 'border-borderSubtle');
+      });
+
+      btnEl.classList.remove('bg-surface', 'text-inkSecondary', 'font-medium', 'border', 'border-borderSubtle');
+      btnEl.classList.add('bg-copper', 'text-white', 'font-semibold');
+
+      document.querySelectorAll('.solution-card').forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // Pre-select Solution in Contact Form
+    function selectSolutionOption(value) {
+      const select = document.getElementById('solutionSelect');
+      if (select) {
+        select.value = value;
+      }
+    }
+
+    // FAQ Accordion
+    function toggleFaq(btn) {
+      const panel = btn.nextElementSibling;
+      const icon = btn.querySelector('svg');
+      const isHidden = panel.classList.contains('hidden');
+
+      panel.classList.toggle('hidden');
+      if (icon) {
+        icon.style.transform = isHidden ? 'rotate(45deg)' : 'rotate(0deg)';
+      }
+    }
+
+    // Contact Form Submission
+    function handleFormSubmission(event) {
+      event.preventDefault();
+      const alertBox = document.getElementById('formSuccessAlert');
+      const submitBtn = document.getElementById('submitFormBtn');
+
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+      submitBtn.innerHTML = '<span>Sending Request...</span>';
+
+      setTimeout(() => {
+        alertBox.classList.remove('hidden');
+        submitBtn.innerHTML = '<span>Message Sent</span>';
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+      }, 500);
+    }
+
+    // Subtle Real-Time Event Log Feed
+    function initEventFeed() {
+      const container = document.getElementById('streamEventFeed');
+      if (!container) return;
+
+      const events = [
+        { topic: 'telemetry.ingest.v2', latency: '6.4ms', state: 'COMMITTED' },
+        { topic: 'settlement.ledger.sync', latency: '8.1ms', state: 'ACK' },
+        { topic: 'vector.index.upsert', latency: '11.2ms', state: 'INDEXED' },
+        { topic: 'risk.window.evaluate', latency: '4.9ms', state: 'PASSED' }
+      ];
+
+      function renderFeed() {
+        container.innerHTML = '';
+        events.forEach(ev => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between px-3 py-2 rounded-lg bg-surface border border-borderSubtle';
+          row.innerHTML = `
+            <span class="text-inkPrimary truncate pr-2">${ev.topic}</span>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="text-inkMuted">${ev.latency}</span>
+              <span class="text-sage font-medium">${ev.state}</span>
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      renderFeed();
+      setInterval(() => {
+        const first = events.shift();
+        first.latency = (4.8 + Math.random() * 6.5).toFixed(1) + 'ms';
+        events.push(first);
+        renderFeed();
+      }, 3000);
+    }
+
+    // Clean Oceanic Midnight Charts
+    function initCharts() {
+      const commonFont = { family: 'JetBrains Mono', size: 10 };
+      const gridColor = 'rgba(226, 232, 240, 0.06)';
+      const tickColor = '#64748B';
+
+      // 1. Hero Production Telemetry Chart
+      const heroCtx = document.getElementById('heroTelemetryChart').getContext('2d');
+      new Chart(heroCtx, {
+        type: 'line',
+        data: {
+          labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+          datasets: [
+            {
+              label: 'Throughput (k events/sec)',
+              data: [1420, 1380, 1790, 2140, 2280, 1960, 1650],
+              borderColor: '#D97757',
+              backgroundColor: 'rgba(217, 119, 87, 0.10)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2,
+              pointRadius: 3,
+              pointBackgroundColor: '#D97757',
+              yAxisID: 'y'
+            },
+            {
+              label: 'P99 Latency (ms)',
+              data: [7.8, 7.5, 8.9, 11.2, 11.8, 9.4, 8.1],
+              borderColor: '#4EA8DE',
+              backgroundColor: 'transparent',
+              borderDash: [4, 4],
+              tension: 0.35,
+              borderWidth: 1.75,
+              pointRadius: 2.5,
+              pointBackgroundColor: '#4EA8DE',
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              grid: { color: gridColor },
+              ticks: { color: tickColor, font: commonFont }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: '#D97757', font: commonFont }
+            },
+            y1: {
+              position: 'right',
+              min: 0,
+              max: 20,
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#4EA8DE', font: commonFont }
+            }
+          }
+        }
+      });
+
+      // 2. ETL Polars vs Legacy Pandas Benchmark
+      const etlCtx = document.getElementById('etlBenchmarkChart').getContext('2d');
+      new Chart(etlCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Ingest', 'Validate', 'Dedupe', 'Load'],
+          datasets: [
+            {
+              label: 'Legacy Pandas (sec)',
+              data: [38.5, 29.2, 41.0, 22.4],
+              backgroundColor: '#25354B',
+              borderRadius: 4
+            },
+            {
+              label: 'Rixvol Polars (sec)',
+              data: [2.9, 2.1, 3.4, 1.8],
+              backgroundColor: '#D97757',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              align: 'end',
+              labels: { color: '#94A3B8', font: commonFont, boxWidth: 10 }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: tickColor, font: commonFont }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: tickColor, font: commonFont }
+            }
+          }
+        }
+      });
+
+      // 3. Streaming Transit Percentiles
+      const streamCtx = document.getElementById('streamPercentileChart').getContext('2d');
+      new Chart(streamCtx, {
+        type: 'line',
+        data: {
+          labels: ['P50', 'P75', 'P90', 'P95', 'P99', 'P99.9'],
+          datasets: [
+            {
+              label: 'Latency (ms)',
+              data: [6.2, 7.8, 9.5, 11.4, 14.2, 21.8],
+              borderColor: '#4EA8DE',
+              backgroundColor: 'rgba(78, 168, 222, 0.12)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2,
+              pointRadius: 3,
+              pointBackgroundColor: '#4EA8DE'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              grid: { color: gridColor },
+              ticks: { color: tickColor, font: commonFont }
+            },
+            y: {
+              min: 0,
+              max: 30,
+              grid: { color: gridColor },
+              ticks: { color: tickColor, font: commonFont }
+            }
+          }
+        }
+      });
+
+      // 4. AI Token Cost Optimization
+      const aiCtx = document.getElementById('aiCostChart').getContext('2d');
+      new Chart(aiCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Semantic Cache (62%)', 'Fine-Tuned SLM (28%)', 'Frontier LLM (10%)'],
+          datasets: [{
+            data: [62, 28, 10],
+            backgroundColor: ['#D97757', '#4EA8DE', '#25354B'],
+            borderColor: '#080E16',
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '72%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#94A3B8', font: commonFont, boxWidth: 10, padding: 12 }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
