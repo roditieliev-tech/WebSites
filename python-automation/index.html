@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rixvol — Enterprise Python Engineering & API Architecture</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: {
+                            950: '#050507',
+                            900: '#090a0e',
+                            850: '#0e1017',
+                            800: '#131620',
+                            700: '#1b1f2e',
+                        },
+                        champagne: {
+                            300: '#e5c97b',
+                            400: '#d4af37',
+                            500: '#b59224',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050507;
+            color: #d4d4d8;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        /* Deep Obsidian Architectural Surface */
+        .surface-card {
+            background: linear-gradient(180deg, rgba(16, 18, 26, 0.78) 0%, rgba(9, 10, 14, 0.96) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.065);
+            box-shadow: 0 28px 60px -24px rgba(0, 0, 0, 0.92), inset 0 1px 0 0 rgba(255, 255, 255, 0.045);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .surface-card:hover {
+            border-color: rgba(212, 175, 55, 0.22);
+        }
+        .subtle-grid {
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-size: 56px 56px;
+        }
+        .hero-radial {
+            background: 
+                radial-gradient(ellipse 60% 42% at 22% -8%, rgba(37, 99, 235, 0.09), transparent),
+                radial-gradient(ellipse 50% 38% at 82% 8%, rgba(212, 175, 55, 0.06), transparent),
+                radial-gradient(ellipse 45% 35% at 55% 25%, rgba(16, 185, 129, 0.045), transparent);
+        }
+        .luxury-shadow {
+            box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.95), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        /* Custom Range Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #161924;
+            height: 4px;
+            border-radius: 999px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            background: #d4af37;
+            border: 2px solid #090a0e;
+            cursor: pointer;
+            box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.45);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #e5c97b;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050507;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1c202e;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2d344a;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-amber-400/20 selection:text-amber-200 min-h-screen">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 bg-[#050507]/90 backdrop-blur-xl border-b border-white/[0.06]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-lg bg-[#0e1017] border border-amber-400/25 flex items-center justify-center text-champagne-300 group-hover:border-amber-400/55 transition-colors">
+                    <span class="font-mono font-semibold text-xs tracking-tighter">RX</span>
+                </div>
+                <div class="flex items-baseline gap-2.5">
+                    <span class="text-base font-display font-bold text-zinc-100 tracking-wider">RIXVOL</span>
+                    <span class="hidden sm:inline-block text-xs text-zinc-500 font-normal">Systems Engineering</span>
+                </div>
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-8 text-[13px] text-zinc-400">
+                <a href="#solutions" class="hover:text-zinc-100 transition-colors">Solutions & Capabilities</a>
+                <a href="#architecture" class="hover:text-zinc-100 transition-colors">Code Standards</a>
+                <a href="#roi-calculator" class="hover:text-zinc-100 transition-colors">Efficiency Model</a>
+                <a href="#stack" class="hover:text-zinc-100 transition-colors">Infrastructure</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <a href="#consultation" class="px-4 py-2 rounded-lg bg-[#121520] hover:bg-[#181c2b] text-zinc-100 border border-amber-400/30 hover:border-amber-400/60 text-xs font-medium tracking-wide transition-all flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    <span>Contact Us</span>
+                </a>
+                <button id="mobileToggle" class="lg:hidden p-2 text-zinc-400 hover:text-white" aria-label="Toggle Menu">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-obsidian-900 border-t border-white/[0.06] px-6 py-4 space-y-3 text-sm text-zinc-300">
+            <a href="#solutions" class="block py-1 hover:text-white">Solutions & Capabilities</a>
+            <a href="#architecture" class="block py-1 hover:text-white">Code Standards</a>
+            <a href="#roi-calculator" class="block py-1 hover:text-white">Efficiency Model</a>
+            <a href="#stack" class="block py-1 hover:text-white">Infrastructure</a>
+            <a href="#consultation" class="block pt-2 text-champagne-300 font-medium border-t border-white/[0.06]">Contact Us &rarr;</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-24 md:pt-28 md:pb-32 overflow-hidden subtle-grid hero-radial">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+                
+                <!-- Left Column -->
+                <div class="lg:col-span-6 space-y-7">
+                    <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.025] border border-white/[0.08] text-xs text-zinc-300 font-medium">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/90"></span>
+                        <span>Enterprise Python & Backend Architecture</span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-[52px] font-display font-bold text-zinc-100 leading-[1.12] tracking-tight">
+                        Deterministic <span class="bg-gradient-to-r from-zinc-100 via-blue-200 to-champagne-300 bg-clip-text text-transparent">Python Systems</span> & High-Load API Infrastructure
+                    </h1>
+
+                    <p class="text-zinc-400 text-base sm:text-[17px] leading-relaxed font-normal max-w-xl">
+                        We engineer fault-tolerant automation pipelines, low-latency microservices, and resilient data integrations for operational teams that require predictable scale and zero silent failures.
+                    </p>
+
+                    <!-- Key Metrics -->
+                    <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/[0.07]">
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">99.99%</div>
+                            <div class="text-xs text-emerald-400/80 mt-1 font-medium">Production SLA</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">&lt;35ms</div>
+                            <div class="text-xs text-blue-300/80 mt-1 font-medium">P99 API Latency</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">10M+</div>
+                            <div class="text-xs text-champagne-300/85 mt-1 font-medium">Daily Events</div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Group -->
+                    <div class="flex flex-wrap items-center gap-3.5 pt-2">
+                        <a href="#consultation" class="px-6 py-3.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-sm transition-all shadow-lg shadow-black/50 flex items-center gap-2">
+                            <span>Contact Us</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#solutions" class="px-6 py-3.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300 border border-white/[0.08] text-sm font-medium transition-all">
+                            Explore Capabilities
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Column: Editorial Code Console -->
+                <div class="lg:col-span-6">
+                    <div class="surface-card rounded-2xl overflow-hidden luxury-shadow">
+                        <!-- Top Bar -->
+                        <div class="bg-[#08090d] border-b border-white/[0.07] px-4 py-3 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+                                <span class="ml-2 font-mono text-zinc-400">orchestrator / sync_worker.py</span>
+                            </div>
+                            <span class="font-mono text-[11px] text-champagne-300/80">Python 3.12 · AsyncIO</span>
+                        </div>
+
+                        <!-- Code Body -->
+                        <div class="p-5 text-xs font-mono leading-relaxed overflow-x-auto bg-[#06070a] flex">
+                            <div class="text-zinc-600 select-none text-right pr-4 border-r border-white/[0.05] space-y-1">
+                                <div>01</div><div>02</div><div>03</div><div>04</div><div>05</div><div>06</div><div>07</div><div>08</div><div>09</div><div>10</div><div>11</div><div>12</div>
+                            </div>
+                            <div class="pl-4 space-y-1 flex-1 text-zinc-300">
+                                <div><span class="text-blue-300/80">from</span> rixvol.core <span class="text-blue-300/80">import</span> <span class="text-champagne-300">AsyncScheduler, SchemaValidator</span></div>
+                                <div><span class="text-blue-300/80">from</span> rixvol.adapters <span class="text-blue-300/80">import</span> <span class="text-champagne-300">CRMClient, PostgresPool</span></div>
+                                <div class="text-zinc-600"># Idempotent background synchronization pipeline</div>
+                                <div><span class="text-blue-300/90">@AsyncScheduler.task</span>(queue=<span class="text-emerald-300/80">"ledger-sync"</span>, max_retries=<span class="text-champagne-300">5</span>)</div>
+                                <div><span class="text-blue-300/80">async def</span> <span class="text-zinc-100 font-medium">reconcile_enterprise_ledger</span>(tenant_id: <span class="text-emerald-300/80">str</span>) -> <span class="text-emerald-300/80">dict</span>:</div>
+                                <div class="pl-4"><span class="text-blue-300/80">async with</span> PostgresPool.acquire() <span class="text-blue-300/80">as</span> conn:</div>
+                                <div class="pl-8 text-zinc-400">batch = <span class="text-blue-300/80">await</span> conn.fetch_uncommitted(tenant_id)</div>
+                                <div class="pl-8 text-zinc-400">validated = SchemaValidator.enforce(batch)</div>
+                                <div class="pl-8"><span class="text-blue-300/80">await</span> CRMClient.upsert_atomic(validated)</div>
+                                <div class="pl-8"><span class="text-blue-300/80">return</span> {<span class="text-emerald-300/80">"status"</span>: <span class="text-emerald-300/80">"committed"</span>, <span class="text-emerald-300/80">"count"</span>: len(validated)}</div>
+                                <div>&nbsp;</div>
+                                <div class="text-emerald-400/80 border-t border-white/[0.06] pt-2">
+                                    &gt; worker-node-01: 4,820 records committed in 18.4ms · 0 errors
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Status Bar -->
+                        <div class="bg-[#0a0b10] border-t border-white/[0.07] px-4 py-2.5 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                            <div class="flex items-center gap-3">
+                                <span class="flex items-center gap-1.5 text-emerald-400/85">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/85"></span> Cluster Nominal
+                                </span>
+                                <span class="text-zinc-700">|</span>
+                                <span>RSS: 142 MB</span>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span id="heroRunMsg" class="text-emerald-400/90 hidden">Verified in 18.4ms</span>
+                                <button onclick="triggerHeroSimulation()" class="px-3 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 border border-white/[0.09] transition-colors">
+                                    Run Verification
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPANDED SOLUTIONS & ENGINEERING DOSSIERS (6 PRACTICE AREAS) -->
+    <section id="solutions" class="py-24 md:py-32 border-t border-white/[0.06] bg-[#07080c]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-16">
+            
+            <!-- Section Header -->
+            <div class="max-w-3xl space-y-4">
+                <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-champagne-300/90">
+                    <span class="w-1.5 h-1.5 rounded-full bg-champagne-400"></span>
+                    <span>Core Engineering Practice</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-[42px] font-display font-bold text-zinc-100 tracking-tight leading-tight">
+                    Comprehensive Production Capabilities
+                </h2>
+                <p class="text-zinc-400 text-base leading-relaxed">
+                    Six specialized engineering domains designed to replace fragile manual workflows, fragmented SaaS tools, and legacy bottlenecks with maintainable, thoroughly tested Python systems.
+                </p>
+            </div>
+
+            <!-- Interactive Navigation Filter Bar -->
+            <div class="flex flex-wrap items-center gap-2.5 pb-5 border-b border-white/[0.06]" id="solutionNav">
+                <button onclick="filterSolutions('all')" data-filter="all" class="sol-filter-btn px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-100 text-zinc-950 transition-all">
+                    All Practice Areas
+                </button>
+                <button onclick="filterSolutions('automation')" data-filter="automation" class="sol-filter-btn px-4 py-2 rounded-lg text-xs font-medium bg-white/[0.025] text-zinc-400 hover:text-zinc-100 border border-white/[0.07] transition-all">
+                    Enterprise ETL & Automation
+                </button>
+                <button onclick="filterSolutions('api')" data-filter="api" class="sol-filter-btn px-4 py-2 rounded-lg text-xs font-medium bg-white/[0.025] text-zinc-400 hover:text-zinc-100 border border-white/[0.07] transition-all">
+                    Custom API & Webhook Systems
+                </button>
+                <button onclick="filterSolutions('scraping')" data-filter="scraping" class="sol-filter-btn px-4 py-2 rounded-lg text-xs font-medium bg-white/[0.025] text-zinc-400 hover:text-zinc-100 border border-white/[0.07] transition-all">
+                    Web Data Extraction Pipelines
+                </button>
+                <button onclick="filterSolutions('workflows')" data-filter="workflows" class="sol-filter-btn px-4 py-2 rounded-lg text-xs font-medium bg-white/[0.025] text-zinc-400 hover:text-zinc-100 border border-white/[0.07] transition-all">
+                    Business Process Orchestration
+                </button>
+                <button onclick="filterSolutions('backend')" data-filter="backend" class="sol-filter-btn px-4 py-2 rounded-lg text-xs font-medium bg-white/[0.025] text-zinc-400 hover:text-zinc-100 border border-white/[0.07] transition-all">
+                    High-Load Backend Architecture
+                </button>
+                <button onclick="filterSolutions('ai-systems')" data-filter="ai-systems" class="sol-filter-btn px-4 py-2 rounded-lg text-xs font-medium bg-white/[0.025] text-zinc-400 hover:text-zinc-100 border border-white/[0.07] transition-all">
+                    Deterministic LLM & AI Pipelines
+                </button>
+            </div>
+
+            <!-- SOLUTIONS CONTAINER -->
+            <div class="space-y-16" id="solutionsList">
+
+                <!-- ENTERPRISE PYTHON AUTOMATION & ETL -->
+                <article data-category="automation" class="solution-card surface-card rounded-2xl p-6 sm:p-10 lg:p-12 space-y-10">
+                    <!-- Header -->
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-white/[0.06]">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-champagne-300 font-medium">PRACTICE AREA</span>
+                                <span class="text-zinc-700">&bull;</span>
+                                <span class="font-mono text-xs text-zinc-400">Data Engineering & Task Queues</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">
+                                Enterprise Python Automation & Distributed ETL
+                            </h3>
+                            <p class="text-zinc-400 text-sm max-w-3xl leading-relaxed">
+                                High-throughput data ingestion, multi-format document parsing, and scheduled batch processing engines built to eliminate manual spreadsheet operations and operational latency.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">
+                            <span class="px-3 py-1.5 rounded-md bg-blue-500/[0.07] border border-blue-400/20 font-mono text-xs text-blue-200/90">Polars / Pandas</span>
+                            <span class="px-3 py-1.5 rounded-md bg-emerald-500/[0.07] border border-emerald-400/20 font-mono text-xs text-emerald-200/90">Celery & Redis</span>
+                            <span class="px-3 py-1.5 rounded-md bg-white/[0.03] border border-white/[0.08] font-mono text-xs text-zinc-300">PostgreSQL</span>
+                        </div>
+                    </div>
+
+                    <!-- Architecture Topology Flow -->
+                    <div class="bg-[#050507] rounded-xl p-6 border border-white/[0.06] space-y-4">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-mono uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+                                <i data-lucide="git-branch" class="w-3.5 h-3.5 text-champagne-300"></i>
+                                System Topology &mdash; Distributed Ingestion Pipeline
+                            </span>
+                            <span class="font-mono text-emerald-400/80">Idempotent &bull; Zero Data Loss</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-blue-300/80">01. INGESTION</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Multi-Source Connectors</div>
+                                <div class="text-xs text-zinc-400 mt-1">SFTP, REST/GraphQL, S3 Buckets, Email Attachments</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-indigo-300/80">02. TRANSFORMATION</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Vectorized Normalization</div>
+                                <div class="text-xs text-zinc-400 mt-1">Polars streaming chunks, schema enforcement, deduplication</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-emerald-300/80">03. ORCHESTRATION</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Distributed Worker Pool</div>
+                                <div class="text-xs text-zinc-400 mt-1">Redis locks, exponential backoff retries, Dead-Letter Queues</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-champagne-300/85">04. PERSISTENCE</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Warehouse & Reporting</div>
+                                <div class="text-xs text-zinc-400 mt-1">ClickHouse, PostgreSQL, automated executive PDF/XLSX digests</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 Detailed Capabilities Matrix -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-mono uppercase tracking-wider text-zinc-500">Technical Capabilities & Sub-Modules</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="layers" class="w-4 h-4 text-blue-300/80"></i>
+                                    <span>Gigabyte-Scale Streaming ETL</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Memory-safe chunked processing using Polars and PyArrow to transform millions of rows without out-of-memory crashes.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="file-text" class="w-4 h-4 text-emerald-300/80"></i>
+                                    <span>Unstructured Document Parsing</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Automated extraction of line items, tax tables, and metadata from complex PDF invoices, packing slips, and scanned OCR files.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="clock" class="w-4 h-4 text-champagne-300/85"></i>
+                                    <span>Distributed Cron & Lock Management</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Redlock-backed schedulers ensuring scheduled financial and operational jobs execute exactly once across multi-node clusters.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-blue-300/80"></i>
+                                    <span>Automated BI & Financial Synthesis</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Programmatic generation of styled Excel workbooks, board-ready PDFs, and automated Slack/email KPI digests on schedule.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="database" class="w-4 h-4 text-emerald-300/80"></i>
+                                    <span>Zero-Downtime Legacy Migrations</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Dual-write synchronization scripts and checksum verification tools to migrate terabytes between legacy ERPs and modern databases.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="bell" class="w-4 h-4 text-champagne-300/85"></i>
+                                    <span>Anomaly Detection & Alerting</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Built-in statistical threshold checks that quarantine malformed upstream vendor files and alert engineers via PagerDuty or Slack.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Split: Case Study & Deliverables + Interactive Simulator -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 border-t border-white/[0.06]">
+                        <div class="lg:col-span-7 space-y-6">
+                            <!-- Case Study -->
+                            <div class="p-6 rounded-xl bg-[#08090d] border border-white/[0.06] space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono uppercase tracking-wider text-champagne-300">Production Case Study &mdash; Logistics & Supply Chain</span>
+                                    <span class="text-xs font-mono px-2.5 py-0.5 rounded bg-emerald-500/[0.08] text-emerald-300/90 border border-emerald-400/20">92% Labor Reduction</span>
+                                </div>
+                                <p class="text-sm text-zinc-300 leading-relaxed">
+                                    An international freight operator spent 42 hours weekly manually reconciling carrier manifests, customs PDFs, and ERP ledger entries. Rixvol engineered an asynchronous Polars + Celery ingestion pipeline that automatically parses incoming manifests, validates tax codes, and commits reconciled records to PostgreSQL—cutting processing time from 4 days to 38 seconds.
+                                </p>
+                            </div>
+
+                            <!-- Deliverables -->
+                            <div>
+                                <div class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Included Engineering Deliverables</div>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-zinc-300">
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Production Docker Compose</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Dead-Letter Queue Dashboard</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> PyTest Suite (&gt;90% coverage)</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Grafana Telemetry Metrics</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Automated CI/CD Pipeline</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Full Runbook Documentation</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Interactive Console -->
+                        <div class="lg:col-span-5 bg-[#050507] rounded-xl border border-white/[0.07] p-5 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between pb-2.5 border-b border-white/[0.06] text-xs font-mono">
+                                    <span class="text-zinc-200 flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/85"></span>
+                                        Worker Telemetry Console
+                                    </span>
+                                    <span class="text-zinc-500">celery@prod-01</span>
+                                </div>
+                                <div class="p-3 bg-[#090a0f] rounded-lg border border-white/[0.05] font-mono text-[11px] text-zinc-400 space-y-1.5 h-36 overflow-y-auto" id="autoLogs">
+                                    <div>[09:14:02] Worker pool initialized (16 async processes)</div>
+                                    <div>[09:14:03] Ingested 14,200 rows from S3://vendor-feeds/</div>
+                                    <div class="text-emerald-400/80">[09:14:03] Schema check passed: 0 malformed records</div>
+                                    <div class="text-blue-300/80">[09:14:04] Committed batch #8841 to PostgreSQL warehouse</div>
+                                </div>
+                            </div>
+                            <button onclick="runAutoPipelineSim()" class="w-full py-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.09] text-zinc-200 text-xs font-mono font-medium transition-colors">
+                                Simulate Batch Execution
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- CUSTOM API & WEBHOOK INTEGRATION SYSTEMS -->
+                <article data-category="api" class="solution-card surface-card rounded-2xl p-6 sm:p-10 lg:p-12 space-y-10">
+                    <!-- Header -->
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-white/[0.06]">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-emerald-400/90 font-medium">PRACTICE AREA</span>
+                                <span class="text-zinc-700">&bull;</span>
+                                <span class="font-mono text-xs text-zinc-400">Middleware & System Connectivity</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">
+                                Custom API Engineering & Bidirectional Webhook Buses
+                            </h3>
+                            <p class="text-zinc-400 text-sm max-w-3xl leading-relaxed">
+                                Type-safe integration middleware connecting payment gateways, CRMs, ERPs, and proprietary internal services with cryptographic verification, idempotency, and automatic rate-limit handling.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">
+                            <span class="px-3 py-1.5 rounded-md bg-emerald-500/[0.07] border border-emerald-400/20 font-mono text-xs text-emerald-200/90">FastAPI</span>
+                            <span class="px-3 py-1.5 rounded-md bg-blue-500/[0.07] border border-blue-400/20 font-mono text-xs text-blue-200/90">Pydantic v2</span>
+                            <span class="px-3 py-1.5 rounded-md bg-amber-500/[0.07] border border-amber-400/20 font-mono text-xs text-champagne-300">OAuth2 / HMAC</span>
+                        </div>
+                    </div>
+
+                    <!-- Architecture Topology Flow -->
+                    <div class="bg-[#050507] rounded-xl p-6 border border-white/[0.06] space-y-4">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-mono uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+                                <i data-lucide="network" class="w-3.5 h-3.5 text-emerald-400/85"></i>
+                                System Topology &mdash; Fault-Tolerant Event Bus
+                            </span>
+                            <span class="font-mono text-blue-300/80">HMAC-SHA256 &bull; Idempotent Keys</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-emerald-300/85">01. INGRESS GUARD</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Webhook Verification</div>
+                                <div class="text-xs text-zinc-400 mt-1">Signature validation, IP allowlisting, replay protection</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-blue-300/85">02. CONTRACT LAYER</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Pydantic v2 Validation</div>
+                                <div class="text-xs text-zinc-400 mt-1">Rust-speed type coercion, canonical schema mapping</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-champagne-300/85">03. RESILIENCE</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Circuit Breakers</div>
+                                <div class="text-xs text-zinc-400 mt-1">429 rate-limit throttling, jittered exponential backoff</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-indigo-300/85">04. EGRESS DISPATCH</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Atomic State Sync</div>
+                                <div class="text-xs text-zinc-400 mt-1">Two-phase commits across CRM, ERP, and billing ledgers</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 Detailed Capabilities Matrix -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-mono uppercase tracking-wider text-zinc-500">Technical Capabilities & Sub-Modules</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400/80"></i>
+                                    <span>Strict Schema Contracts (Pydantic v2)</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Every incoming and outgoing JSON/XML payload is validated against strict data models before touching production databases.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="repeat" class="w-4 h-4 text-blue-300/80"></i>
+                                    <span>Idempotency & Deduplication</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Redis-backed idempotency keys guarantee that duplicate webhook deliveries never trigger double charges or duplicate invoices.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="key" class="w-4 h-4 text-champagne-300/85"></i>
+                                    <span>Automated OAuth2 Token Rotation</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Centralized credential vault handling background refresh token lifecycles across Salesforce, HubSpot, Xero, and Google APIs.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="git-pull-request" class="w-4 h-4 text-indigo-300/80"></i>
+                                    <span>Legacy SOAP / XML Modernization</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Wrapping rigid legacy banking, logistics, or ERP XML endpoints into clean, documented REST or GraphQL interfaces.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="activity" class="w-4 h-4 text-emerald-400/80"></i>
+                                    <span>Adaptive Rate-Limit Shaping</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Token-bucket concurrency limiters that maximize throughput while strictly respecting third-party API quota headers.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="book-open" class="w-4 h-4 text-blue-300/80"></i>
+                                    <span>Auto-Generated OpenAPI 3.1 Specs</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Interactive Swagger/Redoc documentation and typed client SDKs generated directly from your API source code.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Split -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 border-t border-white/[0.06]">
+                        <div class="lg:col-span-7 space-y-6">
+                            <div class="p-6 rounded-xl bg-[#08090d] border border-white/[0.06] space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono uppercase tracking-wider text-emerald-400/90">Production Case Study &mdash; FinTech Billing Gateway</span>
+                                    <span class="text-xs font-mono px-2.5 py-0.5 rounded bg-blue-500/[0.08] text-blue-200/90 border border-blue-400/20">99.995% Webhook Uptime</span>
+                                </div>
+                                <p class="text-sm text-zinc-300 leading-relaxed">
+                                    A B2B subscription platform processing payments across Stripe, Adyen, and SEPA bank APIs suffered from dropped webhook events and currency reconciliation mismatches. Rixvol built an idempotent FastAPI ingestion gateway that verifies signatures in &lt;2ms, normalizes multi-currency FX rates, and syncs canonical ledger entries into QuickBooks and PostgreSQL.
+                                </p>
+                            </div>
+
+                            <div>
+                                <div class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Included Engineering Deliverables</div>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-zinc-300">
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> OpenAPI 3.1 Documentation</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Webhook Replay Utility</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Postman / HTTP Test Suite</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Encrypted Secrets Vault Setup</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Audit Log Persistence</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Load Testing Benchmark</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Schema Validator -->
+                        <div class="lg:col-span-5 bg-[#050507] rounded-xl border border-white/[0.07] p-5 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between pb-2.5 border-b border-white/[0.06] text-xs font-mono">
+                                    <span class="text-zinc-200">Pydantic Contract Validator</span>
+                                    <span id="validationTag" class="text-zinc-400">Ready</span>
+                                </div>
+                                <div class="text-xs font-mono bg-[#090a0f] p-3.5 rounded-lg border border-white/[0.05] space-y-1 text-zinc-300">
+                                    <div><span class="text-blue-300/80">class</span> <span class="text-champagne-300">LedgerSyncContract</span>(BaseModel):</div>
+                                    <div class="pl-4">event_id: <span class="text-blue-200/80">UUID4</span></div>
+                                    <div class="pl-4">amount_cents: <span class="text-blue-200/80">PositiveInt</span></div>
+                                    <div class="pl-4">currency: <span class="text-emerald-300/80">Literal["USD", "EUR", "GBP"]</span></div>
+                                    <div class="pl-4">idempotency_key: <span class="text-blue-200/80">constr(min_length=16)</span></div>
+                                </div>
+                            </div>
+                            <button onclick="testApiValidation()" class="w-full py-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.09] text-zinc-200 text-xs font-mono font-medium transition-colors">
+                                Validate Sample Payload
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- WEB DATA EXTRACTION & ANTI-BOT INFRASTRUCTURE -->
+                <article data-category="scraping" class="solution-card surface-card rounded-2xl p-6 sm:p-10 lg:p-12 space-y-10">
+                    <!-- Header -->
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-white/[0.06]">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-blue-300/90 font-medium">PRACTICE AREA</span>
+                                <span class="text-zinc-700">&bull;</span>
+                                <span class="font-mono text-xs text-zinc-400">Distributed Crawling & Market Intelligence</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">
+                                Resilient Web Data Extraction & Harvesting Pipelines
+                            </h3>
+                            <p class="text-zinc-400 text-sm max-w-3xl leading-relaxed">
+                                Enterprise-scale web scraping infrastructure engineered to collect structured pricing, catalog, financial, and public market intelligence from complex JavaScript-heavy targets at high concurrency.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">
+                            <span class="px-3 py-1.5 rounded-md bg-blue-500/[0.07] border border-blue-400/20 font-mono text-xs text-blue-200/90">Playwright / Patchright</span>
+                            <span class="px-3 py-1.5 rounded-md bg-white/[0.03] border border-white/[0.08] font-mono text-xs text-zinc-300">Scrapy / HTTPX</span>
+                            <span class="px-3 py-1.5 rounded-md bg-emerald-500/[0.07] border border-emerald-400/20 font-mono text-xs text-emerald-200/90">Residential Proxy Mesh</span>
+                        </div>
+                    </div>
+
+                    <!-- Architecture Topology Flow -->
+                    <div class="bg-[#050507] rounded-xl p-6 border border-white/[0.06] space-y-4">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-mono uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+                                <i data-lucide="globe" class="w-3.5 h-3.5 text-blue-300/85"></i>
+                                System Topology &mdash; Distributed Extraction Cluster
+                            </span>
+                            <span class="font-mono text-zinc-400">TLS Fingerprint Rotation &bull; Auto-Healing</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-blue-300/85">01. SESSION LAYER</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Proxy & Fingerprint Pool</div>
+                                <div class="text-xs text-zinc-400 mt-1">Geo-targeted residential rotation, JA3/TLS spoofing</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-indigo-300/85">02. RENDER ENGINE</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Hybrid Browser / API</div>
+                                <div class="text-xs text-zinc-400 mt-1">Direct GraphQL/XHR interception + stealth Chromium</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-emerald-300/85">03. EXTRACTION</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Structured Parsers</div>
+                                <div class="text-xs text-zinc-400 mt-1">Selectolax / lxml C-speed parsing with schema guards</div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-[#0b0c12] border border-white/[0.06]">
+                                <div class="text-[11px] font-mono text-champagne-300/85">04. DELIVERY</div>
+                                <div class="text-sm font-semibold text-zinc-100 mt-1">Clean Data Feeds</div>
+                                <div class="text-xs text-zinc-400 mt-1">Parquet, JSONL, PostgreSQL, or live REST webhook push</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 Detailed Capabilities Matrix -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-mono uppercase tracking-wider text-zinc-500">Technical Capabilities & Sub-Modules</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="globe" class="w-4 h-4 text-blue-300/80"></i>
+                                    <span>Stealth Headless Browser Clusters</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Hardened Playwright and Chromium workers with realistic canvas, WebGL, and behavioral profiles for SPA targets.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="network" class="w-4 h-4 text-emerald-300/80"></i>
+                                    <span>Internal XHR / GraphQL Interception</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Reverse-engineering mobile and web internal JSON endpoints to extract data 20x faster than full DOM rendering.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="shuffle" class="w-4 h-4 text-champagne-300/85"></i>
+                                    <span>Intelligent Proxy Health Routing</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Automatic subnet scoring, sticky session management for authenticated portals, and instant failover on HTTP 403/429.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-blue-300/80"></i>
+                                    <span>Real-Time Competitive Price Indexing</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Continuous SKU matching, stock availability tracking, and historical price-change delta alerts across global marketplaces.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="eye" class="w-4 h-4 text-emerald-300/80"></i>
+                                    <span>DOM Drift & Selector Monitoring</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Automated canary checks that detect target layout changes immediately and isolate broken selectors before bad data is stored.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                                <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                    <i data-lucide="archive" class="w-4 h-4 text-champagne-300/85"></i>
+                                    <span>Raw HTML / Snapshot Archiving</span>
+                                </div>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Compressed S3/MinIO storage of raw responses for compliance auditing and instant parser reprocessing without re-crawling.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Case Study & Interactive Scraper Telemetry -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 border-t border-white/[0.06]">
+                        <div class="lg:col-span-7 space-y-6">
+                            <div class="p-6 rounded-xl bg-[#08090d] border border-white/[0.06] space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono uppercase tracking-wider text-blue-300/90">Production Case Study &mdash; E-Commerce Pricing Intelligence</span>
+                                    <span class="text-xs font-mono px-2.5 py-0.5 rounded bg-emerald-500/[0.08] text-emerald-300/90 border border-emerald-400/20">1.8M SKUs / Day</span>
+                                </div>
+                                <p class="text-sm text-zinc-300 leading-relaxed">
+                                    A European retail aggregator required hourly price and inventory snapshots across 45 regional marketplaces protected by dynamic bot mitigation. Rixvol built an asynchronous HTTPX + Playwright hybrid cluster that tracks 1.8 million SKUs daily with a 99.4% extraction success rate and streams deltas directly into their dynamic pricing engine.
+                                </p>
+                            </div>
+                            <div>
+                                <div class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Included Engineering Deliverables</div>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-zinc-300">
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Containerized Crawler Fleet</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Proxy Rotation Middleware</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Data Quality Validation Rules</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Parquet / SQL Export Connectors</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Selector Drift Alerting</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Bandwidth Optimization Tuning</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 bg-[#050507] rounded-xl border border-white/[0.07] p-5 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between pb-2.5 border-b border-white/[0.06] text-xs font-mono">
+                                    <span class="text-zinc-200">Crawler Fleet Telemetry</span>
+                                    <span class="text-emerald-400/85">99.4% Success</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+                                    <div class="p-3 bg-[#090a0f] rounded-lg border border-white/[0.05]">
+                                        <div class="text-zinc-500 text-[10px]">ACTIVE SESSIONS</div>
+                                        <div class="text-zinc-100 font-semibold text-base mt-0.5" id="crawlerWorkers">128 Nodes</div>
+                                    </div>
+                                    <div class="p-3 bg-[#090a0f] rounded-lg border border-white/[0.05]">
+                                        <div class="text-zinc-500 text-[10px]">AVG EXTRACTION</div>
+                                        <div class="text-champagne-300 font-semibold text-base mt-0.5" id="crawlerSpeed">410 pages/s</div>
+                                    </div>
+                                </div>
+                                <div class="p-2.5 bg-[#090a0f] rounded-lg border border-white/[0.05] font-mono text-[11px] text-zinc-400" id="crawlerStatusText">
+                                    &gt; TLS fingerprint pool rotated · 0 CAPTCHA blocks
+                                </div>
+                            </div>
+                            <button onclick="simulateCrawlerBurst()" class="w-full py-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.09] text-zinc-200 text-xs font-mono font-medium transition-colors">
+                                Trigger Marketplace Crawl Burst
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- BUSINESS PROCESS & WORKFLOW ORCHESTRATION -->
+                <article data-category="workflows" class="solution-card surface-card rounded-2xl p-6 sm:p-10 lg:p-12 space-y-10">
+                    <!-- Header -->
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-white/[0.06]">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-champagne-300 font-medium">PRACTICE AREA</span>
+                                <span class="text-zinc-700">&bull;</span>
+                                <span class="font-mono text-xs text-zinc-400">Cross-Platform Operations</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">
+                                End-to-End Business Process & Workflow Orchestration
+                            </h3>
+                            <p class="text-zinc-400 text-sm max-w-3xl leading-relaxed">
+                                Deterministic state-machine workflows uniting CRM, billing, legal document generation, user provisioning, and internal communication channels into auditable automated pipelines.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">
+                            <span class="px-3 py-1.5 rounded-md bg-amber-500/[0.07] border border-amber-400/20 font-mono text-xs text-champagne-300">Temporal / Prefect</span>
+                            <span class="px-3 py-1.5 rounded-md bg-blue-500/[0.07] border border-blue-400/20 font-mono text-xs text-blue-200/90">CRM & ERP Sync</span>
+                            <span class="px-3 py-1.5 rounded-md bg-white/[0.03] border border-white/[0.08] font-mono text-xs text-zinc-300">State Machines</span>
+                        </div>
+                    </div>
+
+                    <!-- Operational Comparison Matrix -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 rounded-xl bg-[#08090d] border border-white/[0.06] space-y-3">
+                            <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                                <i data-lucide="x-circle" class="w-4 h-4 text-rose-400/60"></i>
+                                Legacy Fragmented Operations
+                            </div>
+                            <ul class="text-sm text-zinc-400 space-y-2.5">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-zinc-600 mt-0.5">&mdash;</span>
+                                    <span>Manual data re-entry across CRM, accounting software, and internal admin panels</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-zinc-600 mt-0.5">&mdash;</span>
+                                    <span>Multi-day delays between contract signature, invoice issuance, and workspace provisioning</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-zinc-600 mt-0.5">&mdash;</span>
+                                    <span>Brittle no-code zaps failing silently without rollback or audit trails</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="p-6 rounded-xl bg-[#0c0e15] border border-emerald-400/15 space-y-3">
+                            <div class="text-xs font-mono uppercase tracking-wider text-emerald-300/90 flex items-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400/80"></i>
+                                Rixvol Deterministic Orchestration
+                            </div>
+                            <ul class="text-sm text-zinc-200 space-y-2.5">
+                                <li class="flex items-start gap-2.5">
+                                    <i data-lucide="check" class="w-4 h-4 text-emerald-400/80 shrink-0 mt-0.5"></i>
+                                    <span>Event-driven state machines executing multi-step onboarding in under 60 seconds</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <i data-lucide="check" class="w-4 h-4 text-emerald-400/80 shrink-0 mt-0.5"></i>
+                                    <span>Compensating transactions (automatic rollback) if any downstream service fails</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <i data-lucide="check" class="w-4 h-4 text-emerald-400/80 shrink-0 mt-0.5"></i>
+                                    <span>Complete immutable execution logs and human-in-the-loop approval gates</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Case Study & Interactive Workflow Stepper -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 border-t border-white/[0.06]">
+                        <div class="lg:col-span-7 flex flex-col justify-between space-y-6">
+                            <div class="p-6 rounded-xl bg-[#08090d] border border-white/[0.06] space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono uppercase tracking-wider text-champagne-300">Production Case Study &mdash; B2B Client Onboarding</span>
+                                    <span class="text-xs font-mono px-2.5 py-0.5 rounded bg-emerald-500/[0.08] text-emerald-300/90 border border-emerald-400/20">48h &rarr; 85s Turnaround</span>
+                                </div>
+                                <p class="text-sm text-zinc-300 leading-relaxed">
+                                    A regulated financial consultancy reduced client onboarding from 48 hours to 85 seconds by replacing manual compliance checks, NDA generation, and AWS tenant provisioning with a Python event orchestrator triggered directly from HubSpot deal stage transitions.
+                                </p>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-zinc-300">
+                                <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> HubSpot / Salesforce Hooks</div>
+                                <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Automated PDF Contracts</div>
+                                <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Slack Approval Bots</div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 bg-[#050507] rounded-xl border border-white/[0.07] p-5 flex flex-col justify-between space-y-4">
+                            <div class="space-y-2.5 font-mono text-xs">
+                                <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+                                    <span class="text-zinc-200">State Machine Visualizer</span>
+                                    <span class="text-champagne-300" id="wfStatusBadge">IDLE</span>
+                                </div>
+                                <div id="wfStep1" class="p-2.5 rounded bg-[#090a0f] border border-white/[0.05] flex justify-between text-zinc-400">
+                                    <span>1. CRM Deal Closed Trigger</span>
+                                    <span>READY</span>
+                                </div>
+                                <div id="wfStep2" class="p-2.5 rounded bg-[#090a0f] border border-white/[0.05] flex justify-between text-zinc-400">
+                                    <span>2. Generate NDA & Provision Tenant</span>
+                                    <span>READY</span>
+                                </div>
+                                <div id="wfStep3" class="p-2.5 rounded bg-[#090a0f] border border-white/[0.05] flex justify-between text-zinc-400">
+                                    <span>3. Issue Stripe Invoice & Notify Slack</span>
+                                    <span>READY</span>
+                                </div>
+                            </div>
+                            <button onclick="runWorkflowStepper()" class="w-full py-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.09] text-zinc-200 text-xs font-mono font-medium transition-colors">
+                                Execute Onboarding Workflow
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- HIGH-LOAD CUSTOM PYTHON BACKEND DEVELOPMENT -->
+                <article data-category="backend" class="solution-card surface-card rounded-2xl p-6 sm:p-10 lg:p-12 space-y-10">
+                    <!-- Header -->
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-white/[0.06]">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-blue-300/90 font-medium">PRACTICE AREA</span>
+                                <span class="text-zinc-700">&bull;</span>
+                                <span class="font-mono text-xs text-zinc-400">Core Application & Cloud Architecture</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">
+                                High-Concurrency Custom Python Backend Systems
+                            </h3>
+                            <p class="text-zinc-400 text-sm max-w-3xl leading-relaxed">
+                                Clean-architecture SaaS backends, real-time WebSocket engines, and high-throughput transactional APIs engineered with FastAPI, AsyncIO, PostgreSQL, and containerized cloud deployments.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">
+                            <span class="px-3 py-1.5 rounded-md bg-blue-500/[0.07] border border-blue-400/20 font-mono text-xs text-blue-200/90">FastAPI + uvloop</span>
+                            <span class="px-3 py-1.5 rounded-md bg-white/[0.03] border border-white/[0.08] font-mono text-xs text-zinc-300">SQLAlchemy 2.0</span>
+                            <span class="px-3 py-1.5 rounded-md bg-emerald-500/[0.07] border border-emerald-400/20 font-mono text-xs text-emerald-200/90">Docker / Kubernetes</span>
+                        </div>
+                    </div>
+
+                    <!-- 6 Detailed Capabilities Matrix -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="zap" class="w-4 h-4 text-blue-300/80"></i>
+                                <span>Non-Blocking AsyncIO Core</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Built on uvloop and Uvicorn workers to handle tens of thousands of concurrent connections with sub-35ms P99 response times.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="database" class="w-4 h-4 text-emerald-300/80"></i>
+                                <span>High-Performance PostgreSQL Tuning</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">AsyncPG connection pooling, table partitioning, composite indexing, and read-replica routing for heavy analytical and transactional loads.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="radio" class="w-4 h-4 text-champagne-300/85"></i>
+                                <span>Real-Time WebSockets & SSE</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Redis Pub/Sub backed WebSocket gateways for live financial tickers, collaborative dashboards, and instant telemetry streams.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="lock" class="w-4 h-4 text-blue-300/80"></i>
+                                <span>Multi-Tenant Auth & RBAC</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Enterprise SSO (SAML/OIDC), stateless JWT rotation, API key scoping, and row-level security isolation per organization.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="box" class="w-4 h-4 text-emerald-300/80"></i>
+                                <span>Domain-Driven Modular Codebase</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Strict separation between transport, business domain, and repository layers—ensuring effortless feature velocity as your team grows.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="activity" class="w-4 h-4 text-champagne-300/85"></i>
+                                <span>Full Observability & Tracing</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">OpenTelemetry distributed tracing, structured JSON logging, Prometheus metrics, and automated Sentry error grouping.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Split with Live Endpoint Tester -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 border-t border-white/[0.06]">
+                        <div class="lg:col-span-7 space-y-6">
+                            <div class="p-6 rounded-xl bg-[#08090d] border border-white/[0.06] space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono uppercase tracking-wider text-blue-300/90">Production Case Study &mdash; Monolith Re-Architecture</span>
+                                    <span class="text-xs font-mono px-2.5 py-0.5 rounded bg-emerald-500/[0.08] text-emerald-300/90 border border-emerald-400/20">900ms &rarr; 32ms Latency</span>
+                                </div>
+                                <p class="text-sm text-zinc-300 leading-relaxed">
+                                    A high-volume SaaS analytics provider suffering from CPU saturation and 900ms API response times migrated their core transaction engine to a Rixvol FastAPI + AsyncPG architecture. P99 latency dropped to 32ms while monthly cloud compute costs decreased by 48%.
+                                </p>
+                            </div>
+                            <div>
+                                <div class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Included Engineering Deliverables</div>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-zinc-300">
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Multi-Stage Dockerfiles</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Alembic DB Migrations</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Kubernetes Helm Charts</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> GitHub Actions CI/CD</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> OpenTelemetry Tracing</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400/80"></i> Locust Load Test Suite</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 bg-[#050507] rounded-xl border border-white/[0.07] p-5 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between pb-2.5 border-b border-white/[0.06] text-xs font-mono">
+                                    <span class="text-zinc-200 font-medium">POST /v2/transactions/settle</span>
+                                    <span class="text-emerald-400/85">200 OK</span>
+                                </div>
+                                <div class="p-3 bg-[#090a0f] rounded-lg border border-white/[0.05] text-xs font-mono text-zinc-300" id="swaggerResponse">
+                                    <div class="text-zinc-500 text-[11px] mb-1">Response Payload (31.4ms):</div>
+                                    <div>{</div>
+                                    <div class="pl-4">"settlement_id": <span class="text-emerald-300/80">"stl_9011ba42"</span>,</div>
+                                    <div class="pl-4">"status": <span class="text-emerald-300/80">"COMMITTED"</span>,</div>
+                                    <div class="pl-4">"execution_ms": <span class="text-champagne-300">31.4</span></div>
+                                    <div>}</div>
+                                </div>
+                            </div>
+                            <button onclick="sendMockApiRequest()" class="w-full py-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.09] text-zinc-200 text-xs font-mono font-medium transition-colors">
+                                Dispatch Test Request
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- DETERMINISTIC LLM & AI WORKFLOW PIPELINES -->
+                <article data-category="ai-systems" class="solution-card surface-card rounded-2xl p-6 sm:p-10 lg:p-12 space-y-10">
+                    <!-- Header -->
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-white/[0.06]">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-emerald-400/90 font-medium">PRACTICE AREA</span>
+                                <span class="text-zinc-700">&bull;</span>
+                                <span class="font-mono text-xs text-zinc-400">Applied AI Engineering & RAG</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-display font-bold text-zinc-100 tracking-tight">
+                                Production LLM Pipelines & Structured Extraction Systems
+                            </h3>
+                            <p class="text-zinc-400 text-sm max-w-3xl leading-relaxed">
+                                Moving beyond fragile chat prototypes to deterministic, schema-constrained LLM pipelines for contract analysis, hybrid vector search, and automated internal knowledge retrieval.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">
+                            <span class="px-3 py-1.5 rounded-md bg-emerald-500/[0.07] border border-emerald-400/20 font-mono text-xs text-emerald-200/90">Structured Outputs</span>
+                            <span class="px-3 py-1.5 rounded-md bg-blue-500/[0.07] border border-blue-400/20 font-mono text-xs text-blue-200/90">pgvector / Qdrant</span>
+                            <span class="px-3 py-1.5 rounded-md bg-white/[0.03] border border-white/[0.08] font-mono text-xs text-zinc-300">Eval Harnesses</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 Key Capabilities -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="braces" class="w-4 h-4 text-emerald-300/80"></i>
+                                <span>Pydantic-Constrained Outputs</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Enforcing strict JSON schemas and automated retry-with-feedback loops so LLM responses integrate safely into SQL databases.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="search" class="w-4 h-4 text-blue-300/80"></i>
+                                <span>Hybrid Semantic + Lexical RAG</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Combining dense vector embeddings with BM25 keyword search and cross-encoder reranking for high-precision document retrieval.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="cpu" class="w-4 h-4 text-champagne-300/85"></i>
+                                <span>Token & Latency Optimization</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Semantic caching, model routing (small models for classification, frontier models for reasoning), and async batching.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/[0.015] border border-white/[0.06] space-y-2">
+                            <div class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                                <i data-lucide="check-square" class="w-4 h-4 text-emerald-300/80"></i>
+                                <span>Automated Regression Evals</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Deterministic benchmark datasets measuring extraction accuracy, hallucination rates, and cost per 1,000 requests before deployment.</p>
+                        </div>
+                    </div>
+
+                    <!-- Case Study -->
+                    <div class="p-6 rounded-xl bg-[#08090d] border border-white/[0.06] flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                        <div class="space-y-2 max-w-3xl">
+                            <div class="text-xs font-mono uppercase tracking-wider text-emerald-400/90">Production Case Study &mdash; Legal & Procurement Contract Extraction</div>
+                            <p class="text-sm text-zinc-300 leading-relaxed">
+                                An enterprise procurement platform automated the extraction of payment terms, SLA penalties, and renewal clauses from 12,000+ supplier PDF contracts using a schema-enforced Python extraction pipeline with automated confidence scoring and human review routing.
+                            </p>
+                        </div>
+                        <div class="shrink-0 font-mono text-left lg:text-right">
+                            <div class="text-2xl font-display font-bold text-zinc-100">98.7%</div>
+                            <div class="text-xs text-emerald-400/85">Field Extraction Precision</div>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CODE STANDARDS & REPOSITORY SANDBOX -->
+    <section id="architecture" class="py-24 md:py-32 border-t border-white/[0.06] subtle-grid">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="max-w-3xl mb-14 space-y-3">
+                <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-emerald-400/85">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/85"></span>
+                    <span>Engineering Standards</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-display font-bold text-zinc-100 tracking-tight">
+                    Production Code Architecture
+                </h2>
+                <p class="text-zinc-400 text-base leading-relaxed">
+                    Every repository delivered by Rixvol adheres to strict static typing, PEP 8 formatting, automated test coverage, and clean separation of concerns.
+                </p>
+            </div>
+
+            <div class="surface-card rounded-2xl overflow-hidden luxury-shadow">
+                <!-- Window Header -->
+                <div class="bg-[#08090d] px-5 py-3 border-b border-white/[0.07] flex items-center justify-between text-xs font-mono">
+                    <div class="flex items-center gap-2.5 text-zinc-300">
+                        <i data-lucide="folder" class="w-4 h-4 text-champagne-300/85"></i>
+                        <span>rixvol-enterprise-core / src /</span>
+                    </div>
+                    <div class="text-emerald-400/80 hidden sm:block">mypy --strict &bull; ruff check: passed</div>
+                </div>
+
+                <!-- Split Workspace -->
+                <div class="grid grid-cols-1 md:grid-cols-12 min-h-[430px]">
+                    
+                    <!-- File Explorer -->
+                    <div class="md:col-span-3 bg-[#08090e] border-r border-white/[0.07] p-4 text-xs font-mono space-y-1.5">
+                        <div class="text-[11px] uppercase tracking-wider text-zinc-500 px-2 pb-2">Modules</div>
+                        
+                        <button onclick="switchLabCode('etl')" id="labBtn-etl" class="lab-tab w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5 text-zinc-100 bg-white/[0.05] border border-amber-400/25">
+                            <i data-lucide="file-code" class="w-3.5 h-3.5 text-champagne-300"></i>
+                            <span>etl_stream.py</span>
+                        </button>
+                        <button onclick="switchLabCode('fastapi')" id="labBtn-fastapi" class="lab-tab w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5 text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.03]">
+                            <i data-lucide="file-code" class="w-3.5 h-3.5 text-emerald-400/80"></i>
+                            <span>api_gateway.py</span>
+                        </button>
+                        <button onclick="switchLabCode('celery')" id="labBtn-celery" class="lab-tab w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5 text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.03]">
+                            <i data-lucide="file-code" class="w-3.5 h-3.5 text-blue-300/80"></i>
+                            <span>queue_worker.py</span>
+                        </button>
+                        <button onclick="switchLabCode('pydantic')" id="labBtn-pydantic" class="lab-tab w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5 text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.03]">
+                            <i data-lucide="file-code" class="w-3.5 h-3.5 text-indigo-300/80"></i>
+                            <span>contracts.py</span>
+                        </button>
+
+                        <div class="pt-6 px-2 text-[11px] text-zinc-500 space-y-2 border-t border-white/[0.06] mt-6">
+                            <div class="flex justify-between"><span>Type Safety</span><span class="text-champagne-300/90">Strict</span></div>
+                            <div class="flex justify-between"><span>Test Suite</span><span class="text-emerald-400/85">PyTest</span></div>
+                            <div class="flex justify-between"><span>Runtime</span><span class="text-zinc-300">3.12+</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Code Viewer -->
+                    <div class="md:col-span-9 bg-[#050507] p-6 sm:p-8 text-xs sm:text-[13px] font-mono leading-relaxed overflow-x-auto flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/[0.06] text-xs">
+                                <span id="labCodeFileTitle" class="text-zinc-200 font-medium">etl_stream.py &mdash; Asynchronous Streaming Ingestion</span>
+                                <span class="text-zinc-500">UTF-8</span>
+                            </div>
+
+                            <pre id="labCodeContent" class="text-zinc-300"><code><span class="text-zinc-600"># Asynchronous streaming ETL pipeline with circuit-breaker protection</span>
+<span class="text-blue-300/80">from</span> typing <span class="text-blue-300/80">import</span> AsyncGenerator
+<span class="text-blue-300/80">from</span> uuid <span class="text-blue-300/80">import</span> uuid4
+<span class="text-blue-300/80">import</span> httpx
+<span class="text-blue-300/80">from</span> pydantic <span class="text-blue-300/80">import</span> BaseModel
+
+<span class="text-blue-300/80">class</span> <span class="text-champagne-300 font-semibold">EventBatch</span>(BaseModel):
+    batch_id: str
+    records: list[dict]
+
+<span class="text-blue-300/90">@circuit_breaker</span>(max_failures=<span class="text-champagne-300">3</span>, reset_timeout=<span class="text-champagne-300">30</span>)
+<span class="text-blue-300/80">async def</span> <span class="text-zinc-100 font-semibold">stream_etl_pipeline</span>(feed_url: <span class="text-emerald-300/80">str</span>) -> AsyncGenerator[EventBatch, <span class="text-champagne-300">None</span>]:
+    <span class="text-blue-300/80">async with</span> httpx.AsyncClient(http2=<span class="text-champagne-300">True</span>, timeout=<span class="text-champagne-300">10.0</span>) <span class="text-blue-300/80">as</span> client:
+        <span class="text-blue-300/80">async for</span> chunk <span class="text-blue-300/80">in</span> client.aiter_lines(feed_url):
+            cleaned = <span class="text-blue-300/80">await</span> DataTransformer.normalize(chunk)
+            <span class="text-blue-300/80">await</span> PostgresWarehouse.bulk_copy(cleaned)
+            <span class="text-blue-300/80">yield</span> EventBatch(batch_id=uuid4().hex, records=cleaned)</code></pre>
+                        </div>
+
+                        <div class="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                            <span class="text-zinc-500">Containerized &bull; Ready for CI/CD deployment</span>
+                            <button onclick="executeCodeLabSim(event)" class="px-3.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.09] text-zinc-200 flex items-center gap-2 transition-colors">
+                                <i data-lucide="play" class="w-3 h-3 text-emerald-400/85"></i>
+                                <span>Run Unit Check</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OPERATIONAL EFFICIENCY MODEL (ROI CALCULATOR) -->
+    <section id="roi-calculator" class="py-24 md:py-32 border-t border-white/[0.06] bg-[#07080c]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-champagne-300/90">
+                        <span class="w-1.5 h-1.5 rounded-full bg-champagne-400"></span>
+                        <span>Operational Economics</span>
+                    </div>
+
+                    <h2 class="text-3xl sm:text-4xl font-display font-bold text-zinc-100 tracking-tight leading-tight">
+                        Quantify Engineering & Operational Capacity Recovered
+                    </h2>
+
+                    <p class="text-zinc-400 text-base leading-relaxed">
+                        Model the monthly hours and operational capital reclaimed when replacing manual data synchronization, reporting, and repetitive workflows with deterministic Python automation.
+                    </p>
+
+                    <div class="space-y-3 pt-2 text-sm text-zinc-300">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-emerald-400/80 shrink-0"></i>
+                            <span>Eliminates over 90% of manual data-entry errors</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-champagne-300/85 shrink-0"></i>
+                            <span>Typical infrastructure payback within 60&ndash;75 days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculator Card -->
+                <div class="lg:col-span-7 surface-card rounded-2xl p-8 sm:p-10 luxury-shadow">
+                    <div class="space-y-8">
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-zinc-300">Team members performing manual workflows</span>
+                                <span id="calcTeamCount" class="font-mono text-champagne-300 font-semibold">6 specialists</span>
+                            </div>
+                            <input type="range" id="inputTeam" min="1" max="40" value="6" class="w-full">
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-zinc-300">Weekly repetitive hours per team member</span>
+                                <span id="calcHoursPerWeek" class="font-mono text-champagne-300 font-semibold">14 hrs / week</span>
+                            </div>
+                            <input type="range" id="inputHours" min="2" max="30" value="14" class="w-full">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-white/[0.07]">
+                            <div class="bg-[#050507] p-6 rounded-xl border border-white/[0.06]">
+                                <div class="text-xs font-mono uppercase tracking-wider text-zinc-500">Monthly Hours Reclaimed</div>
+                                <div id="calcHoursSaved" class="text-3xl font-display font-bold text-zinc-100 mt-2">307 hrs</div>
+                                <div class="text-xs text-blue-300/80 mt-1">Equivalent to ~1.9 FTE capacity</div>
+                            </div>
+                            <div class="bg-[#050507] p-6 rounded-xl border border-white/[0.06]">
+                                <div class="text-xs font-mono uppercase tracking-wider text-zinc-500">Estimated Monthly Savings</div>
+                                <div id="calcMoneySaved" class="text-3xl font-display font-bold text-emerald-400/90 mt-2">$10,745</div>
+                                <div class="text-xs text-zinc-400 mt-1">Benchmarked at $35/hr loaded cost</div>
+                            </div>
+                        </div>
+
+                        <a href="#consultation" class="block w-full py-3.5 text-center rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-sm transition-all">
+                            Contact Us &rarr;
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- INFRASTRUCTURE & TECHNOLOGY MATRIX -->
+    <section id="stack" class="py-24 border-t border-white/[0.06] bg-[#050507]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="max-w-2xl mb-14 space-y-3">
+                <div class="text-xs font-mono uppercase tracking-widest text-zinc-500">Production Ecosystem</div>
+                <h2 class="text-3xl font-display font-bold text-zinc-100 tracking-tight">Core Technology Stack</h2>
+                <p class="text-zinc-400 text-sm leading-relaxed">Battle-tested frameworks selected for strict type safety, predictable memory footprints, and horizontal scalability.</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-blue-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Python 3.12+</div>
+                    <div class="text-zinc-500 text-xs mt-1">AsyncIO Core Runtime</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-emerald-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">FastAPI</div>
+                    <div class="text-zinc-500 text-xs mt-1">ASGI Web Framework</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-amber-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Pydantic v2</div>
+                    <div class="text-zinc-500 text-xs mt-1">Schema Validation</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-blue-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Celery & Redis</div>
+                    <div class="text-zinc-500 text-xs mt-1">Task Orchestration</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-emerald-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">PostgreSQL</div>
+                    <div class="text-zinc-500 text-xs mt-1">AsyncPG & Partitioning</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-amber-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Docker & K8s</div>
+                    <div class="text-zinc-500 text-xs mt-1">Container Infrastructure</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-blue-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Playwright</div>
+                    <div class="text-zinc-500 text-xs mt-1">Browser Automation</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-emerald-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Polars & Pandas</div>
+                    <div class="text-zinc-500 text-xs mt-1">Vectorized Data ETL</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-amber-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Kafka / RabbitMQ</div>
+                    <div class="text-zinc-500 text-xs mt-1">Event Streaming</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-blue-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">SQLAlchemy 2.0</div>
+                    <div class="text-zinc-500 text-xs mt-1">Async ORM Layer</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-emerald-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">PyTest & Mypy</div>
+                    <div class="text-zinc-500 text-xs mt-1">Verification & Typing</div>
+                </div>
+                <div class="bg-[#090a0e] p-5 rounded-xl border border-white/[0.06] hover:border-amber-400/30 transition-colors">
+                    <div class="text-zinc-100 font-semibold text-sm">Grafana & Sentry</div>
+                    <div class="text-zinc-500 text-xs mt-1">Telemetry & Tracing</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT US & SCOPING FORM -->
+    <section id="consultation" class="py-24 md:py-32 border-t border-white/[0.06] bg-[#07080c]">
+        <div class="max-w-3xl mx-auto px-6 lg:px-8">
+            <div class="surface-card rounded-2xl p-8 sm:p-12 luxury-shadow">
+                
+                <div class="space-y-3 mb-10">
+                    <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-champagne-300/90">
+                        <span class="w-1.5 h-1.5 rounded-full bg-champagne-400"></span>
+                        <span>Direct Engineering Inquiry</span>
+                    </div>
+                    <h2 class="text-3xl font-display font-bold text-zinc-100 tracking-tight">
+                        Contact Us
+                    </h2>
+                    <p class="text-zinc-400 text-sm leading-relaxed">
+                        Outline your current bottlenecks, integration requirements, or target system architecture. A senior engineer will review your brief and respond within one business day.
+                    </p>
+                </div>
+
+                <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-6 text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-300 mb-2">Full Name</label>
+                            <input type="text" required placeholder="Alex Mercer" class="w-full bg-[#050507] border border-white/[0.08] rounded-lg px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-400/50 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-300 mb-2">Work Email</label>
+                            <input type="email" required placeholder="alex@company.com" class="w-full bg-[#050507] border border-white/[0.08] rounded-lg px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-400/50 transition-colors">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-300 mb-2">Primary Focus Area</label>
+                        <select class="w-full bg-[#050507] border border-white/[0.08] rounded-lg px-4 py-3 text-zinc-200 focus:outline-none focus:border-amber-400/50 transition-colors">
+                            <option>Enterprise Python Automation & ETL Pipelines</option>
+                            <option>Custom API Development & Bidirectional Integrations</option>
+                            <option>Web Data Extraction & Scraping Infrastructure</option>
+                            <option>Business Process & Workflow Orchestration</option>
+                            <option>High-Load Backend Architecture (FastAPI / PostgreSQL)</option>
+                            <option>Production LLM & Structured Extraction Pipelines</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-300 mb-2">System Requirements & Scope</label>
+                        <textarea rows="4" required placeholder="Describe your data sources, target volume, third-party APIs, or timeline objectives..." class="w-full bg-[#050507] border border-white/[0.08] rounded-lg p-4 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-400/50 transition-colors"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-sm transition-all">
+                        Contact Us &rarr;
+                    </button>
+                </form>
+
+                <div id="contactSuccess" class="hidden text-center py-12 space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-400/25 text-emerald-400/90 flex items-center justify-center mx-auto">
+                        <i data-lucide="check" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-display font-semibold text-zinc-100">Message Received</h3>
+                    <p class="text-zinc-400 text-sm max-w-md mx-auto">Thank you. Our architecture team has logged your inquiry and will follow up with a structured scoping proposal shortly.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/[0.06] bg-[#050507] py-12 text-zinc-500 text-xs">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <span class="font-display font-bold text-zinc-100 tracking-wider">RIXVOL</span>
+                <span class="text-zinc-700">|</span>
+                <span>Python Systems & API Architecture</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-6">
+                <a href="#solutions" class="hover:text-zinc-200 transition-colors">Solutions</a>
+                <a href="#architecture" class="hover:text-zinc-200 transition-colors">Code Standards</a>
+                <a href="#roi-calculator" class="hover:text-zinc-200 transition-colors">Efficiency Model</a>
+                <a href="#stack" class="hover:text-zinc-200 transition-colors">Infrastructure</a>
+                <a href="#consultation" class="hover:text-champagne-300 transition-colors">Contact Us</a>
+            </div>
+
+            <div>
+                &copy; 2026 Rixvol. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // Mobile Navigation
+        const mobileToggle = document.getElementById('mobileToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Solution Category Filter
+        function filterSolutions(category) {
+            const buttons = document.querySelectorAll('.sol-filter-btn');
+            buttons.forEach(btn => {
+                if (btn.dataset.filter === category) {
+                    btn.className = 'sol-filter-btn px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-100 text-zinc-950 transition-all';
+                } else {
+                    btn.className = 'sol-filter-btn px-4 py-2 rounded-lg text-xs font-medium bg-white/[0.025] text-zinc-400 hover:text-zinc-100 border border-white/[0.07] transition-all';
+                }
+            });
+
+            const cards = document.querySelectorAll('.solution-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Hero Verification Run
+        function triggerHeroSimulation() {
+            const msg = document.getElementById('heroRunMsg');
+            msg.classList.remove('hidden');
+            msg.textContent = "Verifying...";
+            setTimeout(() => {
+                msg.textContent = "Verified in 18.4ms";
+            }, 300);
+        }
+
+        // Product 01 Log Simulator
+        function runAutoPipelineSim() {
+            const logs = document.getElementById('autoLogs');
+            const now = new Date().toTimeString().split(' ')[0];
+            logs.innerHTML += `<div class="text-zinc-200">[${now}] Dispatched manual batch job (pid #9182)</div>`;
+            logs.innerHTML += `<div class="text-emerald-400/85">[${now}] Reconciled 840 records in 24ms · 0 errors</div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Product 02 Schema Validation
+        function testApiValidation() {
+            const tag = document.getElementById('validationTag');
+            tag.textContent = "Validating...";
+            tag.className = "text-champagne-300";
+            setTimeout(() => {
+                tag.textContent = "Valid (0.02ms)";
+                tag.className = "text-emerald-400/90 font-semibold";
+            }, 250);
+        }
+
+        // Product 03 Crawler Burst Simulator
+        function simulateCrawlerBurst() {
+            const workers = document.getElementById('crawlerWorkers');
+            const speed = document.getElementById('crawlerSpeed');
+            const status = document.getElementById('crawlerStatusText');
+            workers.textContent = "256 Nodes";
+            speed.textContent = "790 pages/s";
+            status.innerHTML = `<span class="text-emerald-400/85">&gt; Burst complete: 18,400 SKUs indexed · 0 blocks</span>`;
+            setTimeout(() => {
+                workers.textContent = "128 Nodes";
+                speed.textContent = "410 pages/s";
+            }, 2200);
+        }
+
+        // Product 04 Workflow Stepper
+        function runWorkflowStepper() {
+            const badge = document.getElementById('wfStatusBadge');
+            const s1 = document.getElementById('wfStep1');
+            const s2 = document.getElementById('wfStep2');
+            const s3 = document.getElementById('wfStep3');
+
+            badge.textContent = "RUNNING";
+            badge.className = "text-blue-300";
+
+            s1.innerHTML = `<span>1. CRM Deal Closed Trigger</span><span class="text-emerald-400/85">DONE (4ms)</span>`;
+            setTimeout(() => {
+                s2.innerHTML = `<span>2. Generate NDA & Provision Tenant</span><span class="text-emerald-400/85">DONE (38ms)</span>`;
+            }, 250);
+            setTimeout(() => {
+                s3.innerHTML = `<span>3. Issue Stripe Invoice & Notify Slack</span><span class="text-emerald-400/85">DONE (19ms)</span>`;
+                badge.textContent = "COMPLETED";
+                badge.className = "text-emerald-400/85";
+            }, 500);
+        }
+
+        // Product 05 Endpoint Test
+        function sendMockApiRequest() {
+            const box = document.getElementById('swaggerResponse');
+            const latency = (Math.random() * 12 + 21).toFixed(1);
+            const id = Math.random().toString(36).substring(2, 10);
+            box.innerHTML = `
+                <div class="text-zinc-500 text-[11px] mb-1">Response Payload (${latency}ms):</div>
+                <div>{</div>
+                <div class="pl-4">"settlement_id": <span class="text-emerald-300/80">"stl_${id}"</span>,</div>
+                <div class="pl-4">"status": <span class="text-emerald-300/80">"COMMITTED"</span>,</div>
+                <div class="pl-4">"execution_ms": <span class="text-champagne-300">${latency}</span></div>
+                <div>}</div>
+            `;
+        }
+
+        // Code Standards Switcher
+        const codeLabRepo = {
+            etl: {
+                title: "etl_stream.py — Asynchronous Streaming Ingestion",
+                code: `<span class="text-zinc-600"># Asynchronous streaming ETL pipeline with circuit-breaker protection</span>
+<span class="text-blue-300/80">from</span> typing <span class="text-blue-300/80">import</span> AsyncGenerator
+<span class="text-blue-300/80">from</span> uuid <span class="text-blue-300/80">import</span> uuid4
+<span class="text-blue-300/80">import</span> httpx
+<span class="text-blue-300/80">from</span> pydantic <span class="text-blue-300/80">import</span> BaseModel
+
+<span class="text-blue-300/80">class</span> <span class="text-champagne-300 font-semibold">EventBatch</span>(BaseModel):
+    batch_id: str
+    records: list[dict]
+
+<span class="text-blue-300/90">@circuit_breaker</span>(max_failures=<span class="text-champagne-300">3</span>, reset_timeout=<span class="text-champagne-300">30</span>)
+<span class="text-blue-300/80">async def</span> <span class="text-zinc-100 font-semibold">stream_etl_pipeline</span>(feed_url: <span class="text-emerald-300/80">str</span>) -> AsyncGenerator[EventBatch, <span class="text-champagne-300">None</span>]:
+    <span class="text-blue-300/80">async with</span> httpx.AsyncClient(http2=<span class="text-champagne-300">True</span>, timeout=<span class="text-champagne-300">10.0</span>) <span class="text-blue-300/80">as</span> client:
+        <span class="text-blue-300/80">async for</span> chunk <span class="text-blue-300/80">in</span> client.aiter_lines(feed_url):
+            cleaned = <span class="text-blue-300/80">await</span> DataTransformer.normalize(chunk)
+            <span class="text-blue-300/80">await</span> PostgresWarehouse.bulk_copy(cleaned)
+            <span class="text-blue-300/80">yield</span> EventBatch(batch_id=uuid4().hex, records=cleaned)`
+            },
+            fastapi: {
+                title: "api_gateway.py — Non-Blocking Transactional Endpoint",
+                code: `<span class="text-zinc-600"># High-concurrency FastAPI route with transactional database session</span>
+<span class="text-blue-300/80">from</span> fastapi <span class="text-blue-300/80">import</span> FastAPI, Depends, status
+<span class="text-blue-300/80">from</span> sqlalchemy.ext.asyncio <span class="text-blue-300/80">import</span> AsyncSession
+<span class="text-blue-300/80">from</span> core.database <span class="text-blue-300/80">import</span> get_async_session
+
+app = FastAPI(title=<span class="text-emerald-300/80">"Rixvol Core API"</span>, version=<span class="text-emerald-300/80">"4.2.0"</span>)
+
+<span class="text-blue-300/90">@app.post</span>(<span class="text-emerald-300/80">"/v2/ledger/commit"</span>, status_code=status.HTTP_200_OK)
+<span class="text-blue-300/80">async def</span> <span class="text-zinc-100 font-semibold">commit_ledger_entry</span>(payload: LedgerRequest, db: AsyncSession = Depends(get_async_session)):
+    <span class="text-blue-300/80">async with</span> db.begin():
+        record = <span class="text-blue-300/80">await</span> LedgerService.execute_atomic(payload, db)
+    <span class="text-blue-300/80">return</span> {<span class="text-emerald-300/80">"entry_id"</span>: record.id, <span class="text-emerald-300/80">"state"</span>: <span class="text-emerald-300/80">"COMMITTED"</span>}`
+            },
+            celery: {
+                title: "queue_worker.py — Idempotent Distributed Task Worker",
+                code: `<span class="text-zinc-600"># Distributed Celery worker with exponential backoff and dead-letter routing</span>
+<span class="text-blue-300/80">from</span> celery <span class="text-blue-300/80">import</span> Celery
+<span class="text-blue-300/80">from</span> services.reconciliation <span class="text-blue-300/80">import</span> LedgerReconciler
+
+worker = Celery(<span class="text-emerald-300/80">"rixvol_workers"</span>, broker=<span class="text-emerald-300/80">"redis://cluster:6379/0"</span>)
+
+<span class="text-blue-300/90">@worker.task</span>(bind=<span class="text-champagne-300">True</span>, max_retries=<span class="text-champagne-300">5</span>, retry_backoff=<span class="text-champagne-300">True</span>)
+<span class="text-blue-300/80">def</span> <span class="text-zinc-100 font-semibold">reconcile_settlement_batch</span>(self, batch_uri: <span class="text-emerald-300/80">str</span>) -> <span class="text-emerald-300/80">dict</span>:
+    <span class="text-blue-300/80">try</span>:
+        summary = LedgerReconciler.process(batch_uri)
+        <span class="text-blue-300/80">return</span> {<span class="text-emerald-300/80">"processed"</span>: summary.count, <span class="text-emerald-300/80">"discrepancies"</span>: <span class="text-champagne-300">0</span>}
+    <span class="text-blue-300/80">except</span> TransientNetworkError <span class="text-blue-300/80">as</span> exc:
+        <span class="text-blue-300/80">raise</span> self.retry(exc=exc)`
+            },
+            pydantic: {
+                title: "contracts.py — Immutable Domain Data Contracts",
+                code: `<span class="text-zinc-600"># Strict Pydantic v2 validation boundary preventing schema drift</span>
+<span class="text-blue-300/80">from</span> uuid <span class="text-blue-300/80">import</span> UUID
+<span class="text-blue-300/80">from</span> pydantic <span class="text-blue-300/80">import</span> BaseModel, ConfigDict, Field, PositiveInt
+
+<span class="text-blue-300/80">class</span> <span class="text-champagne-300 font-semibold">SettlementContract</span>(BaseModel):
+    model_config = ConfigDict(extra=<span class="text-emerald-300/80">"forbid"</span>, frozen=<span class="text-champagne-300">True</span>)
+
+    transaction_id: UUID
+    amount_cents: PositiveInt = Field(description=<span class="text-emerald-300/80">"Minor currency units"</span>)
+    provider: str = Field(pattern=<span class="text-emerald-300/80">"^(stripe|adyen|sepa)$"</span>)
+    verified: bool = <span class="text-champagne-300">False</span>`
+            }
+        };
+
+        function switchLabCode(tabKey) {
+            document.querySelectorAll('.lab-tab').forEach(btn => {
+                btn.className = 'lab-tab w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5 text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.03]';
+            });
+            const activeBtn = document.getElementById(`labBtn-${tabKey}`);
+            activeBtn.className = 'lab-tab w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2.5 text-zinc-100 bg-white/[0.05] border border-amber-400/25';
+
+            const data = codeLabRepo[tabKey];
+            document.getElementById('labCodeFileTitle').textContent = data.title;
+            document.getElementById('labCodeContent').innerHTML = `<code>${data.code}</code>`;
+        }
+
+        function executeCodeLabSim(e) {
+            const btn = e.currentTarget;
+            btn.innerHTML = `<span>Running suite...</span>`;
+            setTimeout(() => {
+                btn.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-400/85"></i><span>14/14 Tests Passed (22ms)</span>`;
+                lucide.createIcons();
+            }, 350);
+        }
+
+        // ROI Calculator
+        const inputTeam = document.getElementById('inputTeam');
+        const inputHours = document.getElementById('inputHours');
+        const calcTeamCount = document.getElementById('calcTeamCount');
+        const calcHoursPerWeek = document.getElementById('calcHoursPerWeek');
+        const calcHoursSaved = document.getElementById('calcHoursSaved');
+        const calcMoneySaved = document.getElementById('calcMoneySaved');
+
+        function recalcROI() {
+            const team = parseInt(inputTeam.value);
+            const hours = parseInt(inputHours.value);
+
+            calcTeamCount.textContent = `${team} specialist${team > 1 ? 's' : ''}`;
+            calcHoursPerWeek.textContent = `${hours} hrs / week`;
+
+            const monthlyHours = Math.round(team * hours * 4.3 * 0.85);
+            const monthlyDollars = monthlyHours * 35;
+
+            calcHoursSaved.textContent = `${monthlyHours.toLocaleString()} hrs`;
+            calcMoneySaved.textContent = `$${monthlyDollars.toLocaleString()}`;
+        }
+
+        inputTeam.addEventListener('input', recalcROI);
+        inputHours.addEventListener('input', recalcROI);
+
+        // Form Submission
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            document.getElementById('contactForm').classList.add('hidden');
+            document.getElementById('contactSuccess').classList.remove('hidden');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
