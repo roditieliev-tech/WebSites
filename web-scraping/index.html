@@ -1,453 +1,1358 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rixvol | Enterprise Web Scraping & Data Extraction</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        obsidian: {
-                            950: '#08090C',
-                            900: '#0D0F14',
-                            850: '#12151C',
-                            800: '#171B24',
-                            700: '#222733'
-                        },
-                        champagne: {
-                            300: '#DFC7A7',
-                            400: '#C8A97E',
-                            500: '#B08F63'
-                        },
-                        slatepro: {
-                            300: '#CBD5E1',
-                            400: '#94A3B8',
-                            500: '#64748B'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Chart.js for Price Intelligence Visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        html, body {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #08090C;
-            color: #E2E8F0;
-            -webkit-font-smoothing: antialiased;
-        }
-        h1, h2, h3, h4, .font-display {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .surface-card {
-            background-color: #0D0F14;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            transition: border-color 0.25s ease;
-        }
-        .surface-card:hover {
-            border-color: rgba(200, 169, 126, 0.28);
-        }
-        .surface-elevated {
-            background-color: #12151C;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .subtle-grid {
-            background-size: 48px 48px;
-            background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        }
-        @media (min-width: 768px) {
-            .subtle-grid {
-                background-size: 64px 64px;
-            }
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #08090C;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #222733;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #333A4B;
-        }
-    </style>
-</head>
-<body class="bg-obsidian-950 text-slate-200 selection:bg-champagne-400 selection:text-obsidian-950">
+<title>Rixvol</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
-    <!-- Executive Single-Row Navigation Header -->
-    <header class="sticky top-0 z-50 bg-obsidian-950/90 backdrop-blur-md border-b border-white/[0.06]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-6">
-            <!-- Brand Identity -->
-            <a href="#" class="flex items-center gap-2.5 sm:gap-3.5 min-w-0 group">
-                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-obsidian-850 border border-champagne-400/40 group-hover:border-champagne-400/80 flex items-center justify-center shrink-0 transition-colors">
-                    <span class="font-display font-bold text-champagne-400 text-base sm:text-lg tracking-tight">R</span>
-                </div>
-                <div class="flex flex-col min-w-0">
-                    <span class="font-display text-base sm:text-lg font-semibold tracking-tight text-white leading-none">Rixvol</span>
-                    <span class="text-[9px] sm:text-[10px] font-mono tracking-[0.11em] sm:tracking-[0.14em] uppercase text-slatepro-400 truncate mt-1 sm:mt-1.5">
-                        Web Scraping &amp; Data Extraction
-                    </span>
-                </div>
-            </a>
+<style>
+/* Dark-first design — obsidian + champagne palette, green logo accent */
+:root {
+  --bg: #07080b;
+  --bg-raised: #0c0e13;
+  --bg-elevated: #11141b;
+  --bg-muted: #191d27;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(200,169,126,0.25);
+  --fg: #e2e8f0;
+  --fg-muted: #94a3b8;
+  --fg-dim: #64748b;
+  --accent: #c8a97e;
+  --accent-light: #dfc7a7;
+  --accent-soft: rgba(200,169,126,0.08);
+  --logo-green: #3fb950;
+  --logo-green-light: #56d364;
+  --white: #f8fafc;
+  color-scheme: dark;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
 
-            <!-- Desktop Executive Navigation -->
-            <nav class="hidden lg:flex items-center gap-8 text-[13px] font-medium text-slatepro-300">
-                <div class="relative" id="solutionsDropdownWrapper">
-                    <button
-                        type="button"
-                        id="solutionsMenuBtn"
-                        onclick="toggleSolutionsMenu()"
-                        aria-expanded="false"
-                        class="inline-flex items-center gap-1.5 py-2 text-slatepro-300 hover:text-white transition-colors whitespace-nowrap focus:outline-none"
-                    >
-                        <span>Solutions</span>
-                        <svg id="solutionsChevron" class="w-3.5 h-3.5 text-slatepro-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #07080b;
+    --bg-raised: #0c0e13;
+    --bg-elevated: #11141b;
+    --bg-muted: #191d27;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(200,169,126,0.25);
+    --fg: #e2e8f0;
+    --fg-muted: #94a3b8;
+    --fg-dim: #64748b;
+    --accent: #c8a97e;
+    --accent-light: #dfc7a7;
+    --accent-soft: rgba(200,169,126,0.08);
+    --logo-green: #3fb950;
+    --logo-green-light: #56d364;
+    --white: #f8fafc;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #07080b;
+  --bg-raised: #0c0e13;
+  --bg-elevated: #11141b;
+  --bg-muted: #191d27;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(200,169,126,0.25);
+  --fg: #e2e8f0;
+  --fg-muted: #94a3b8;
+  --fg-dim: #64748b;
+  --accent: #c8a97e;
+  --accent-light: #dfc7a7;
+  --accent-soft: rgba(200,169,126,0.08);
+  --logo-green: #3fb950;
+  --logo-green-light: #56d364;
+  --white: #f8fafc;
+  color-scheme: dark;
+}
 
-                    <!-- Clean Dropdown Panel -->
-                    <div
-                        id="solutionsDropdownPanel"
-                        class="hidden absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[620px] z-50"
-                    >
-                        <div class="rounded-xl bg-obsidian-900/95 backdrop-blur-xl border border-white/[0.09] shadow-2xl shadow-black/80 p-5">
-                            <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06]">
-                                <span class="text-[10px] font-mono uppercase tracking-[0.18em] text-champagne-400">
-                                    Data Acquisition &amp; Intelligence Suite
-                                </span>
-                                <a href="#products-overview" onclick="closeSolutionsMenu()" class="text-[11px] font-mono text-slatepro-400 hover:text-white transition-colors">
-                                    Overview →
-                                </a>
-                            </div>
+body {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <a href="#custom-python" onclick="closeSolutionsMenu()" class="p-3 rounded-lg hover:bg-obsidian-800/80 border border-transparent hover:border-white/[0.06] transition-all group block">
-                                    <span class="text-[13px] font-semibold text-white group-hover:text-champagne-300 transition-colors block">Custom Python Web Scraping</span>
-                                    <p class="text-[11px] text-slatepro-400 mt-1 leading-snug">Async headless clusters, TLS emulation &amp; internal API interception.</p>
-                                </a>
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: var(--bg);
+}
 
-                                <a href="#data-extraction" onclick="closeSolutionsMenu()" class="p-3 rounded-lg hover:bg-obsidian-800/80 border border-transparent hover:border-white/[0.06] transition-all group block">
-                                    <span class="text-[13px] font-semibold text-white group-hover:text-champagne-300 transition-colors block">Website Data Extraction</span>
-                                    <p class="text-[11px] text-slatepro-400 mt-1 leading-snug">DOM parsing, entity normalization &amp; Pydantic v2 schema gates.</p>
-                                </a>
+*, *::before, *::after { box-sizing: border-box; }
 
-                                <a href="#data-collection" onclick="closeSolutionsMenu()" class="p-3 rounded-lg hover:bg-obsidian-800/80 border border-transparent hover:border-white/[0.06] transition-all group block">
-                                    <span class="text-[13px] font-semibold text-white group-hover:text-champagne-300 transition-colors block">Automated Data Collection</span>
-                                    <p class="text-[11px] text-slatepro-400 mt-1 leading-snug">Managed scheduling, drift alerts &amp; direct warehouse ingestion.</p>
-                                </a>
+.display { font-family: 'Space Grotesk', system-ui, sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
 
-                                <a href="#price-monitoring" onclick="closeSolutionsMenu()" class="p-3 rounded-lg hover:bg-obsidian-800/80 border border-transparent hover:border-white/[0.06] transition-all group block">
-                                    <span class="text-[13px] font-semibold text-white group-hover:text-champagne-300 transition-colors block">E-commerce Price Monitoring</span>
-                                    <p class="text-[11px] text-slatepro-400 mt-1 leading-snug">Sub-hourly SKU surveillance, Buy-Box telemetry &amp; MAP auditing.</p>
-                                </a>
+h1, h2, h3, h4 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  text-wrap: balance;
+}
 
-                                <a href="#price-intelligence" onclick="closeSolutionsMenu()" class="p-3 rounded-lg hover:bg-obsidian-800/80 border border-transparent hover:border-white/[0.06] transition-all group block">
-                                    <span class="text-[13px] font-semibold text-white group-hover:text-champagne-300 transition-colors block">Competitor Price Intelligence</span>
-                                    <p class="text-[11px] text-slatepro-400 mt-1 leading-snug">Cross-catalog matching, elasticity curves &amp; repricing feeds.</p>
-                                </a>
+/* Grain texture overlay */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0.028;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
 
-                                <a href="#web-crawling" onclick="closeSolutionsMenu()" class="p-3 rounded-lg hover:bg-obsidian-800/80 border border-transparent hover:border-white/[0.06] transition-all group block">
-                                    <span class="text-[13px] font-semibold text-white group-hover:text-champagne-300 transition-colors block">Web Crawling &amp; Processing</span>
-                                    <p class="text-[11px] text-slatepro-400 mt-1 leading-snug">High-volume domain discovery &amp; distributed data lake ETL.</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-dim); }
 
-                <a href="#live-playground" class="py-2 hover:text-white transition-colors whitespace-nowrap">
-                    Live Inspector
-                </a>
-                <a href="#capacity-estimator" class="py-2 hover:text-white transition-colors whitespace-nowrap">
-                    Capacity Estimator
-                </a>
-                <a href="#governance-faq" class="py-2 hover:text-white transition-colors whitespace-nowrap">
-                    Governance &amp; FAQ
-                </a>
-            </nav>
+/* Layout containers */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
 
-            <!-- Right-Side Contact Us CTA & Mobile Toggle -->
-            <div class="flex items-center gap-3 shrink-0">
-                <a href="#sample-request" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-champagne-400 hover:bg-champagne-300 text-obsidian-950 font-semibold text-[13px] tracking-wide transition-colors whitespace-nowrap">
-                    Contact Us
-                </a>
+html, body { overflow-x: hidden; max-width: 100vw; }
 
-                <!-- Mobile Navigation Button -->
-                <button
-                    type="button"
-                    id="mobileMenuBtn"
-                    onclick="toggleMobileMenu()"
-                    aria-label="Toggle Navigation Menu"
-                    class="lg:hidden p-2 sm:p-2.5 rounded-lg bg-obsidian-900 border border-white/10 text-slatepro-300 hover:text-white transition-colors"
-                >
-                    <svg id="mobileMenuIconOpen" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    <svg id="mobileMenuIconClose" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+/* Card system */
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.3s ease;
+}
+.card:hover { border-color: var(--border-hover); }
+
+.card-inner {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+/* Entrance animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delay classes */
+.d1 { transition-delay: 0.08s; }
+.d2 { transition-delay: 0.16s; }
+.d3 { transition-delay: 0.24s; }
+.d4 { transition-delay: 0.32s; }
+.d5 { transition-delay: 0.4s; }
+.d6 { transition-delay: 0.48s; }
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  background: rgba(7, 8, 11, 0.88);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Logo */
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+.logo-link:hover .logo-wordmark { color: var(--white); }
+
+.logo-wordmark {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  transition: color 0.2s;
+}
+.logo-wordmark span { color: var(--fg-muted); }
+
+/* Navigation */
+.nav-desktop {
+  display: none;
+  align-items: center;
+  gap: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+@media (min-width: 1024px) {
+  .nav-desktop { display: flex; }
+}
+
+.nav-desktop a {
+  color: inherit;
+  text-decoration: none;
+  padding: 8px 0;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.nav-desktop a:hover { color: var(--white); }
+
+.nav-dropdown {
+  position: relative;
+}
+.nav-dropdown-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  color: var(--fg-muted);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+.nav-dropdown-btn:hover { color: var(--white); }
+
+.nav-dropdown-panel {
+  display: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 100%;
+  padding-top: 12px;
+  width: 580px;
+  z-index: 60;
+}
+.nav-dropdown-panel.open { display: block; }
+
+.dropdown-card {
+  background: rgba(12, 14, 19, 0.96);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+}
+.dropdown-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.dropdown-item {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.dropdown-item:hover {
+  background: var(--bg-muted);
+  border-color: var(--border);
+}
+.dropdown-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+  display: block;
+  transition: color 0.2s;
+}
+.dropdown-item:hover .dropdown-item-title { color: var(--accent-light); }
+.dropdown-item-desc {
+  font-size: 11px;
+  color: var(--fg-dim);
+  margin-top: 4px;
+  display: block;
+  line-height: 1.5;
+}
+
+/* CTA buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.25s;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  background: var(--accent-light);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(200,169,126,0.2);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  color: var(--white);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.btn-secondary:hover {
+  background: var(--bg-muted);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: var(--bg-muted);
+  color: var(--white);
+  font-weight: 500;
+  font-size: 12px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-ghost:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Mobile menu */
+.mobile-toggle {
+  display: flex;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.mobile-toggle:hover { color: var(--white); }
+@media (min-width: 1024px) { .mobile-toggle { display: none; } }
+
+.mobile-drawer {
+  display: none;
+  background: rgba(12, 14, 19, 0.98);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+}
+.mobile-drawer.open { display: block; }
+@media (min-width: 1024px) { .mobile-drawer { display: none !important; } }
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mobile-nav-links a {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.mobile-nav-links a:hover { background: var(--bg-muted); }
+
+/* Hero */
+.hero {
+  position: relative;
+  padding: 80px 0 100px;
+  margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+  padding-top: calc(env(safe-area-inset-top, 0px) + 80px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 768px) {
+  .hero { padding: 48px 0 64px; padding-top: calc(env(safe-area-inset-top, 0px) + 48px); }
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(160px);
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-glow-1 {
+  background: var(--accent);
+  top: -200px;
+  right: -100px;
+}
+.hero-glow-2 {
+  background: var(--logo-green);
+  bottom: -300px;
+  left: -200px;
+  opacity: 0.04;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-size: clamp(28px, 5.5vw, 60px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--white);
+  margin: 0 0 28px;
+  overflow-wrap: break-word;
+}
+
+.hero-desc {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  margin: 0 0 12px;
+  max-width: 640px;
+}
+@media (max-width: 640px) { .hero-desc { font-size: 15px; } }
+
+.hero-subdesc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--fg-dim);
+  margin: 0 0 40px;
+  max-width: 600px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Metrics strip */
+.metrics {
+  margin-top: 72px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+@media (max-width: 768px) {
+  .metrics { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
+@media (max-width: 480px) {
+  .metrics { grid-template-columns: 1fr; }
+}
+
+.metric-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--fg-dim);
+}
+.metric-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--white);
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.metric-value.accent { color: var(--accent); }
+.metric-note {
+  font-size: 12px;
+  color: var(--fg-dim);
+  margin-top: 4px;
+}
+
+/* Products index */
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 48px;
+}
+@media (min-width: 768px) {
+  .section-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+.section-title {
+  font-size: clamp(24px, 3.5vw, 34px);
+  font-weight: 600;
+  color: var(--white);
+  margin: 8px 0 0;
+  letter-spacing: -0.015em;
+}
+
+.section-aside {
+  font-size: 13px;
+  color: var(--fg-dim);
+  max-width: 380px;
+  line-height: 1.6;
+}
+
+/* Product index cards */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1024px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .product-grid { grid-template-columns: 1fr; }
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+.product-card .card { padding: 24px; height: 100%; display: flex; flex-direction: column; }
+
+.product-card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--fg-dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.product-card-arrow {
+  color: var(--fg-dim);
+  transition: color 0.2s;
+}
+.product-card:hover .product-card-arrow { color: var(--accent); }
+
+.product-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 8px;
+}
+
+.product-card p {
+  font-size: 13px;
+  color: var(--fg-dim);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+/* Product detail articles */
+.product-article {
+  scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 100px);
+}
+
+.article-header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+@media (min-width: 1024px) {
+  .article-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.article-title {
+  font-size: clamp(24px, 3.8vw, 38px);
+  font-weight: 600;
+  color: var(--white);
+  margin: 8px 0 0;
+  letter-spacing: -0.015em;
+}
+
+.article-desc {
+  font-size: 15px;
+  color: var(--fg-dim);
+  line-height: 1.65;
+  margin-top: 14px;
+  max-width: 640px;
+}
+
+.article-body {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .article-body { grid-template-columns: 7fr 5fr; }
+  .article-body.reverse { grid-template-columns: 5fr 7fr; }
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .feature-grid { grid-template-columns: 1fr; }
+}
+
+.feature-card {
+  padding: 20px;
+}
+.feature-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 8px;
+}
+.feature-card p {
+  font-size: 12px;
+  color: var(--fg-dim);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Use cases */
+.use-cases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .use-cases { grid-template-columns: 1fr; }
+}
+
+.use-case {
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+.use-case-label {
+  color: var(--accent);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Code block */
+.code-block {
+  overflow-x: auto;
+  min-width: 0;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  margin: 0;
+  white-space: pre;
+}
+.code-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.code-header-file { color: var(--fg-dim); }
+.code-header-lang { color: var(--accent); }
+
+/* Spec list */
+.spec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.spec-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+@media (min-width: 480px) {
+  .spec-row { flex-direction: row; justify-content: space-between; gap: 16px; }
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-label { color: var(--fg-dim); }
+.spec-value { color: var(--white); }
+.spec-value.accent { color: var(--accent); }
+
+/* Normalization table (desktop) */
+.norm-table {
+  width: 100%;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+.norm-table th {
+  padding: 14px 16px;
+  font-weight: 500;
+  color: var(--fg-dim);
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+}
+.norm-table th:last-child { color: var(--accent); }
+.norm-table td {
+  padding: 14px 16px;
+  color: var(--fg-muted);
+  border-bottom: 1px solid var(--border);
+}
+.norm-table tr:last-child td { border-bottom: none; }
+.norm-table td:last-child { color: var(--white); }
+
+/* Normalization cards (mobile) */
+.norm-cards { display: flex; flex-direction: column; gap: 12px; }
+.norm-card {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.norm-card-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--fg-dim);
+}
+.norm-card-label.accent { color: var(--accent); }
+.norm-card-value { color: var(--fg-muted); overflow-wrap: break-word; }
+.norm-card-value.white { color: var(--white); font-size: 10px; }
+
+/* DAG log */
+.dag-log {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.dag-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.dag-row:last-child { border-bottom: none; padding-bottom: 0; }
+@media (min-width: 640px) {
+  .dag-row { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 16px; }
+}
+.dag-time { color: var(--fg-dim); white-space: nowrap; flex-shrink: 0; }
+.dag-msg { color: var(--fg-muted); flex: 1; min-width: 0; }
+.dag-status { color: var(--white); flex-shrink: 0; }
+.dag-status.accent { color: var(--accent); }
+
+/* Tech tags */
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tech-tag {
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+
+/* Stat boxes */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 480px) {
+  .stat-grid { grid-template-columns: 1fr; }
+}
+.stat-box {
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.stat-box-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+.stat-box-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+  margin-top: 6px;
+}
+.stat-box-value.accent { color: var(--accent); }
+
+/* Chart section */
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+@media (min-width: 640px) { .chart-wrap { height: 280px; } }
+
+.chart-toggle {
+  display: flex;
+  gap: 8px;
+}
+.chart-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg-dim);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.chart-btn:hover { color: var(--white); }
+.chart-btn.active {
+  background: var(--white);
+  color: var(--bg);
+  border-color: var(--white);
+}
+
+/* Playground */
+.playground-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+@media (min-width: 480px) {
+  .playground-toggle { display: inline-grid; width: auto; }
+}
+
+.playground-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--fg-dim);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: center;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.playground-btn:hover { color: var(--white); }
+.playground-btn.active {
+  background: var(--white);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.playground-code {
+  padding: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+  overflow-x: auto;
+  max-height: 380px;
+  min-width: 0;
+}
+
+.playground-footer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-raised);
+  border-radius: 0 0 16px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+@media (max-width: 768px) {
+  .playground-footer { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Estimator */
+.range-input {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--bg-muted);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 3px solid var(--bg);
+  box-shadow: 0 2px 8px rgba(200,169,126,0.3);
+}
+.range-input::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 3px solid var(--bg);
+  box-shadow: 0 2px 8px rgba(200,169,126,0.3);
+}
+
+.select-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.select-input:focus { border-color: var(--accent); }
+
+/* FAQ */
+.faq-item {
+  padding: 24px;
+}
+.faq-item h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 10px;
+}
+.faq-item p {
+  font-size: 13px;
+  color: var(--fg-dim);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* Contact form */
+.form-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+  margin-bottom: 8px;
+}
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-input::placeholder { color: var(--fg-dim); }
+
+textarea.form-input { resize: vertical; min-height: 80px; }
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding-block: 48px;
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 768px) {
+  .footer-inner { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 12px;
+}
+.footer-links a {
+  color: var(--fg-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+
+/* Utility */
+.flex-center { display: flex; align-items: center; }
+.gap-sm { gap: 8px; }
+.gap-md { gap: 16px; }
+.mt-section { margin-top: 80px; }
+@media (max-width: 768px) { .mt-section { margin-top: 48px; } }
+
+.sub-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: 0s !important; transition-duration: 0s !important; }
+}
+</style>
+
+<div class="grain" style="overflow:hidden;width:100%">
+
+<!-- Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#" class="logo-link">
+      <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Rixvol logo">
+        <defs>
+          <linearGradient id="lg" x1="2" y1="4" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2ea043"/>
+            <stop offset="1" stop-color="#56d364"/>
+          </linearGradient>
+        </defs>
+        <path d="M4 32V6h10.5c2.3 0 4.3.5 5.8 1.5 1.5 1 2.5 2.5 2.7 4.3v.4c0 2-0.8 3.6-2.2 4.8-1 .8-2.2 1.3-3.6 1.5l7.4 10.2.3.3H20l-6.5-9.6H10V32H4zm6-14.5h4.5c1.3 0 2.3-.3 3-1 .7-.7 1.1-1.6 1.1-2.7 0-1-.4-1.9-1.1-2.5-.7-.7-1.7-1-3-1H10v7.2z" fill="url(#lg)"/>
+        <path d="M22.5 6L29 23.5 35.5 6h-3.2L29 15l-3.3-9h-3.2z" fill="url(#lg)" opacity="0.85"/>
+      </svg>
+      <span class="logo-wordmark">Rix<span>vol</span></span>
+    </a>
+
+    <nav class="nav-desktop">
+      <div class="nav-dropdown" id="solWrap">
+        <button type="button" class="nav-dropdown-btn" id="solBtn" aria-expanded="false">
+          Solutions
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="solChevron" style="transition:transform 0.2s"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="nav-dropdown-panel" id="solPanel">
+          <div class="dropdown-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--border)">
+              <span class="mono" style="font-size:10px;text-transform:uppercase;letter-spacing:0.16em;color:var(--accent)">Data Acquisition Suite</span>
+              <a href="#products-overview" style="font-size:11px;color:var(--fg-dim);text-decoration:none;font-family:'JetBrains Mono',monospace" class="sol-close">Overview &rarr;</a>
             </div>
+            <div class="dropdown-grid">
+              <a href="#custom-python" class="dropdown-item sol-close"><span class="dropdown-item-title">Custom Python Scraping</span><span class="dropdown-item-desc">Async headless clusters, TLS emulation &amp; API interception.</span></a>
+              <a href="#data-extraction" class="dropdown-item sol-close"><span class="dropdown-item-title">Data Extraction</span><span class="dropdown-item-desc">DOM parsing, normalization &amp; schema validation.</span></a>
+              <a href="#data-collection" class="dropdown-item sol-close"><span class="dropdown-item-title">Automated Collection</span><span class="dropdown-item-desc">Managed scheduling, drift alerts &amp; warehouse delivery.</span></a>
+              <a href="#price-monitoring" class="dropdown-item sol-close"><span class="dropdown-item-title">Price Monitoring</span><span class="dropdown-item-desc">Sub-hourly SKU surveillance &amp; MAP auditing.</span></a>
+              <a href="#price-intelligence" class="dropdown-item sol-close"><span class="dropdown-item-title">Price Intelligence</span><span class="dropdown-item-desc">Cross-catalog matching &amp; repricing signals.</span></a>
+              <a href="#web-crawling" class="dropdown-item sol-close"><span class="dropdown-item-title">Web Crawling</span><span class="dropdown-item-desc">High-volume discovery &amp; data lake ETL.</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="#live-playground">Live Inspector</a>
+      <a href="#capacity-estimator">Capacity Estimator</a>
+      <a href="#governance-faq">FAQ</a>
+    </nav>
+
+    <div class="flex-center gap-sm">
+      <a href="#sample-request" class="btn-primary" style="display:none;padding:10px 22px;font-size:13px" id="headerCta">Contact Us</a>
+      <button type="button" class="mobile-toggle" id="mobBtn" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" id="mobOpen"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" id="mobClose" hidden><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-drawer" id="mobDrawer">
+    <div class="container">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.16em;color:var(--accent);margin-bottom:12px">Solutions</div>
+      <div class="mobile-nav-links">
+        <a href="#custom-python" class="mob-close">Custom Python Scraping</a>
+        <a href="#data-extraction" class="mob-close">Data Extraction</a>
+        <a href="#data-collection" class="mob-close">Automated Collection</a>
+        <a href="#price-monitoring" class="mob-close">Price Monitoring</a>
+        <a href="#price-intelligence" class="mob-close">Price Intelligence</a>
+        <a href="#web-crawling" class="mob-close">Web Crawling</a>
+      </div>
+      <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px">
+        <div class="mobile-nav-links">
+          <a href="#live-playground" class="mob-close">Live Inspector</a>
+          <a href="#capacity-estimator" class="mob-close">Capacity Estimator</a>
+          <a href="#governance-faq" class="mob-close">FAQ</a>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <a href="#sample-request" class="btn-primary mob-close" style="width:100%;text-align:center">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow hero-glow-1"></div>
+  <div class="hero-glow hero-glow-2"></div>
+  <div class="container">
+    <div class="hero-content">
+      <p class="hero-eyebrow reveal">Enterprise Web Scraping &amp; Data Extraction</p>
+      <h1 class="reveal d1">Industrial-Grade Data Extraction. Built for Scale.</h1>
+      <p class="hero-desc reveal d2">We engineer, deploy, and operate dedicated scraping pipelines and high-precision data extraction systems for investment funds, global retailers, and enterprise analytics teams.</p>
+      <p class="hero-subdesc reveal d3">From dynamic JavaScript SPAs and TLS-protected storefronts to internal GraphQL endpoints &mdash; our infrastructure parses complex DOM trees, standardizes entities, and delivers schema-validated datasets directly into Snowflake, BigQuery, PostgreSQL, or AWS S3.</p>
+      <div class="hero-actions reveal d4">
+        <a href="#products-overview" class="btn-primary">Explore Capabilities</a>
+        <a href="#sample-request" class="btn-secondary">Schedule Scoping Call</a>
+      </div>
+    </div>
+
+    <div class="metrics reveal d5">
+      <div>
+        <div class="metric-label">Daily Throughput</div>
+        <div class="metric-value">25M+ Pages</div>
+        <div class="metric-note">Sustained extraction volume</div>
+      </div>
+      <div>
+        <div class="metric-label">Network Footprint</div>
+        <div class="metric-value">115M+ IPs</div>
+        <div class="metric-note">Geo-targeted residential &amp; ISP nodes</div>
+      </div>
+      <div>
+        <div class="metric-label">Delivery Reliability</div>
+        <div class="metric-value accent">99.98% SLA</div>
+        <div class="metric-note">Automated failover &amp; schema checks</div>
+      </div>
+      <div>
+        <div class="metric-label">Data Integrity</div>
+        <div class="metric-value">Zero-Loss ETL</div>
+        <div class="metric-note">Strict typed validation prior to sink</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Products Overview -->
+<section id="products-overview" style="padding-block:80px;background:var(--bg-raised);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="section-header reveal">
+      <div>
+        <span class="section-eyebrow">Platform Architecture</span>
+        <h2 class="section-title">Specialized Data Acquisition Solutions</h2>
+      </div>
+      <p class="section-aside">Modular engineering capabilities tailored to isolated extraction tasks or unified enterprise intelligence ecosystems.</p>
+    </div>
+
+    <div class="product-grid">
+      <a href="#custom-python" class="product-card reveal d1">
+        <div class="card">
+          <div class="product-card-tag"><span>ACQUISITION</span><span class="product-card-arrow">&rarr;</span></div>
+          <h3>Custom Python Web Scraping</h3>
+          <p>Bespoke asynchronous crawlers for complex SPAs, protected targets, and internal API interception.</p>
+        </div>
+      </a>
+      <a href="#data-extraction" class="product-card reveal d2">
+        <div class="card">
+          <div class="product-card-tag"><span>NORMALIZATION</span><span class="product-card-arrow">&rarr;</span></div>
+          <h3>Website Data Extraction</h3>
+          <p>Deep DOM parsing, entity resolution, currency standardization, and strict schema enforcement.</p>
+        </div>
+      </a>
+      <a href="#data-collection" class="product-card reveal d3">
+        <div class="card">
+          <div class="product-card-tag"><span>ORCHESTRATION</span><span class="product-card-arrow">&rarr;</span></div>
+          <h3>Automated Data Collection</h3>
+          <p>Managed scheduling, layout drift monitoring, automated retries, and direct warehouse delivery.</p>
+        </div>
+      </a>
+      <a href="#price-monitoring" class="product-card reveal d4">
+        <div class="card">
+          <div class="product-card-tag"><span>SURVEILLANCE</span><span class="product-card-arrow">&rarr;</span></div>
+          <h3>E-commerce Price Monitoring</h3>
+          <p>Sub-hourly tracking of SKU pricing, stock depth, promotional mechanics, and MAP compliance.</p>
+        </div>
+      </a>
+      <a href="#price-intelligence" class="product-card reveal d5">
+        <div class="card">
+          <div class="product-card-tag"><span>ANALYTICS</span><span class="product-card-arrow">&rarr;</span></div>
+          <h3>Competitor Price Intelligence</h3>
+          <p>Cross-retailer catalog matching, historical elasticity curves, and algorithmic repricing signals.</p>
+        </div>
+      </a>
+      <a href="#web-crawling" class="product-card reveal d6">
+        <div class="card">
+          <div class="product-card-tag"><span>SCALE</span><span class="product-card-arrow">&rarr;</span></div>
+          <h3>Web Crawling &amp; Processing</h3>
+          <p>High-throughput domain discovery, deduplication pipelines, and petabyte-ready data lake ingestion.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Product Details -->
+<section style="padding-block:80px" class="container">
+  <div style="display:flex;flex-direction:column;gap:80px">
+
+    <!-- Custom Python Web Scraping -->
+    <article id="custom-python" class="product-article card reveal" style="padding:clamp(24px,4vw,48px)">
+      <div class="article-header">
+        <div>
+          <span class="section-eyebrow">Specialized Acquisition Engineering</span>
+          <h2 class="article-title">Custom Python Web Scraping</h2>
+          <p class="article-desc">Off-the-shelf scraping tools fail on modern JavaScript architectures and enterprise bot defenses. We engineer custom asynchronous Python spiders tailored to your target domains, extracting deeply nested records with deterministic accuracy.</p>
+        </div>
+        <a href="#sample-request" class="btn-ghost">Scope Custom Scraper &rarr;</a>
+      </div>
+
+      <div class="article-body">
+        <div style="display:flex;flex-direction:column;gap:24px;min-width:0">
+          <div>
+            <div class="sub-label" style="margin-bottom:16px">Core Capabilities</div>
+            <div class="feature-grid">
+              <div class="card-inner feature-card">
+                <h4>Headless Browser Clusters</h4>
+                <p>Distributed Playwright and Chromium instances executing complex user flows, shadow DOM traversal, canvas rendering, and authenticated multi-step sessions.</p>
+              </div>
+              <div class="card-inner feature-card">
+                <h4>Protocol &amp; TLS Emulation</h4>
+                <p>Custom HTTP/2 and HTTP/3 transport layers matching genuine browser JA3/JA4 fingerprints, WebGL parameters, and behavioral telemetry.</p>
+              </div>
+              <div class="card-inner feature-card">
+                <h4>Hidden API Interception</h4>
+                <p>Reverse-engineering internal GraphQL, gRPC, and REST XHR endpoints to pull structured payloads directly &mdash; up to 15x higher throughput than DOM rendering.</p>
+              </div>
+              <div class="card-inner feature-card">
+                <h4>Geo-Fenced Session Routing</h4>
+                <p>City- and ASN-level IP pinning across 195 countries to capture localized pricing, regional inventory, and currency-specific catalog variations.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="sub-label" style="margin-bottom:12px">Enterprise Use Cases</div>
+            <div class="use-cases">
+              <div class="use-case"><span class="use-case-label">Alternative Data</span>Real-time job postings, patent filings, and supply-chain manifests for quantitative funds.</div>
+              <div class="use-case"><span class="use-case-label">Real Estate &amp; Travel</span>Dynamic fare matrices, hospitality occupancy rates, and commercial property registries.</div>
+              <div class="use-case"><span class="use-case-label">B2B Directories</span>Verified corporate registries, licensing databases, and industrial supplier catalogs.</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Mobile Navigation Drawer -->
-        <div id="mobileDrawer" class="hidden lg:hidden bg-obsidian-900/98 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-6 py-5 space-y-5 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div>
-                <div class="text-[10px] font-mono uppercase tracking-[0.18em] text-champagne-400 mb-2.5">Solutions</div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
-                    <a href="#custom-python" onclick="closeMobileMenu()" class="p-3 rounded-lg bg-obsidian-950/80 border border-white/[0.05] text-slate-200 hover:text-champagne-300 transition-colors">Custom Python Web Scraping</a>
-                    <a href="#data-extraction" onclick="closeMobileMenu()" class="p-3 rounded-lg bg-obsidian-950/80 border border-white/[0.05] text-slate-200 hover:text-champagne-300 transition-colors">Website Data Extraction</a>
-                    <a href="#data-collection" onclick="closeMobileMenu()" class="p-3 rounded-lg bg-obsidian-950/80 border border-white/[0.05] text-slate-200 hover:text-champagne-300 transition-colors">Automated Data Collection</a>
-                    <a href="#price-monitoring" onclick="closeMobileMenu()" class="p-3 rounded-lg bg-obsidian-950/80 border border-white/[0.05] text-slate-200 hover:text-champagne-300 transition-colors">E-commerce Price Monitoring</a>
-                    <a href="#price-intelligence" onclick="closeMobileMenu()" class="p-3 rounded-lg bg-obsidian-950/80 border border-white/[0.05] text-slate-200 hover:text-champagne-300 transition-colors">Competitor Price Intelligence</a>
-                    <a href="#web-crawling" onclick="closeMobileMenu()" class="p-3 rounded-lg bg-obsidian-950/80 border border-white/[0.05] text-slate-200 hover:text-champagne-300 transition-colors">Web Crawling &amp; Processing</a>
-                </div>
+        <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+          <div class="card-inner" style="padding:20px">
+            <div class="code-header">
+              <span class="code-header-file">worker_pipeline.py</span>
+              <span class="code-header-lang">Python 3.12 / AsyncIO</span>
             </div>
-
-            <div class="pt-3.5 border-t border-white/[0.06] flex flex-col gap-3 text-sm font-medium text-slatepro-300">
-                <a href="#live-playground" onclick="closeMobileMenu()" class="hover:text-white py-0.5">Live Inspector</a>
-                <a href="#capacity-estimator" onclick="closeMobileMenu()" class="hover:text-white py-0.5">Capacity Estimator</a>
-                <a href="#governance-faq" onclick="closeMobileMenu()" class="hover:text-white py-0.5">Governance &amp; FAQ</a>
-            </div>
-
-            <div class="pt-1">
-                <a href="#sample-request" onclick="closeMobileMenu()" class="block w-full text-center px-5 py-3 rounded-lg bg-champagne-400 hover:bg-champagne-300 text-obsidian-950 font-semibold text-sm transition-colors">
-                    Contact Us
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <main>
-        <!-- Hero Section -->
-        <section class="relative pt-14 pb-16 sm:pt-24 sm:pb-28 md:pt-32 md:pb-36 subtle-grid border-b border-white/[0.06]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="max-w-4xl">
-                    <p class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em] text-champagne-400 mb-4 sm:mb-6">
-                        Enterprise Web Scraping &amp; Data Extraction Infrastructure
-                    </p>
-
-                    <h1 class="text-3xl sm:text-5xl lg:text-[62px] font-semibold tracking-tight text-white leading-[1.16] sm:leading-[1.12] mb-5 sm:mb-7">
-                        Industrial Web Scraping and Structured Data Extraction at Scale.
-                    </h1>
-
-                    <p class="text-base sm:text-xl text-slatepro-300 font-normal leading-relaxed mb-4 sm:mb-5 max-w-3xl">
-                        We engineer, deploy, and operate dedicated web scraping pipelines and high-precision data extraction systems for investment funds, global retailers, and enterprise analytics teams.
-                    </p>
-
-                    <p class="text-sm sm:text-base text-slatepro-400 font-normal leading-relaxed mb-8 sm:mb-10 max-w-3xl">
-                        Whether acquiring data from dynamic JavaScript-rendered SPAs, TLS-protected storefronts, or internal GraphQL and REST APIs, our extraction infrastructure parses complex DOM trees, standardizes entities, and delivers schema-validated datasets directly into Snowflake, BigQuery, PostgreSQL, or AWS S3 with guaranteed SLA reliability.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                        <a href="#products-overview" class="px-6 sm:px-7 py-3.5 rounded-lg bg-white hover:bg-slate-200 text-obsidian-950 font-semibold text-sm transition-colors text-center">
-                            Explore Core Capabilities
-                        </a>
-                        <a href="#sample-request" class="px-6 sm:px-7 py-3.5 rounded-lg bg-obsidian-850 hover:bg-obsidian-800 text-white font-medium text-sm border border-white/10 transition-colors text-center">
-                            Schedule Technical Scoping
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Key Infrastructure Metrics -->
-                <div class="mt-14 sm:mt-20 pt-8 sm:pt-12 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-                    <div class="p-4 sm:p-0 rounded-xl bg-obsidian-900/50 sm:bg-transparent border border-white/[0.05] sm:border-0">
-                        <div class="text-[11px] font-mono uppercase tracking-wider text-slatepro-500">Daily Throughput</div>
-                        <div class="text-2xl sm:text-3xl font-display font-semibold text-white mt-1.5 sm:mt-2">25M+ Pages</div>
-                        <div class="text-xs text-slatepro-400 mt-1">Sustained extraction volume</div>
-                    </div>
-                    <div class="p-4 sm:p-0 rounded-xl bg-obsidian-900/50 sm:bg-transparent border border-white/[0.05] sm:border-0">
-                        <div class="text-[11px] font-mono uppercase tracking-wider text-slatepro-500">Network Footprint</div>
-                        <div class="text-2xl sm:text-3xl font-display font-semibold text-white mt-1.5 sm:mt-2">115M+ IPs</div>
-                        <div class="text-xs text-slatepro-400 mt-1">Geo-targeted residential &amp; ISP nodes</div>
-                    </div>
-                    <div class="p-4 sm:p-0 rounded-xl bg-obsidian-900/50 sm:bg-transparent border border-white/[0.05] sm:border-0">
-                        <div class="text-[11px] font-mono uppercase tracking-wider text-slatepro-500">Delivery Reliability</div>
-                        <div class="text-2xl sm:text-3xl font-display font-semibold text-champagne-400 mt-1.5 sm:mt-2">99.98% SLA</div>
-                        <div class="text-xs text-slatepro-400 mt-1">Automated failover &amp; schema checks</div>
-                    </div>
-                    <div class="p-4 sm:p-0 rounded-xl bg-obsidian-900/50 sm:bg-transparent border border-white/[0.05] sm:border-0">
-                        <div class="text-[11px] font-mono uppercase tracking-wider text-slatepro-500">Data Integrity</div>
-                        <div class="text-2xl sm:text-3xl font-display font-semibold text-white mt-1.5 sm:mt-2">Zero-Loss ETL</div>
-                        <div class="text-xs text-slatepro-400 mt-1">Strict typed validation prior to sink</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Executive Product Index -->
-        <section id="products-overview" class="py-14 sm:py-20 border-b border-white/[0.06] bg-obsidian-900/50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-3 sm:gap-4">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.18em] text-champagne-400">Platform Architecture</span>
-                        <h2 class="text-2xl sm:text-3xl font-semibold text-white mt-1.5 sm:mt-2">Specialized Data Acquisition Solutions</h2>
-                    </div>
-                    <p class="text-xs sm:text-sm text-slatepro-400 max-w-md leading-relaxed">
-                        Modular engineering capabilities tailored to isolated extraction tasks or unified enterprise intelligence ecosystems.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                    <a href="#custom-python" class="surface-card rounded-xl p-5 sm:p-6 block group">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-slatepro-500 mb-3 sm:mb-4">
-                            <span>ACQUISITION</span>
-                            <span class="group-hover:text-champagne-400 transition-colors">View Spec →</span>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Custom Python Web Scraping</h3>
-                        <p class="text-xs sm:text-sm text-slatepro-400 leading-relaxed">Bespoke asynchronous crawlers engineered for complex SPAs, protected targets, and internal API interception.</p>
-                    </a>
-
-                    <a href="#data-extraction" class="surface-card rounded-xl p-5 sm:p-6 block group">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-slatepro-500 mb-3 sm:mb-4">
-                            <span>NORMALIZATION</span>
-                            <span class="group-hover:text-champagne-400 transition-colors">View Spec →</span>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Website Data Extraction</h3>
-                        <p class="text-xs sm:text-sm text-slatepro-400 leading-relaxed">Deep DOM parsing, entity resolution, currency/unit standardization, and strict schema enforcement.</p>
-                    </a>
-
-                    <a href="#data-collection" class="surface-card rounded-xl p-5 sm:p-6 block group">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-slatepro-500 mb-3 sm:mb-4">
-                            <span>ORCHESTRATION</span>
-                            <span class="group-hover:text-champagne-400 transition-colors">View Spec →</span>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Automated Data Collection System</h3>
-                        <p class="text-xs sm:text-sm text-slatepro-400 leading-relaxed">Managed scheduling, layout drift monitoring, automated retries, and direct cloud warehouse delivery.</p>
-                    </a>
-
-                    <a href="#price-monitoring" class="surface-card rounded-xl p-5 sm:p-6 block group">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-slatepro-500 mb-3 sm:mb-4">
-                            <span>SURVEILLANCE</span>
-                            <span class="group-hover:text-champagne-400 transition-colors">View Spec →</span>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-semibold text-white mb-2">E-commerce Price Monitoring</h3>
-                        <p class="text-xs sm:text-sm text-slatepro-400 leading-relaxed">Sub-hourly tracking of SKU pricing, stock depth, promotional mechanics, and MAP compliance.</p>
-                    </a>
-
-                    <a href="#price-intelligence" class="surface-card rounded-xl p-5 sm:p-6 block group">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-slatepro-500 mb-3 sm:mb-4">
-                            <span>ANALYTICS</span>
-                            <span class="group-hover:text-champagne-400 transition-colors">View Spec →</span>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Competitor Price Intelligence</h3>
-                        <p class="text-xs sm:text-sm text-slatepro-400 leading-relaxed">Cross-retailer catalog matching, historical elasticity curves, and algorithmic repricing signals.</p>
-                    </a>
-
-                    <a href="#web-crawling" class="surface-card rounded-xl p-5 sm:p-6 block group">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-slatepro-500 mb-3 sm:mb-4">
-                            <span>DISTRIBUTED SCALE</span>
-                            <span class="group-hover:text-champagne-400 transition-colors">View Spec →</span>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Web Crawling &amp; Data Processing</h3>
-                        <p class="text-xs sm:text-sm text-slatepro-400 leading-relaxed">High-throughput domain discovery, deduplication pipelines, and petabyte-ready data lake ingestion.</p>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- EXPANDED PRODUCT SUITE -->
-        <section class="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-24">
-
-            <!-- PRODUCT: Custom Python Web Scraping -->
-            <article id="custom-python" class="scroll-mt-24 sm:scroll-mt-28 surface-card rounded-2xl p-5 sm:p-8 lg:p-12">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-6 sm:pb-8 border-b border-white/[0.07]">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-champagne-400">Specialized Acquisition Engineering</span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mt-2">Custom Python Web Scraping</h2>
-                        <p class="text-slatepro-400 text-sm sm:text-base mt-3 max-w-3xl leading-relaxed">
-                            Off-the-shelf scraping tools fail on modern JavaScript architectures and enterprise bot defenses. We engineer custom asynchronous Python spiders tailored specifically to your target domains, extracting deeply nested records with deterministic accuracy.
-                        </p>
-                    </div>
-                    <a href="#sample-request" class="w-full sm:w-auto text-center shrink-0 px-5 py-2.5 rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-white/10 text-white text-xs font-medium transition-colors">
-                        Scope Custom Scraper →
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mt-6 sm:mt-10">
-                    <div class="lg:col-span-7 space-y-6 sm:space-y-8 min-w-0">
-                        <div>
-                            <h3 class="text-xs sm:text-sm font-mono uppercase tracking-wider text-white mb-3.5 sm:mb-4">Core Engineering Capabilities</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                                <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                                    <h4 class="text-sm font-semibold text-white mb-1.5">Headless Browser Clusters</h4>
-                                    <p class="text-xs text-slatepro-400 leading-relaxed">
-                                        Distributed Playwright and Chromium instances executing complex user flows, shadow DOM traversal, canvas rendering, and authenticated multi-step sessions.
-                                    </p>
-                                </div>
-                                <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                                    <h4 class="text-sm font-semibold text-white mb-1.5">Protocol &amp; TLS Emulation</h4>
-                                    <p class="text-xs text-slatepro-400 leading-relaxed">
-                                        Custom HTTP/2 and HTTP/3 transport layers matching genuine browser JA3/JA4 fingerprints, WebGL parameters, and behavioral telemetry without browser overhead.
-                                    </p>
-                                </div>
-                                <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                                    <h4 class="text-sm font-semibold text-white mb-1.5">Hidden API Interception</h4>
-                                    <p class="text-xs text-slatepro-400 leading-relaxed">
-                                        Reverse-engineering internal GraphQL, gRPC, and REST XHR endpoints to pull raw structured payloads directly—achieving up to 15x higher throughput than DOM rendering.
-                                    </p>
-                                </div>
-                                <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                                    <h4 class="text-sm font-semibold text-white mb-1.5">Geo-Fenced Session Routing</h4>
-                                    <p class="text-xs text-slatepro-400 leading-relaxed">
-                                        City- and ASN-level IP pinning across 195 countries to capture localized pricing, regional inventory availability, and currency-specific catalog variations.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xs sm:text-sm font-mono uppercase tracking-wider text-white mb-3">Primary Enterprise Use Cases</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slatepro-300">
-                                <div class="p-3.5 rounded-lg bg-obsidian-950 border border-white/[0.05]">
-                                    <span class="text-champagne-400 font-medium block mb-1">Alternative Data</span>
-                                    Real-time job postings, patent filings, and supply-chain manifests for quantitative funds.
-                                </div>
-                                <div class="p-3.5 rounded-lg bg-obsidian-950 border border-white/[0.05]">
-                                    <span class="text-champagne-400 font-medium block mb-1">Real Estate &amp; Travel</span>
-                                    Dynamic fare matrices, hospitality occupancy rates, and commercial property registries.
-                                </div>
-                                <div class="p-3.5 rounded-lg bg-obsidian-950 border border-white/[0.05]">
-                                    <span class="text-champagne-400 font-medium block mb-1">B2B Directories</span>
-                                    Verified corporate registries, licensing databases, and industrial supplier catalogs.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-5 flex flex-col justify-between space-y-5 sm:space-y-6 min-w-0">
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5 min-w-0">
-                            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-white/[0.06]">
-                                <span class="text-xs font-mono text-slatepro-400">worker_pipeline.py</span>
-                                <span class="text-[11px] font-mono text-champagne-400">Python 3.12 / AsyncIO</span>
-                            </div>
-                            <pre class="text-[11px] font-mono leading-relaxed text-slatepro-300 overflow-x-auto pb-1"><code>from rixvol.engine import SessionPool, SchemaGuard
+            <div class="code-block"><pre><code>from rixvol.engine import SessionPool, SchemaGuard
 from schemas.catalog import ProductRecord
 
 async def extract_endpoint(target_url: str) -> ProductRecord:
@@ -458,1078 +1363,595 @@ async def extract_endpoint(target_url: str) -> ProductRecord:
             retry_policy="exponential_backoff"
         )
         raw_payload = response.json()
-        return SchemaGuard.validate(ProductRecord, raw_payload)</code></pre>
-                        </div>
+        return SchemaGuard.validate(ProductRecord, raw_payload)</code></pre></div>
+          </div>
 
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5 space-y-3 text-xs font-mono">
-                            <div class="text-slatepro-400 uppercase tracking-wider text-[11px]">Technical Specifications</div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 py-1.5 border-b border-white/[0.05]">
-                                <span class="text-slatepro-400">Concurrency Model</span>
-                                <span class="text-white">uvloop + Distributed Worker Pool</span>
-                            </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 py-1.5 border-b border-white/[0.05]">
-                                <span class="text-slatepro-400">Mitigation Handling</span>
-                                <span class="text-white">Cloudflare, Akamai, DataDome, Kasada</span>
-                            </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 py-1.5 border-b border-white/[0.05]">
-                                <span class="text-slatepro-400">Delivery Formats</span>
-                                <span class="text-white">Parquet, JSONL, Avro, PostgreSQL, S3</span>
-                            </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 pt-1">
-                                <span class="text-slatepro-400">Success Rate Guarantee</span>
-                                <span class="text-champagne-400">99.9% Validated Records</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- PRODUCT: Website Data Extraction -->
-            <article id="data-extraction" class="scroll-mt-24 sm:scroll-mt-28 surface-card rounded-2xl p-5 sm:p-8 lg:p-12">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-6 sm:pb-8 border-b border-white/[0.07]">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-champagne-400">Data Engineering &amp; Normalization</span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mt-2">Website Data Extraction</h2>
-                        <p class="text-slatepro-400 text-sm sm:text-base mt-3 max-w-3xl leading-relaxed">
-                            Raw HTML is noisy, inconsistent, and prone to structural edge cases. Our extraction layer transforms fragmented web markup, embedded documents, and unstructured text strings into normalized, analytics-ready tables with strict data typing.
-                        </p>
-                    </div>
-                    <a href="#sample-request" class="w-full sm:w-auto text-center shrink-0 px-5 py-2.5 rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-white/10 text-white text-xs font-medium transition-colors">
-                        Request Schema Sample →
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mt-6 sm:mt-10">
-                    <div class="lg:col-span-5 space-y-4 min-w-0">
-                        <h3 class="text-xs sm:text-sm font-mono uppercase tracking-wider text-white mb-2">Extraction &amp; Hygiene Standards</h3>
-                        <div class="space-y-3">
-                            <div class="surface-elevated rounded-xl p-4">
-                                <h4 class="text-sm font-semibold text-white">Resilient Multi-Anchor Selectors</h4>
-                                <p class="text-xs text-slatepro-400 mt-1 leading-relaxed">
-                                    Fallback extraction trees combining XPath, CSS, JSON-LD microdata, and structural heuristics so minor front-end CSS refactors never drop fields.
-                                </p>
-                            </div>
-                            <div class="surface-elevated rounded-xl p-4">
-                                <h4 class="text-sm font-semibold text-white">Entity &amp; Attribute Standardization</h4>
-                                <p class="text-xs text-slatepro-400 mt-1 leading-relaxed">
-                                    Automated conversion of currencies to ISO-4217, timestamps to UTC ISO-8601, imperial/metric dimensions, and hierarchical category taxonomy mapping.
-                                </p>
-                            </div>
-                            <div class="surface-elevated rounded-xl p-4">
-                                <h4 class="text-sm font-semibold text-white">Document &amp; Binary Asset Ingestion</h4>
-                                <p class="text-xs text-slatepro-400 mt-1 leading-relaxed">
-                                    Parallel extraction of PDF technical specifications, CAD sheets, and high-resolution product media with SHA-256 checksum deduplication and S3 mirroring.
-                                </p>
-                            </div>
-                            <div class="surface-elevated rounded-xl p-4">
-                                <h4 class="text-sm font-semibold text-white">Pydantic v2 Quarantine Gates</h4>
-                                <p class="text-xs text-slatepro-400 mt-1 leading-relaxed">
-                                    Every record passes strict type, range, and nullability assertions before warehouse commit—preventing corrupted rows from reaching your BI layer.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-7 flex flex-col justify-between space-y-6 min-w-0">
-                        <div>
-                            <h3 class="text-xs sm:text-sm font-mono uppercase tracking-wider text-white mb-3.5 sm:mb-4">Deterministic Normalization Pipeline</h3>
-                            
-                            <!-- Mobile Stacked Cards (< md) -->
-                            <div class="md:hidden space-y-3 font-mono text-xs">
-                                <div class="rounded-xl border border-white/[0.08] bg-obsidian-950 p-4 space-y-2.5">
-                                    <div>
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Unstructured Input</span>
-                                        <span class="text-slatepro-300 break-words">&lt;div&gt; € 2.450,00 incl. VAT &lt;/div&gt;</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Transformation Rule</span>
-                                        <span class="text-slatepro-300">Locale Float &amp; Tax Extractor</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-champagne-400 block">Validated Output</span>
-                                        <code class="text-white text-[11px] break-all block mt-0.5">{"net": 2058.82, "gross": 2450.00, "ccy": "EUR"}</code>
-                                    </div>
-                                </div>
-
-                                <div class="rounded-xl border border-white/[0.08] bg-obsidian-950 p-4 space-y-2.5">
-                                    <div>
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Unstructured Input</span>
-                                        <span class="text-slatepro-300">"Ships in 2-3 business days (DE)"</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Transformation Rule</span>
-                                        <span class="text-slatepro-300">Fulfillment SLA Classifier</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-champagne-400 block">Validated Output</span>
-                                        <code class="text-white text-[11px] break-all block mt-0.5">{"in_stock": true, "lead_days_max": 3, "hub": "DE"}</code>
-                                    </div>
-                                </div>
-
-                                <div class="rounded-xl border border-white/[0.08] bg-obsidian-950 p-4 space-y-2.5">
-                                    <div>
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Unstructured Input</span>
-                                        <span class="text-slatepro-300">Weight: 4 lbs 8 oz / Dim: 12x8 in</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Transformation Rule</span>
-                                        <span class="text-slatepro-300">SI Metric Unit Normalizer</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-champagne-400 block">Validated Output</span>
-                                        <code class="text-white text-[11px] break-all block mt-0.5">{"weight_kg": 2.041, "dims_cm": [30.48, 20.32]}</code>
-                                    </div>
-                                </div>
-
-                                <div class="rounded-xl border border-white/[0.08] bg-obsidian-950 p-4 space-y-2.5">
-                                    <div>
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Unstructured Input</span>
-                                        <span class="text-slatepro-300">Updated: "3 hours ago"</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-slatepro-500 block">Transformation Rule</span>
-                                        <span class="text-slatepro-300">Relative Chrono Resolver</span>
-                                    </div>
-                                    <div class="pt-2 border-t border-white/[0.05]">
-                                        <span class="text-[10px] uppercase tracking-wider text-champagne-400 block">Validated Output</span>
-                                        <code class="text-white text-[11px] break-all block mt-0.5">"2026-11-24T09:00:00Z"</code>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Desktop Table (>= md) -->
-                            <div class="hidden md:block overflow-x-auto rounded-xl border border-white/[0.08] bg-obsidian-950">
-                                <table class="w-full text-left text-xs font-mono">
-                                    <thead class="bg-obsidian-900 text-slatepro-400 border-b border-white/[0.08]">
-                                        <tr>
-                                            <th class="p-4 font-medium">Unstructured Source Input</th>
-                                            <th class="p-4 font-medium">Transformation Rule</th>
-                                            <th class="p-4 font-medium text-champagne-400">Validated Output</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-white/[0.05] text-slatepro-300">
-                                        <tr>
-                                            <td class="p-4 text-slatepro-400">&lt;div&gt; € 2.450,00 incl. VAT &lt;/div&gt;</td>
-                                            <td class="p-4">Locale Float &amp; Tax Extractor</td>
-                                            <td class="p-4 text-white">{"net": 2058.82, "gross": 2450.00, "ccy": "EUR"}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-4 text-slatepro-400">"Ships in 2-3 business days (DE)"</td>
-                                            <td class="p-4">Fulfillment SLA Classifier</td>
-                                            <td class="p-4 text-white">{"in_stock": true, "lead_days_max": 3, "hub": "DE"}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-4 text-slatepro-400">Weight: 4 lbs 8 oz / Dim: 12x8 in</td>
-                                            <td class="p-4">SI Metric Unit Normalizer</td>
-                                            <td class="p-4 text-white">{"weight_kg": 2.041, "dims_cm": [30.48, 20.32]}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-4 text-slatepro-400">Updated: "3 hours ago"</td>
-                                            <td class="p-4">Relative Chrono Resolver</td>
-                                            <td class="p-4 text-white">"2026-11-24T09:00:00Z"</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
-                            <div class="surface-elevated rounded-xl p-4">
-                                <span class="text-[11px] font-mono text-slatepro-400 block">SCHEMA COMPLIANCE</span>
-                                <span class="text-lg font-semibold text-white mt-1 block">100% Typed</span>
-                                <span class="text-[11px] text-slatepro-500">Zero malformed nulls</span>
-                            </div>
-                            <div class="surface-elevated rounded-xl p-4">
-                                <span class="text-[11px] font-mono text-slatepro-400 block">DEDUPLICATION</span>
-                                <span class="text-lg font-semibold text-white mt-1 block">Composite Keys</span>
-                                <span class="text-[11px] text-slatepro-500">Hash &amp; fuzzy matching</span>
-                            </div>
-                            <div class="surface-elevated rounded-xl p-4">
-                                <span class="text-[11px] font-mono text-slatepro-400 block">ENCODING</span>
-                                <span class="text-lg font-semibold text-champagne-400 mt-1 block">Strict UTF-8</span>
-                                <span class="text-[11px] text-slatepro-500">Full multilingual support</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- PRODUCT: Automated Data Collection System -->
-            <article id="data-collection" class="scroll-mt-24 sm:scroll-mt-28 surface-card rounded-2xl p-5 sm:p-8 lg:p-12">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-6 sm:pb-8 border-b border-white/[0.07]">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-champagne-400">Managed Pipeline Orchestration</span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mt-2">Automated Data Collection System</h2>
-                        <p class="text-slatepro-400 text-sm sm:text-base mt-3 max-w-3xl leading-relaxed">
-                            Eliminate internal maintenance overhead. We operate end-to-end scheduled data pipelines with continuous telemetry, automated anomaly detection, and zero-touch ingestion directly into your production databases.
-                        </p>
-                    </div>
-                    <a href="#sample-request" class="w-full sm:w-auto text-center shrink-0 px-5 py-2.5 rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-white/10 text-white text-xs font-medium transition-colors">
-                        Configure Delivery Schedule →
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mt-6 sm:mt-10">
-                    <div class="lg:col-span-6 space-y-4 min-w-0">
-                        <h3 class="text-xs sm:text-sm font-mono uppercase tracking-wider text-white mb-2">Operational Reliability &amp; Governance</h3>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white">Deterministic Cron &amp; Event Scheduling</h4>
-                            <p class="text-xs text-slatepro-400 mt-1.5 leading-relaxed">
-                                Run continuous streaming workers, 15-minute intraday snapshots, or overnight batch updates coordinated via distributed task queues with strict rate-limit governance.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white">Automated Schema &amp; Volume Drift Alerts</h4>
-                            <p class="text-xs text-slatepro-400 mt-1.5 leading-relaxed">
-                                Statistical monitors compare every run against historical baselines—detecting sudden field drop-offs, structural DOM changes, or abnormal HTTP status distributions within seconds.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white">Direct Warehouse &amp; Webhook Sinks</h4>
-                            <p class="text-xs text-slatepro-400 mt-1.5 leading-relaxed">
-                                Native connectors for Snowflake, BigQuery, AWS S3, PostgreSQL, ClickHouse, and SFTP, accompanied by signed HMAC webhook payloads upon batch completion.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-6 flex flex-col justify-between space-y-5 min-w-0">
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5 font-mono text-xs min-w-0">
-                            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-white/[0.07]">
-                                <span class="text-slatepro-400 break-all">DAG: retail_catalog_sync_prod</span>
-                                <span class="text-champagne-400 shrink-0 px-2 py-0.5 rounded bg-champagne-400/10 border border-champagne-400/20 text-[10px]">SLA: OPERATIONAL</span>
-                            </div>
-                            <div class="space-y-3.5 sm:space-y-3 text-[11px] text-slatepro-300">
-                                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4 pb-2.5 sm:pb-0 border-b sm:border-b-0 border-white/[0.04]">
-                                    <div class="flex items-center justify-between sm:block shrink-0">
-                                        <span class="text-slatepro-500">08:00:01 UTC</span>
-                                        <span class="text-white font-medium sm:hidden">OK</span>
-                                    </div>
-                                    <span class="flex-1 leading-relaxed">Initialized 180 isolated worker containers across EU-Central</span>
-                                    <span class="hidden sm:inline text-white shrink-0">OK</span>
-                                </div>
-                                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4 pb-2.5 sm:pb-0 border-b sm:border-b-0 border-white/[0.04]">
-                                    <div class="flex items-center justify-between sm:block shrink-0">
-                                        <span class="text-slatepro-500">08:04:12 UTC</span>
-                                        <span class="text-white font-medium sm:hidden">OK</span>
-                                    </div>
-                                    <span class="flex-1 leading-relaxed">Harvested 412,840 catalog endpoints (0.02% retry rate)</span>
-                                    <span class="hidden sm:inline text-white shrink-0">OK</span>
-                                </div>
-                                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4 pb-2.5 sm:pb-0 border-b sm:border-b-0 border-white/[0.04]">
-                                    <div class="flex items-center justify-between sm:block shrink-0">
-                                        <span class="text-slatepro-500">08:04:49 UTC</span>
-                                        <span class="text-white font-medium sm:hidden">100% PASS</span>
-                                    </div>
-                                    <span class="flex-1 leading-relaxed">Executed Pydantic schema validation &amp; delta diffing</span>
-                                    <span class="hidden sm:inline text-white shrink-0">100% PASS</span>
-                                </div>
-                                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4 pb-2.5 sm:pb-0 border-b sm:border-b-0 border-white/[0.04]">
-                                    <div class="flex items-center justify-between sm:block shrink-0">
-                                        <span class="text-slatepro-500">08:05:03 UTC</span>
-                                        <span class="text-champagne-400 font-medium sm:hidden">COMMITTED</span>
-                                    </div>
-                                    <span class="flex-1 leading-relaxed break-words">Committed Parquet partition to <span class="text-slate-200 break-all">s3://enterprise-lake/v4/</span></span>
-                                    <span class="hidden sm:inline text-champagne-400 shrink-0">COMMITTED</span>
-                                </div>
-                                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4">
-                                    <div class="flex items-center justify-between sm:block shrink-0">
-                                        <span class="text-slatepro-500">08:05:04 UTC</span>
-                                        <span class="text-white font-medium sm:hidden">HTTP 200</span>
-                                    </div>
-                                    <span class="flex-1 leading-relaxed">Dispatched completion webhook to client ingestion API</span>
-                                    <span class="hidden sm:inline text-white shrink-0">HTTP 200</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <div class="text-[11px] font-mono uppercase tracking-wider text-slatepro-400 mb-3">Supported Infrastructure Stack</div>
-                            <div class="flex flex-wrap gap-2 text-xs font-mono text-slatepro-300">
-                                <span class="px-2.5 sm:px-3 py-1.5 rounded bg-obsidian-950 border border-white/[0.06]">Kubernetes</span>
-                                <span class="px-2.5 sm:px-3 py-1.5 rounded bg-obsidian-950 border border-white/[0.06]">Apache Airflow</span>
-                                <span class="px-2.5 sm:px-3 py-1.5 rounded bg-obsidian-950 border border-white/[0.06]">Snowflake</span>
-                                <span class="px-2.5 sm:px-3 py-1.5 rounded bg-obsidian-950 border border-white/[0.06]">BigQuery</span>
-                                <span class="px-2.5 sm:px-3 py-1.5 rounded bg-obsidian-950 border border-white/[0.06]">AWS S3 / GCS</span>
-                                <span class="px-2.5 sm:px-3 py-1.5 rounded bg-obsidian-950 border border-white/[0.06]">PostgreSQL / ClickHouse</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- PRODUCT: E-commerce Price Monitoring -->
-            <article id="price-monitoring" class="scroll-mt-24 sm:scroll-mt-28 surface-card rounded-2xl p-5 sm:p-8 lg:p-12">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-6 sm:pb-8 border-b border-white/[0.07]">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-champagne-400">Commercial Retail Surveillance</span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mt-2">E-commerce Price Monitoring</h2>
-                        <p class="text-slatepro-400 text-sm sm:text-base mt-3 max-w-3xl leading-relaxed">
-                            High-frequency visibility into competitor pricing, stock availability, shipping thresholds, and promotional mechanics across global marketplaces, DTC storefronts, and regional distributors.
-                        </p>
-                    </div>
-                    <a href="#sample-request" class="w-full sm:w-auto text-center shrink-0 px-5 py-2.5 rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-white/10 text-white text-xs font-medium transition-colors">
-                        Monitor Target Catalogs →
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mt-6 sm:mt-10">
-                    <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 min-w-0">
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white mb-2">Granular Variant Tracking</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Resolves SKU-level pricing across every configuration matrix—size, color, capacity, bundle tiers, and member-only loyalty discounts—rather than relying on top-level category averages.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white mb-2">Real-Time Stock &amp; Buy-Box Telemetry</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Tracks exact seller share of the Buy Box, third-party merchant listings, fulfillment lead times, and out-of-stock events so you can capture demand immediately when competitors run dry.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white mb-2">MAP Policy Enforcement</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Automated compliance auditing for brands and manufacturers—flagging unauthorized resellers breaching Minimum Advertised Price agreements with timestamped evidence.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white mb-2">Total Landed Cost Calculation</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Captures checkout-level shipping fees, regional VAT/taxes, and active coupon codes to compute true net consumer price rather than base list price alone.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-5 flex flex-col justify-between space-y-5 min-w-0">
-                        <div class="surface-elevated rounded-xl p-4 sm:p-6 space-y-4">
-                            <div class="text-xs font-mono uppercase tracking-wider text-slatepro-400">Surveillance Benchmarks</div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
-                                <div class="p-3.5 rounded-lg bg-obsidian-950 border border-white/[0.05]">
-                                    <span class="text-[11px] font-mono text-slatepro-500 block">REFRESH CADENCE</span>
-                                    <span class="text-base sm:text-lg font-semibold text-white mt-1 block">Up to 15 min</span>
-                                </div>
-                                <div class="p-3.5 rounded-lg bg-obsidian-950 border border-white/[0.05]">
-                                    <span class="text-[11px] font-mono text-slatepro-500 block">ALERT LATENCY</span>
-                                    <span class="text-base sm:text-lg font-semibold text-champagne-400 mt-1 block">&lt; 30 sec</span>
-                                </div>
-                                <div class="p-3.5 rounded-lg bg-obsidian-950 border border-white/[0.05]">
-                                    <span class="text-[11px] font-mono text-slatepro-500 block">SKU MATCHING</span>
-                                    <span class="text-base sm:text-lg font-semibold text-white mt-1 block">GTIN / UPC / MPN</span>
-                                </div>
-                                <div class="p-3.5 rounded-lg bg-obsidian-950 border border-white/[0.05]">
-                                    <span class="text-[11px] font-mono text-slatepro-500 block">COVERAGE</span>
-                                    <span class="text-base sm:text-lg font-semibold text-white mt-1 block">Global Retail</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5 text-xs text-slatepro-300 leading-relaxed">
-                            <span class="text-white font-semibold block mb-1">Seamless ERP &amp; Repricer Feeds</span>
-                            Deliver clean price feeds directly to Prisync, Competera, SAP, NetSuite, or custom internal pricing engines via REST API or scheduled S3 drops.
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- PRODUCT: Competitor Price Intelligence -->
-            <article id="price-intelligence" class="scroll-mt-24 sm:scroll-mt-28 surface-card rounded-2xl p-5 sm:p-8 lg:p-12">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-6 sm:pb-8 border-b border-white/[0.07]">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-champagne-400">Strategic Pricing Analytics</span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mt-2">Competitor Price Intelligence</h2>
-                        <p class="text-slatepro-400 text-sm sm:text-base mt-3 max-w-3xl leading-relaxed">
-                            Move beyond raw price lists. We harmonize multi-competitor market data into unified analytical models—exposing promotional cadences, margin opportunities, and optimal repricing thresholds across your entire assortment.
-                        </p>
-                    </div>
-                    <a href="#sample-request" class="w-full sm:w-auto text-center shrink-0 px-5 py-2.5 rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-white/10 text-white text-xs font-medium transition-colors">
-                        Request Market Benchmark →
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mt-6 sm:mt-10 items-start">
-                    <div class="lg:col-span-5 space-y-3.5 sm:space-y-4 min-w-0">
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white mb-1.5">Automated Cross-Catalog Entity Matching</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Deterministic barcode matching combined with multi-attribute specification alignment links identical and private-label equivalent SKUs across fragmented retail catalogs.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white mb-1.5">Category Price Index &amp; Positioning</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Measure your weighted price index against key market competitors by brand, margin tier, or velocity segment to protect profitability without sacrificing conversion.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <h4 class="text-sm font-semibold text-white mb-1.5">Longitudinal Price History Vault</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Multi-year historical time-series archives enabling merchandising teams to model seasonal discounting patterns, competitor liquidation cycles, and price elasticity.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-7 surface-elevated rounded-xl p-4 sm:p-6 min-w-0">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4 mb-5 sm:mb-6">
-                            <div>
-                                <h3 class="text-sm font-semibold text-white">Assortment Price Index Simulation</h3>
-                                <p class="text-xs text-slatepro-400 mt-0.5">Comparative trajectory across primary market benchmark</p>
-                            </div>
-                            <div class="flex items-center gap-2 self-start sm:self-auto">
-                                <button id="btn30d" onclick="updatePriceRange('30d')" class="px-3 py-1.5 rounded-md bg-white text-obsidian-950 text-xs font-medium transition-colors">30 Days</button>
-                                <button id="btn7d" onclick="updatePriceRange('7d')" class="px-3 py-1.5 rounded-md bg-obsidian-950 text-slatepro-400 hover:text-white border border-white/10 text-xs font-medium transition-colors">7 Days</button>
-                            </div>
-                        </div>
-
-                        <div class="relative w-full h-56 sm:h-64">
-                            <canvas id="priceChart"></canvas>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/[0.07] font-mono text-xs">
-                            <div class="p-3 sm:p-0 rounded-lg bg-obsidian-950/60 sm:bg-transparent">
-                                <span class="text-slatepro-500 block text-[11px]">COMPETITOR DELTA</span>
-                                <span class="text-white font-semibold mt-1 block">-7.3% vs Market</span>
-                            </div>
-                            <div class="p-3 sm:p-0 rounded-lg bg-obsidian-950/60 sm:bg-transparent">
-                                <span class="text-slatepro-500 block text-[11px]">CATEGORY MEDIAN</span>
-                                <span class="text-white font-semibold mt-1 block">$1,899.00</span>
-                            </div>
-                            <div class="p-3 sm:p-0 rounded-lg bg-obsidian-950/60 sm:bg-transparent">
-                                <span class="text-slatepro-500 block text-[11px]">TARGET POSITION</span>
-                                <span class="text-champagne-400 font-semibold mt-1 block">$1,849.00 (Optimal)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- PRODUCT: Web Crawling & Data Processing -->
-            <article id="web-crawling" class="scroll-mt-24 sm:scroll-mt-28 surface-card rounded-2xl p-5 sm:p-8 lg:p-12">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-6 sm:pb-8 border-b border-white/[0.07]">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-champagne-400">High-Volume Distributed Architecture</span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mt-2">Web Crawling &amp; Data Processing</h2>
-                        <p class="text-slatepro-400 text-sm sm:text-base mt-3 max-w-3xl leading-relaxed">
-                            Broad-scale discovery and high-throughput ETL infrastructure engineered for organizations ingesting tens of millions of web documents, industry corpora, and public registries into centralized data lakes.
-                        </p>
-                    </div>
-                    <a href="#sample-request" class="w-full sm:w-auto text-center shrink-0 px-5 py-2.5 rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-white/10 text-white text-xs font-medium transition-colors">
-                        Architect Crawler Cluster →
-                    </a>
-                </div>
-
-                <div class="mt-6 sm:mt-10 space-y-6 sm:space-y-8">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <span class="text-xs font-mono text-champagne-400">DISCOVERY</span>
-                            <h4 class="text-sm font-semibold text-white mt-1.5 mb-2">Distributed URL Frontier</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Priority-weighted graph queues with Bloom-filter deduplication, canonical URL resolution, and polite per-domain concurrency throttles.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <span class="text-xs font-mono text-champagne-400">ACQUISITION</span>
-                            <h4 class="text-sm font-semibold text-white mt-1.5 mb-2">Elastic Fetch Fleet</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Auto-scaling Kubernetes worker pods sustained at 100,000+ requests per minute with automatic proxy rotation and adaptive backoff.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <span class="text-xs font-mono text-champagne-400">TRANSFORMATION</span>
-                            <h4 class="text-sm font-semibold text-white mt-1.5 mb-2">Stream &amp; Batch ETL</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Boilerplate stripping, SimHash near-duplicate filtering, language classification, and columnar serialization via PyArrow and Spark.
-                            </p>
-                        </div>
-                        <div class="surface-elevated rounded-xl p-4 sm:p-5">
-                            <span class="text-xs font-mono text-champagne-400">DELIVERY</span>
-                            <h4 class="text-sm font-semibold text-white mt-1.5 mb-2">Data Lake &amp; Kafka Sink</h4>
-                            <p class="text-xs text-slatepro-400 leading-relaxed">
-                                Partitioned Apache Parquet or Iceberg tables written directly to AWS S3, Snowflake, BigQuery, or real-time Kafka topics.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-1 text-xs">
-                        <div class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.05]">
-                            <span class="text-white font-semibold block mb-1">Compliance &amp; Governance</span>
-                            <span class="text-slatepro-400 leading-relaxed">Configurable robots.txt adherence, PII redaction filters, and complete audit lineage for every ingested document.</span>
-                        </div>
-                        <div class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.05]">
-                            <span class="text-white font-semibold block mb-1">Incremental Change Detection</span>
-                            <span class="text-slatepro-400 leading-relaxed">ETag, Last-Modified, and content-hash checks minimize bandwidth overhead by re-processing only mutated pages.</span>
-                        </div>
-                        <div class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.05]">
-                            <span class="text-white font-semibold block mb-1">Enterprise Search &amp; Analytics Corpora</span>
-                            <span class="text-slatepro-400 leading-relaxed">Clean, markdown- or JSON-structured text corpora formatted for enterprise search indexing and quantitative modeling.</span>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-        </section>
-
-        <!-- LIVE INTERACTIVE DATA INSPECTOR -->
-        <section id="live-playground" class="scroll-mt-20 sm:scroll-mt-24 py-16 sm:py-24 bg-obsidian-900/60 border-y border-white/[0.06]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-5">
-                    <div>
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.18em] text-champagne-400">Data Hygiene Verification</span>
-                        <h2 class="text-2xl sm:text-3xl font-semibold text-white mt-2">Raw Source vs. Production Output</h2>
-                        <p class="text-slatepro-400 text-xs sm:text-sm mt-2 max-w-2xl leading-relaxed">
-                            Compare raw unstructured retail markup against the normalized, schema-validated JSON payload delivered by Rixvol pipelines.
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-2 sm:inline-flex bg-obsidian-950 p-1 rounded-lg border border-white/10 text-xs font-mono w-full sm:w-auto">
-                        <button id="viewRawBtn" onclick="switchDataView('raw')" class="px-3 sm:px-4 py-2 rounded-md transition-colors bg-white text-obsidian-950 font-semibold text-center">
-                            Raw Source HTML
-                        </button>
-                        <button id="viewJsonBtn" onclick="switchDataView('json')" class="px-3 sm:px-4 py-2 rounded-md transition-colors text-slatepro-400 hover:text-white text-center">
-                            Validated JSON
-                        </button>
-                    </div>
-                </div>
-
-                <div class="rounded-xl border border-white/[0.08] bg-obsidian-950 overflow-hidden">
-                    <div class="min-h-12 bg-obsidian-900 px-4 sm:px-5 py-2.5 border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
-                            <span id="windowTitle" class="text-xs text-slatepro-300 font-mono truncate">source_dom_fragment.html</span>
-                            <span id="formatBadge" class="text-[10px] sm:text-[11px] font-mono px-2 sm:px-2.5 py-0.5 rounded bg-obsidian-800 text-slatepro-400 border border-white/[0.06] whitespace-nowrap">
-                                Unstructured Markup
-                            </span>
-                        </div>
-                        <button onclick="copySnippet(event)" class="text-xs text-slatepro-400 hover:text-white transition-colors font-mono shrink-0">
-                            <span>Copy Snippet</span>
-                        </button>
-                    </div>
-
-                    <pre class="p-4 sm:p-6 text-[11px] sm:text-[13px] font-mono overflow-x-auto text-slatepro-300 leading-relaxed max-h-[380px]"><code id="codeDisplay"></code></pre>
-
-                    <div class="bg-obsidian-900/80 border-t border-white/[0.06] px-4 sm:px-6 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4 text-xs font-mono">
-                        <div>
-                            <span class="text-slatepro-500 block text-[10px] sm:text-[11px]">RUNTIME ENGINE</span>
-                            <span class="text-white">Python 3.12 / lxml + Pydantic</span>
-                        </div>
-                        <div>
-                            <span class="text-slatepro-500 block text-[10px] sm:text-[11px]">TRANSFORM LATENCY</span>
-                            <span class="text-white">38 ms / document</span>
-                        </div>
-                        <div>
-                            <span class="text-slatepro-500 block text-[10px] sm:text-[11px]">CHARACTER ENCODING</span>
-                            <span class="text-white">Strict UTF-8</span>
-                        </div>
-                        <div>
-                            <span class="text-slatepro-500 block text-[10px] sm:text-[11px]">VALIDATION STATUS</span>
-                            <span class="text-champagne-400">Schema Verified</span>
-                        </div>
-                    </div>
-                </div>
+          <div class="card-inner" style="padding:20px">
+            <div class="mono" style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--fg-dim);margin-bottom:14px">Technical Specifications</div>
+            <div class="spec-list">
+              <div class="spec-row"><span class="spec-label">Concurrency Model</span><span class="spec-value">uvloop + Distributed Worker Pool</span></div>
+              <div class="spec-row"><span class="spec-label">Mitigation Handling</span><span class="spec-value">Cloudflare, Akamai, DataDome, Kasada</span></div>
+              <div class="spec-row"><span class="spec-label">Delivery Formats</span><span class="spec-value">Parquet, JSONL, Avro, PostgreSQL, S3</span></div>
+              <div class="spec-row"><span class="spec-label">Success Rate</span><span class="spec-value accent">99.9% Validated Records</span></div>
             </div>
-        </section>
-
-        <!-- CAPACITY & THROUGHPUT ESTIMATOR -->
-        <section id="capacity-estimator" class="scroll-mt-20 sm:scroll-mt-24 py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="surface-card rounded-2xl p-5 sm:p-8 lg:p-12">
-                <div class="max-w-2xl mb-8 sm:mb-10">
-                    <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.18em] text-champagne-400">Infrastructure Sizing</span>
-                    <h2 class="text-2xl sm:text-3xl font-semibold text-white mt-2">Estimate Cluster Capacity</h2>
-                    <p class="text-slatepro-400 text-xs sm:text-sm mt-2 leading-relaxed">
-                        Model dedicated proxy allocation and monthly request volume based on your target catalog size and refresh cadence.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center">
-                    <div class="lg:col-span-6 space-y-6">
-                        <div>
-                            <div class="flex justify-between text-xs font-mono text-slatepro-300 mb-2.5 gap-2">
-                                <span>TARGET RECORDS PER RUN</span>
-                                <span id="pagesVal" class="text-champagne-400 font-semibold shrink-0">500,000</span>
-                            </div>
-                            <input type="range" id="pagesInput" min="10000" max="5000000" step="10000" value="500000" oninput="calculateEstimates()" class="w-full accent-[#C8A97E] bg-obsidian-800 rounded-lg cursor-pointer">
-                            <div class="flex justify-between text-[11px] font-mono text-slatepro-500 mt-1.5">
-                                <span>10,000</span>
-                                <span>2,500,000</span>
-                                <span>5,000,000</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-mono text-slatepro-300 mb-2.5">REFRESH CADENCE</label>
-                            <select id="freqSelect" onchange="calculateEstimates()" class="w-full px-3.5 sm:px-4 py-3 rounded-lg bg-obsidian-950 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-champagne-400">
-                                <option value="24">Daily (Every 24 Hours)</option>
-                                <option value="6">Every 6 Hours (4x Daily)</option>
-                                <option value="1">Hourly (24x Daily)</option>
-                                <option value="0.25">Every 15 Minutes (High-Frequency)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-6 surface-elevated rounded-xl p-4 sm:p-6 space-y-3.5 sm:space-y-4 font-mono text-xs">
-                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1 pb-3 border-b border-white/[0.06]">
-                            <span class="text-slatepro-400">Allocated Residential IP Pool</span>
-                            <span id="nodesCalc" class="text-white font-semibold">32 Dedicated Endpoints</span>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1 pb-3 border-b border-white/[0.06]">
-                            <span class="text-slatepro-400">Projected Monthly Volume</span>
-                            <span id="hitsCalc" class="text-white font-semibold">15,000,000 requests</span>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1 pb-3 border-b border-white/[0.06]">
-                            <span class="text-slatepro-400">Schema Validation &amp; Monitoring</span>
-                            <span class="text-champagne-400">Included (24/7 SLA)</span>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
-                            <span class="text-slatepro-400">Supported Delivery Sinks</span>
-                            <span class="text-white">S3 / Snowflake / PostgreSQL / API</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ENTERPRISE FAQ -->
-        <section id="governance-faq" class="scroll-mt-20 sm:scroll-mt-24 py-14 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-8 sm:mb-12">
-                <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.18em] text-champagne-400">Technical Governance</span>
-                <h2 class="text-2xl sm:text-3xl font-semibold text-white mt-2">Frequently Asked Questions</h2>
-            </div>
-
-            <div class="space-y-3.5 sm:space-y-4">
-                <div class="surface-card rounded-xl p-5 sm:p-6">
-                    <h3 class="text-sm sm:text-base font-semibold text-white mb-2">How does Rixvol maintain stability against bot-mitigation systems?</h3>
-                    <p class="text-slatepro-400 text-xs sm:text-sm leading-relaxed">
-                        We combine custom TLS/HTTP2 fingerprint emulation, geo-matched residential and ISP proxy networks, and headless browser clusters with automated session management—ensuring uninterrupted access without relying on brittle workarounds.
-                    </p>
-                </div>
-
-                <div class="surface-card rounded-xl p-5 sm:p-6">
-                    <h3 class="text-sm sm:text-base font-semibold text-white mb-2">Which warehouse integrations and file formats are supported?</h3>
-                    <p class="text-slatepro-400 text-xs sm:text-sm leading-relaxed">
-                        Data can be delivered directly into AWS S3, Google Cloud Storage, Snowflake, BigQuery, PostgreSQL, ClickHouse, or via REST Webhooks in Parquet, JSONL, Avro, or CSV formats conforming to your exact schema specification.
-                    </p>
-                </div>
-
-                <div class="surface-card rounded-xl p-5 sm:p-6">
-                    <h3 class="text-sm sm:text-base font-semibold text-white mb-2">What happens when a target website changes its DOM structure?</h3>
-                    <p class="text-slatepro-400 text-xs sm:text-sm leading-relaxed">
-                        Every production pipeline is backed by automated schema assertions and anomaly alerts. If a layout update causes missing fields or type mismatches, our engineering team updates and redeploys the parser within your contracted SLA window.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- PILOT DATASET REQUEST -->
-        <section id="sample-request" class="scroll-mt-20 sm:scroll-mt-24 py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="surface-card rounded-2xl p-5 sm:p-8 lg:p-14">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
-                    <div class="lg:col-span-6">
-                        <span class="text-[11px] sm:text-xs font-mono uppercase tracking-[0.18em] text-champagne-400">Technical Scoping</span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mt-2.5 sm:mt-3 leading-tight">
-                            Request a Custom Pilot Dataset
-                        </h2>
-                        <p class="text-slatepro-400 text-sm sm:text-base mt-3.5 sm:mt-4 leading-relaxed">
-                            Share your target domains, update frequency, and required schema. Our data engineering team will evaluate source complexity and deliver a complimentary pilot sample of up to 1,000 structured records.
-                        </p>
-
-                        <div class="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/[0.07] space-y-3.5 sm:space-y-4 text-xs sm:text-sm text-slatepro-300">
-                            <div class="flex items-start gap-3">
-                                <span class="text-champagne-400 mt-0.5">—</span>
-                                <span>Complimentary feasibility assessment &amp; sample dataset</span>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <span class="text-champagne-400 mt-0.5">—</span>
-                                <span>Mutual NDA execution prior to proprietary schema review</span>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <span class="text-champagne-400 mt-0.5">—</span>
-                                <span>Dedicated solutions architect &amp; contractual SLA guarantees</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-6 surface-elevated rounded-xl p-5 sm:p-8">
-                        <form id="contactForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-[11px] font-mono uppercase tracking-wider text-slatepro-400 mb-1.5">Full Name &amp; Organization</label>
-                                <input type="text" required placeholder="Elena Rostova / Northstar Capital" class="w-full px-3.5 sm:px-4 py-3 rounded-lg bg-obsidian-950 border border-white/10 text-white placeholder-slatepro-500 text-sm focus:outline-none focus:border-champagne-400 transition-colors">
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-mono uppercase tracking-wider text-slatepro-400 mb-1.5">Corporate Email or Telegram</label>
-                                <input type="text" required placeholder="e.rostova@northstar.io" class="w-full px-3.5 sm:px-4 py-3 rounded-lg bg-obsidian-950 border border-white/10 text-white placeholder-slatepro-500 text-sm focus:outline-none focus:border-champagne-400 transition-colors">
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-mono uppercase tracking-wider text-slatepro-400 mb-1.5">Primary Solution</label>
-                                <select class="w-full px-3.5 sm:px-4 py-3 rounded-lg bg-obsidian-950 border border-white/10 text-white text-sm focus:outline-none focus:border-champagne-400 transition-colors">
-                                    <option value="custom-scraping">Custom Python Web Scraping</option>
-                                    <option value="data-extraction">Website Data Extraction &amp; Normalization</option>
-                                    <option value="data-collection">Automated Data Collection System</option>
-                                    <option value="price-monitoring">E-commerce Price Monitoring</option>
-                                    <option value="competitor-price">Competitor Price Intelligence</option>
-                                    <option value="web-crawling">Web Crawling &amp; Data Processing</option>
-                                    <option value="enterprise-suite">Full Enterprise Data Pipeline</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-mono uppercase tracking-wider text-slatepro-400 mb-1.5">Target Domains &amp; Schema Requirements</label>
-                                <textarea rows="3" placeholder="List target sources, estimated record volume, and preferred delivery sink (S3, Snowflake, PostgreSQL, JSON)..." class="w-full px-3.5 sm:px-4 py-3 rounded-lg bg-obsidian-950 border border-white/10 text-white placeholder-slatepro-500 text-sm focus:outline-none focus:border-champagne-400 transition-colors"></textarea>
-                            </div>
-
-                            <button type="submit" class="w-full py-3.5 px-6 rounded-lg bg-champagne-400 hover:bg-champagne-300 text-obsidian-950 font-semibold text-sm transition-colors">
-                                Submit Technical Scoping Request
-                            </button>
-                            
-                            <p id="formFeedback" class="text-xs text-center font-mono text-champagne-400 hidden pt-2">
-                                Request logged. A Rixvol solutions engineer will respond with your pilot specification within 2 business hours.
-                            </p>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Corporate Footer -->
-    <footer class="border-t border-white/[0.06] bg-obsidian-950 py-10 sm:py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 sm:gap-8">
-            <div class="flex items-center gap-3.5">
-                <div class="w-8 h-8 rounded-lg bg-obsidian-850 border border-champagne-400/40 flex items-center justify-center text-champagne-400 font-display font-bold text-sm shrink-0">
-                    R
-                </div>
-                <div>
-                    <span class="text-sm font-semibold text-white block">Rixvol</span>
-                    <span class="text-xs text-slatepro-500">© 2026 Rixvol. Web Scraping &amp; Data Extraction Infrastructure.</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-7 gap-y-2.5 text-xs text-slatepro-400 w-full md:w-auto">
-                <a href="#custom-python" class="hover:text-white transition-colors">Python Scraping</a>
-                <a href="#data-extraction" class="hover:text-white transition-colors">Data Extraction</a>
-                <a href="#data-collection" class="hover:text-white transition-colors">Automated Collection</a>
-                <a href="#price-monitoring" class="hover:text-white transition-colors">Price Monitoring</a>
-                <a href="#price-intelligence" class="hover:text-white transition-colors">Price Intelligence</a>
-                <a href="#web-crawling" class="hover:text-white transition-colors">Web Crawling</a>
-            </div>
+          </div>
         </div>
-    </footer>
+      </div>
+    </article>
 
-    <script>
-        // Navigation Dropdown & Mobile Drawer Controls
-        const solutionsPanel = document.getElementById('solutionsDropdownPanel');
-        const solutionsBtn = document.getElementById('solutionsMenuBtn');
-        const solutionsChevron = document.getElementById('solutionsChevron');
-        const solutionsWrapper = document.getElementById('solutionsDropdownWrapper');
-
-        function toggleSolutionsMenu() {
-            const isHidden = solutionsPanel.classList.contains('hidden');
-            if (isHidden) {
-                solutionsPanel.classList.remove('hidden');
-                solutionsBtn.setAttribute('aria-expanded', 'true');
-                solutionsBtn.classList.add('text-white');
-                solutionsChevron.classList.add('rotate-180', 'text-champagne-400');
-            } else {
-                closeSolutionsMenu();
-            }
-        }
-
-        function closeSolutionsMenu() {
-            if (!solutionsPanel) return;
-            solutionsPanel.classList.add('hidden');
-            solutionsBtn.setAttribute('aria-expanded', 'false');
-            solutionsBtn.classList.remove('text-white');
-            solutionsChevron.classList.remove('rotate-180', 'text-champagne-400');
-        }
-
-        if (solutionsWrapper) {
-            let closeTimer = null;
-            solutionsWrapper.addEventListener('mouseenter', () => {
-                clearTimeout(closeTimer);
-                solutionsPanel.classList.remove('hidden');
-                solutionsBtn.setAttribute('aria-expanded', 'true');
-                solutionsBtn.classList.add('text-white');
-                solutionsChevron.classList.add('rotate-180', 'text-champagne-400');
-            });
-            solutionsWrapper.addEventListener('mouseleave', () => {
-                closeTimer = setTimeout(closeSolutionsMenu, 140);
-            });
-        }
-
-        document.addEventListener('click', (event) => {
-            if (solutionsWrapper && !solutionsWrapper.contains(event.target)) {
-                closeSolutionsMenu();
-            }
-        });
-
-        function toggleMobileMenu() {
-            const drawer = document.getElementById('mobileDrawer');
-            const iconOpen = document.getElementById('mobileMenuIconOpen');
-            const iconClose = document.getElementById('mobileMenuIconClose');
-            const isHidden = drawer.classList.contains('hidden');
-
-            if (isHidden) {
-                drawer.classList.remove('hidden');
-                iconOpen.classList.add('hidden');
-                iconClose.classList.remove('hidden');
-            } else {
-                closeMobileMenu();
-            }
-        }
-
-        function closeMobileMenu() {
-            const drawer = document.getElementById('mobileDrawer');
-            const iconOpen = document.getElementById('mobileMenuIconOpen');
-            const iconClose = document.getElementById('mobileMenuIconClose');
-            if (!drawer) return;
-            drawer.classList.add('hidden');
-            iconOpen.classList.remove('hidden');
-            iconClose.classList.add('hidden');
-        }
-
-        const sampleRawHtml = `<!-- UNSTRUCTURED RETAIL MARKUP WITH DYNAMIC ATTRIBUTES -->
-<div class="product-item-card" data-sku="SKU-892147" data-hash="a9f201e">
-    <div class="lazy-image-box">
-        <img class="lazyload" data-src="https://cdn.retail-source.com/p/991204_v2.webp" alt="Pro Drone 4K" />
-    </div>
-    <div class="product-info-wrap">
-        <span class="badge in-stock">In Stock (Fulfillment Hub #4)</span>
-        <h2 class="title"><a href="/item/pro-drone-4k?ref=grid">Pro Drone 4K Dual Camera System</a></h2>
-        <div class="price-container">
-            <span class="old-strike">$1,499.00</span>
-            <span class="current-price" data-currency="USD" data-amount="1249.00">$1,249.00</span>
+    <!-- Website Data Extraction -->
+    <article id="data-extraction" class="product-article card reveal" style="padding:clamp(24px,4vw,48px)">
+      <div class="article-header">
+        <div>
+          <span class="section-eyebrow">Data Engineering &amp; Normalization</span>
+          <h2 class="article-title">Website Data Extraction</h2>
+          <p class="article-desc">Raw HTML is noisy, inconsistent, and prone to structural edge cases. Our extraction layer transforms fragmented web markup and unstructured text into normalized, analytics-ready tables with strict data typing.</p>
         </div>
-        <div class="rating-stars" data-score="4.85" data-reviews="312"></div>
-        <ul class="technical-specs">
-            <li>Battery: 5200 mAh LiPo</li>
-            <li>Max Range: 12.5 km</li>
-        </ul>
-    </div>
-</div>`;
+        <a href="#sample-request" class="btn-ghost">Request Schema Sample &rarr;</a>
+      </div>
 
-        const sampleCleanJson = `{
-  "schema_version": "3.2.0",
-  "extracted_at": "2026-11-24T12:00:00Z",
-  "source_domain": "retail-source.com",
-  "record": {
-    "sku": "SKU-892147",
-    "title": "Pro Drone 4K Dual Camera System",
-    "canonical_url": "https://retail-source.com/item/pro-drone-4k",
-    "inventory": {
-      "in_stock": true,
-      "fulfillment_hub": "Hub #4"
-    },
-    "pricing": {
-      "currency": "USD",
-      "active_price": 1249.00,
-      "list_price": 1499.00,
-      "discount_pct": 16.68
-    },
-    "metrics": {
-      "rating": 4.85,
-      "review_count": 312
-    },
-    "specifications": {
-      "battery_mah": 5200,
-      "max_range_km": 12.5
-    }
-  },
-  "validation": {
-    "status": "passed",
-    "null_fields": 0
+      <div class="article-body reverse">
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          <div class="sub-label" style="margin-bottom:4px">Extraction &amp; Hygiene Standards</div>
+          <div class="card-inner feature-card"><h4>Resilient Multi-Anchor Selectors</h4><p>Fallback extraction trees combining XPath, CSS, JSON-LD microdata, and structural heuristics so minor front-end refactors never drop fields.</p></div>
+          <div class="card-inner feature-card"><h4>Entity &amp; Attribute Standardization</h4><p>Automated conversion of currencies to ISO-4217, timestamps to UTC ISO-8601, imperial/metric dimensions, and hierarchical category taxonomy mapping.</p></div>
+          <div class="card-inner feature-card"><h4>Document &amp; Binary Asset Ingestion</h4><p>Parallel extraction of PDF specs, CAD sheets, and high-res product media with SHA-256 deduplication and S3 mirroring.</p></div>
+          <div class="card-inner feature-card"><h4>Pydantic v2 Quarantine Gates</h4><p>Every record passes strict type, range, and nullability assertions before warehouse commit &mdash; preventing corrupted rows from reaching your BI layer.</p></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+          <div>
+            <div class="sub-label" style="margin-bottom:16px">Normalization Pipeline</div>
+            <!-- Desktop table -->
+            <div class="card-inner" style="overflow-x:auto;display:none" id="normTableWrap">
+              <table class="norm-table">
+                <thead><tr><th>Source Input</th><th>Transformation</th><th>Output</th></tr></thead>
+                <tbody>
+                  <tr><td>&lt;div&gt; &euro; 2.450,00 incl. VAT &lt;/div&gt;</td><td>Locale Float &amp; Tax Extractor</td><td>{"net": 2058.82, "gross": 2450.00, "ccy": "EUR"}</td></tr>
+                  <tr><td>"Ships in 2-3 business days (DE)"</td><td>Fulfillment SLA Classifier</td><td>{"in_stock": true, "lead_days_max": 3, "hub": "DE"}</td></tr>
+                  <tr><td>Weight: 4 lbs 8 oz / Dim: 12x8 in</td><td>SI Metric Unit Normalizer</td><td>{"weight_kg": 2.041, "dims_cm": [30.48, 20.32]}</td></tr>
+                  <tr><td>Updated: "3 hours ago"</td><td>Relative Chrono Resolver</td><td>"2026-11-24T09:00:00Z"</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Mobile cards -->
+            <div class="norm-cards" id="normCardsWrap">
+              <div class="norm-card">
+                <div><span class="norm-card-label">Source</span><span class="norm-card-value">&lt;div&gt; &euro; 2.450,00 incl. VAT &lt;/div&gt;</span></div>
+                <div><span class="norm-card-label">Rule</span><span class="norm-card-value">Locale Float &amp; Tax Extractor</span></div>
+                <div><span class="norm-card-label accent">Output</span><span class="norm-card-value white">{"net": 2058.82, "gross": 2450.00, "ccy": "EUR"}</span></div>
+              </div>
+              <div class="norm-card">
+                <div><span class="norm-card-label">Source</span><span class="norm-card-value">"Ships in 2-3 business days (DE)"</span></div>
+                <div><span class="norm-card-label">Rule</span><span class="norm-card-value">Fulfillment SLA Classifier</span></div>
+                <div><span class="norm-card-label accent">Output</span><span class="norm-card-value white">{"in_stock": true, "lead_days_max": 3}</span></div>
+              </div>
+              <div class="norm-card">
+                <div><span class="norm-card-label">Source</span><span class="norm-card-value">Weight: 4 lbs 8 oz / Dim: 12x8 in</span></div>
+                <div><span class="norm-card-label">Rule</span><span class="norm-card-value">SI Metric Unit Normalizer</span></div>
+                <div><span class="norm-card-label accent">Output</span><span class="norm-card-value white">{"weight_kg": 2.041, "dims_cm": [30.48, 20.32]}</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div class="card-inner" style="padding:16px"><span class="mono" style="font-size:10px;color:var(--fg-dim);display:block">SCHEMA</span><span style="font-size:16px;font-weight:600;color:var(--white);margin-top:4px;display:block;font-family:'Space Grotesk',sans-serif">100% Typed</span><span style="font-size:10px;color:var(--fg-dim)">Zero malformed nulls</span></div>
+            <div class="card-inner" style="padding:16px"><span class="mono" style="font-size:10px;color:var(--fg-dim);display:block">DEDUP</span><span style="font-size:16px;font-weight:600;color:var(--white);margin-top:4px;display:block;font-family:'Space Grotesk',sans-serif">Composite Keys</span><span style="font-size:10px;color:var(--fg-dim)">Hash &amp; fuzzy matching</span></div>
+            <div class="card-inner" style="padding:16px"><span class="mono" style="font-size:10px;color:var(--fg-dim);display:block">ENCODING</span><span style="font-size:16px;font-weight:600;color:var(--accent);margin-top:4px;display:block;font-family:'Space Grotesk',sans-serif">Strict UTF-8</span><span style="font-size:10px;color:var(--fg-dim)">Full multilingual</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Automated Data Collection -->
+    <article id="data-collection" class="product-article card reveal" style="padding:clamp(24px,4vw,48px)">
+      <div class="article-header">
+        <div>
+          <span class="section-eyebrow">Managed Pipeline Orchestration</span>
+          <h2 class="article-title">Automated Data Collection</h2>
+          <p class="article-desc">Eliminate internal maintenance overhead. We operate end-to-end scheduled data pipelines with continuous telemetry, automated anomaly detection, and zero-touch ingestion into your production databases.</p>
+        </div>
+        <a href="#sample-request" class="btn-ghost">Configure Schedule &rarr;</a>
+      </div>
+
+      <div class="article-body">
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          <div class="sub-label" style="margin-bottom:4px">Operational Reliability</div>
+          <div class="card-inner feature-card"><h4>Deterministic Scheduling</h4><p>Continuous streaming workers, 15-minute intraday snapshots, or overnight batch updates coordinated via distributed task queues with strict rate-limit governance.</p></div>
+          <div class="card-inner feature-card"><h4>Schema &amp; Volume Drift Alerts</h4><p>Statistical monitors compare every run against historical baselines &mdash; detecting field drop-offs, DOM changes, or abnormal HTTP status distributions within seconds.</p></div>
+          <div class="card-inner feature-card"><h4>Warehouse &amp; Webhook Sinks</h4><p>Native connectors for Snowflake, BigQuery, AWS S3, PostgreSQL, ClickHouse, and SFTP with signed HMAC webhook payloads upon batch completion.</p></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+          <div class="card-inner" style="padding:20px">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--border)">
+              <span class="mono" style="font-size:11px;color:var(--fg-dim)">DAG: retail_catalog_sync_prod</span>
+              <span class="mono" style="font-size:10px;color:var(--accent);padding:3px 10px;border-radius:6px;background:var(--accent-soft);border:1px solid rgba(200,169,126,0.15)">SLA: OPERATIONAL</span>
+            </div>
+            <div class="dag-log">
+              <div class="dag-row"><span class="dag-time">08:00:01 UTC</span><span class="dag-msg">Initialized 180 worker containers across EU-Central</span><span class="dag-status">OK</span></div>
+              <div class="dag-row"><span class="dag-time">08:04:12 UTC</span><span class="dag-msg">Harvested 412,840 catalog endpoints (0.02% retry)</span><span class="dag-status">OK</span></div>
+              <div class="dag-row"><span class="dag-time">08:04:49 UTC</span><span class="dag-msg">Pydantic schema validation &amp; delta diffing</span><span class="dag-status">100% PASS</span></div>
+              <div class="dag-row"><span class="dag-time">08:05:03 UTC</span><span class="dag-msg">Committed Parquet partition to s3://enterprise-lake/v4/</span><span class="dag-status accent">COMMITTED</span></div>
+              <div class="dag-row"><span class="dag-time">08:05:04 UTC</span><span class="dag-msg">Dispatched completion webhook to client API</span><span class="dag-status">HTTP 200</span></div>
+            </div>
+          </div>
+          <div class="card-inner" style="padding:20px">
+            <div class="mono" style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--fg-dim);margin-bottom:12px">Infrastructure Stack</div>
+            <div class="tech-tags">
+              <span class="tech-tag">Kubernetes</span>
+              <span class="tech-tag">Apache Airflow</span>
+              <span class="tech-tag">Snowflake</span>
+              <span class="tech-tag">BigQuery</span>
+              <span class="tech-tag">AWS S3 / GCS</span>
+              <span class="tech-tag">PostgreSQL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- E-commerce Price Monitoring -->
+    <article id="price-monitoring" class="product-article card reveal" style="padding:clamp(24px,4vw,48px)">
+      <div class="article-header">
+        <div>
+          <span class="section-eyebrow">Commercial Retail Surveillance</span>
+          <h2 class="article-title">E-commerce Price Monitoring</h2>
+          <p class="article-desc">High-frequency visibility into competitor pricing, stock availability, shipping thresholds, and promotional mechanics across global marketplaces, DTC storefronts, and regional distributors.</p>
+        </div>
+        <a href="#sample-request" class="btn-ghost">Monitor Catalogs &rarr;</a>
+      </div>
+
+      <div class="article-body">
+        <div style="min-width:0">
+          <div class="feature-grid">
+            <div class="card-inner feature-card"><h4>Granular Variant Tracking</h4><p>Resolves SKU-level pricing across every configuration &mdash; size, color, capacity, bundle tiers, and member-only loyalty discounts.</p></div>
+            <div class="card-inner feature-card"><h4>Buy-Box Telemetry</h4><p>Tracks seller share, third-party listings, fulfillment lead times, and out-of-stock events so you capture demand when competitors run dry.</p></div>
+            <div class="card-inner feature-card"><h4>MAP Policy Enforcement</h4><p>Automated compliance auditing &mdash; flagging unauthorized resellers breaching Minimum Advertised Price agreements with timestamped evidence.</p></div>
+            <div class="card-inner feature-card"><h4>Total Landed Cost</h4><p>Captures checkout-level shipping fees, regional VAT, and coupon codes to compute true net consumer price beyond base list price.</p></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+          <div class="card-inner" style="padding:24px">
+            <div class="mono" style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--fg-dim);margin-bottom:16px">Surveillance Benchmarks</div>
+            <div class="stat-grid">
+              <div class="stat-box"><span class="stat-box-label">REFRESH CADENCE</span><div class="stat-box-value">Up to 15 min</div></div>
+              <div class="stat-box"><span class="stat-box-label">ALERT LATENCY</span><div class="stat-box-value accent">&lt; 30 sec</div></div>
+              <div class="stat-box"><span class="stat-box-label">SKU MATCHING</span><div class="stat-box-value">GTIN / UPC / MPN</div></div>
+              <div class="stat-box"><span class="stat-box-label">COVERAGE</span><div class="stat-box-value">Global Retail</div></div>
+            </div>
+          </div>
+          <div class="card-inner" style="padding:20px">
+            <span style="font-weight:600;color:var(--white);display:block;margin-bottom:6px;font-size:13px">Seamless ERP &amp; Repricer Feeds</span>
+            <span style="font-size:12px;color:var(--fg-dim);line-height:1.6">Deliver clean price feeds directly to Prisync, Competera, SAP, NetSuite, or custom pricing engines via REST API or scheduled S3 drops.</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Competitor Price Intelligence -->
+    <article id="price-intelligence" class="product-article card reveal" style="padding:clamp(24px,4vw,48px)">
+      <div class="article-header">
+        <div>
+          <span class="section-eyebrow">Strategic Pricing Analytics</span>
+          <h2 class="article-title">Competitor Price Intelligence</h2>
+          <p class="article-desc">Move beyond raw price lists. We harmonize multi-competitor market data into unified analytical models &mdash; exposing promotional cadences, margin opportunities, and optimal repricing thresholds.</p>
+        </div>
+        <a href="#sample-request" class="btn-ghost">Request Benchmark &rarr;</a>
+      </div>
+
+      <div class="article-body reverse">
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          <div class="card-inner feature-card"><h4>Cross-Catalog Entity Matching</h4><p>Deterministic barcode matching combined with multi-attribute specification alignment links identical and private-label equivalent SKUs across fragmented retail catalogs.</p></div>
+          <div class="card-inner feature-card"><h4>Category Price Index</h4><p>Measure your weighted price index against key competitors by brand, margin tier, or velocity segment to protect profitability without sacrificing conversion.</p></div>
+          <div class="card-inner feature-card"><h4>Longitudinal Price History</h4><p>Multi-year time-series archives enabling merchandising teams to model seasonal discounting, competitor liquidation cycles, and price elasticity.</p></div>
+        </div>
+
+        <div class="card-inner" style="padding:24px;min-width:0">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px">
+            <div>
+              <h3 style="font-size:14px;font-weight:600;color:var(--white);margin:0">Price Index Simulation</h3>
+              <p style="font-size:12px;color:var(--fg-dim);margin:4px 0 0">Comparative trajectory across primary benchmark</p>
+            </div>
+            <div class="chart-toggle">
+              <button class="chart-btn active" id="btn30d">30 Days</button>
+              <button class="chart-btn" id="btn7d">7 Days</button>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px">
+            <div><span style="color:var(--fg-dim);display:block;font-size:10px">DELTA</span><span style="color:var(--white);font-weight:600;margin-top:4px;display:block">-7.3% vs Market</span></div>
+            <div><span style="color:var(--fg-dim);display:block;font-size:10px">MEDIAN</span><span style="color:var(--white);font-weight:600;margin-top:4px;display:block">$1,899.00</span></div>
+            <div><span style="color:var(--fg-dim);display:block;font-size:10px">TARGET</span><span style="color:var(--accent);font-weight:600;margin-top:4px;display:block">$1,849.00</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Web Crawling -->
+    <article id="web-crawling" class="product-article card reveal" style="padding:clamp(24px,4vw,48px)">
+      <div class="article-header">
+        <div>
+          <span class="section-eyebrow">High-Volume Distributed Architecture</span>
+          <h2 class="article-title">Web Crawling &amp; Data Processing</h2>
+          <p class="article-desc">Broad-scale discovery and high-throughput ETL infrastructure for organizations ingesting tens of millions of web documents, industry corpora, and public registries into centralized data lakes.</p>
+        </div>
+        <a href="#sample-request" class="btn-ghost">Architect Cluster &rarr;</a>
+      </div>
+
+      <div style="margin-top:40px">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+          <div class="card-inner feature-card" style="grid-column:span 1"><span class="mono" style="font-size:11px;color:var(--accent);display:block;margin-bottom:8px">DISCOVERY</span><h4>Distributed URL Frontier</h4><p>Priority-weighted graph queues with Bloom-filter deduplication, canonical URL resolution, and polite per-domain throttles.</p></div>
+          <div class="card-inner feature-card" style="grid-column:span 1"><span class="mono" style="font-size:11px;color:var(--accent);display:block;margin-bottom:8px">ACQUISITION</span><h4>Elastic Fetch Fleet</h4><p>Auto-scaling Kubernetes pods at 100K+ requests/min with automatic proxy rotation and adaptive backoff.</p></div>
+          <div class="card-inner feature-card" style="grid-column:span 1"><span class="mono" style="font-size:11px;color:var(--accent);display:block;margin-bottom:8px">TRANSFORM</span><h4>Stream &amp; Batch ETL</h4><p>Boilerplate stripping, SimHash dedup, language classification, and columnar serialization via PyArrow and Spark.</p></div>
+          <div class="card-inner feature-card" style="grid-column:span 1"><span class="mono" style="font-size:11px;color:var(--accent);display:block;margin-bottom:8px">DELIVERY</span><h4>Data Lake &amp; Kafka Sink</h4><p>Partitioned Parquet or Iceberg tables to S3, Snowflake, BigQuery, or real-time Kafka topics.</p></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px">
+          <div class="use-case"><span class="use-case-label">Compliance</span>Configurable robots.txt adherence, PII redaction, and complete audit lineage for every ingested document.</div>
+          <div class="use-case"><span class="use-case-label">Change Detection</span>ETag, Last-Modified, and content-hash checks minimize bandwidth by re-processing only mutated pages.</div>
+          <div class="use-case"><span class="use-case-label">Search Corpora</span>Clean markdown- or JSON-structured text formatted for enterprise search indexing and quantitative modeling.</div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- Live Data Inspector -->
+<section id="live-playground" style="padding-block:80px;background:var(--bg-raised);border-block:1px solid var(--border)">
+  <div class="container">
+    <div class="section-header reveal">
+      <div>
+        <span class="section-eyebrow">Data Hygiene Verification</span>
+        <h2 class="section-title">Raw Source vs. Production Output</h2>
+        <p style="font-size:13px;color:var(--fg-dim);margin-top:8px;max-width:520px;line-height:1.6">Compare raw unstructured retail markup against the normalized, schema-validated JSON payload delivered by Rixvol pipelines.</p>
+      </div>
+      <div class="playground-toggle" id="pgToggle">
+        <button class="playground-btn active" id="pgRawBtn">Raw Source HTML</button>
+        <button class="playground-btn" id="pgJsonBtn">Validated JSON</button>
+      </div>
+    </div>
+
+    <div class="reveal d1" style="border-radius:16px;border:1px solid var(--border);background:var(--bg);overflow:hidden">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:14px 24px;background:var(--bg-raised);border-bottom:1px solid var(--border)">
+        <div class="flex-center gap-sm">
+          <span class="mono" style="font-size:11px;color:var(--fg-muted)" id="pgTitle">source_dom_fragment.html</span>
+          <span class="mono" style="font-size:10px;padding:3px 10px;border-radius:6px;background:var(--bg-muted);color:var(--fg-dim);border:1px solid var(--border)" id="pgBadge">Unstructured Markup</span>
+        </div>
+        <button style="all:unset;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--fg-dim);transition:color 0.2s" id="pgCopy">Copy Snippet</button>
+      </div>
+      <div class="playground-code"><pre><code id="pgCode"></code></pre></div>
+      <div class="playground-footer">
+        <div><span style="color:var(--fg-dim);display:block;font-size:10px">ENGINE</span><span style="color:var(--white)">Python 3.12 / lxml</span></div>
+        <div><span style="color:var(--fg-dim);display:block;font-size:10px">LATENCY</span><span style="color:var(--white)">38 ms / doc</span></div>
+        <div><span style="color:var(--fg-dim);display:block;font-size:10px">ENCODING</span><span style="color:var(--white)">Strict UTF-8</span></div>
+        <div><span style="color:var(--fg-dim);display:block;font-size:10px">STATUS</span><span style="color:var(--accent)">Verified</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Capacity Estimator -->
+<section id="capacity-estimator" style="padding-block:80px">
+  <div class="container">
+    <div class="card reveal" style="padding:clamp(24px,4vw,48px)">
+      <div style="max-width:520px;margin-bottom:40px">
+        <span class="section-eyebrow">Infrastructure Sizing</span>
+        <h2 class="section-title">Estimate Cluster Capacity</h2>
+        <p style="font-size:13px;color:var(--fg-dim);margin-top:8px;line-height:1.6">Model dedicated proxy allocation and monthly request volume based on your target catalog size and refresh cadence.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:28px;min-width:0">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;margin-bottom:12px;gap:8px">
+              <span style="color:var(--fg-muted)">TARGET RECORDS PER RUN</span>
+              <span style="color:var(--accent);font-weight:600" id="pagesVal">500,000</span>
+            </div>
+            <input type="range" id="pagesInput" min="10000" max="5000000" step="10000" value="500000" class="range-input">
+            <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--fg-dim);margin-top:8px">
+              <span>10K</span><span>2.5M</span><span>5M</span>
+            </div>
+          </div>
+          <div>
+            <label class="form-label" style="margin-bottom:10px">Refresh Cadence</label>
+            <select id="freqSelect" class="select-input">
+              <option value="24">Daily (Every 24 Hours)</option>
+              <option value="6">Every 6 Hours (4x Daily)</option>
+              <option value="1">Hourly (24x Daily)</option>
+              <option value="0.25">Every 15 Minutes (High-Frequency)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card-inner" style="padding:24px;min-width:0">
+          <div class="spec-list" style="font-family:'JetBrains Mono',monospace;font-size:12px">
+            <div class="spec-row"><span class="spec-label">Residential IP Pool</span><span class="spec-value" id="nodesCalc">32 Dedicated Endpoints</span></div>
+            <div class="spec-row"><span class="spec-label">Monthly Volume</span><span class="spec-value" id="hitsCalc">15,000,000 requests</span></div>
+            <div class="spec-row"><span class="spec-label">Validation &amp; Monitoring</span><span class="spec-value accent">Included (24/7 SLA)</span></div>
+            <div class="spec-row"><span class="spec-label">Delivery Sinks</span><span class="spec-value">S3 / Snowflake / PostgreSQL / API</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="governance-faq" style="padding-block:80px">
+  <div class="container" style="max-width:800px">
+    <div style="margin-bottom:40px" class="reveal">
+      <span class="section-eyebrow">Technical Governance</span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card faq-item reveal d1">
+        <h3>How does Rixvol maintain stability against bot-mitigation systems?</h3>
+        <p>We combine custom TLS/HTTP2 fingerprint emulation, geo-matched residential and ISP proxy networks, and headless browser clusters with automated session management &mdash; ensuring uninterrupted access without relying on brittle workarounds.</p>
+      </div>
+      <div class="card faq-item reveal d2">
+        <h3>Which warehouse integrations and file formats are supported?</h3>
+        <p>Data can be delivered directly into AWS S3, Google Cloud Storage, Snowflake, BigQuery, PostgreSQL, ClickHouse, or via REST Webhooks in Parquet, JSONL, Avro, or CSV formats conforming to your exact schema specification.</p>
+      </div>
+      <div class="card faq-item reveal d3">
+        <h3>What happens when a target website changes its DOM structure?</h3>
+        <p>Every production pipeline is backed by automated schema assertions and anomaly alerts. If a layout update causes missing fields or type mismatches, our engineering team updates and redeploys the parser within your contracted SLA window.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Form -->
+<section id="sample-request" style="padding-block:80px">
+  <div class="container">
+    <div class="card reveal" style="padding:clamp(24px,4vw,56px)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start">
+        <div style="min-width:0">
+          <span class="section-eyebrow">Technical Scoping</span>
+          <h2 class="article-title" style="margin-top:8px">Request a Custom Pilot Dataset</h2>
+          <p style="font-size:14px;color:var(--fg-dim);margin-top:16px;line-height:1.65">Share your target domains, update frequency, and required schema. Our data engineering team will evaluate source complexity and deliver a complimentary pilot sample of up to 1,000 structured records.</p>
+
+          <div style="margin-top:32px;padding-top:32px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:16px;font-size:13px;color:var(--fg-muted)">
+            <div class="flex-center gap-sm"><span style="color:var(--accent)">&#8212;</span><span>Complimentary feasibility assessment &amp; sample dataset</span></div>
+            <div class="flex-center gap-sm"><span style="color:var(--accent)">&#8212;</span><span>Mutual NDA execution prior to proprietary schema review</span></div>
+            <div class="flex-center gap-sm"><span style="color:var(--accent)">&#8212;</span><span>Dedicated solutions architect &amp; contractual SLA guarantees</span></div>
+          </div>
+        </div>
+
+        <div class="card-inner" style="padding:32px;min-width:0">
+          <form id="contactForm" style="display:flex;flex-direction:column;gap:16px">
+            <div><label class="form-label">Full Name &amp; Organization</label><input type="text" required placeholder="Elena Rostova / Northstar Capital" class="form-input" id="f_name"></div>
+            <div><label class="form-label">Corporate Email or Telegram</label><input type="text" required placeholder="e.rostova@northstar.io" class="form-input" id="f_email"></div>
+            <div><label class="form-label">Primary Solution</label>
+              <select class="form-input" id="f_solution" style="font-size:13px">
+                <option value="custom-scraping">Custom Python Web Scraping</option>
+                <option value="data-extraction">Website Data Extraction</option>
+                <option value="data-collection">Automated Data Collection</option>
+                <option value="price-monitoring">E-commerce Price Monitoring</option>
+                <option value="competitor-price">Competitor Price Intelligence</option>
+                <option value="web-crawling">Web Crawling &amp; Processing</option>
+                <option value="enterprise-suite">Full Enterprise Pipeline</option>
+              </select>
+            </div>
+            <div><label class="form-label">Target Domains &amp; Requirements</label><textarea placeholder="List target sources, estimated volume, and preferred delivery sink..." class="form-input" rows="3" id="f_msg"></textarea></div>
+            <button type="submit" class="btn-primary" style="width:100%;margin-top:4px">Submit Scoping Request</button>
+            <p style="font-size:12px;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--accent);padding-top:4px" id="formFeedback" hidden>Request logged. A solutions engineer will respond within 2 business hours.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="flex-center" style="gap:14px">
+      <svg width="28" height="28" viewBox="0 0 38 38" fill="none"><defs><linearGradient id="lg2" x1="2" y1="4" x2="36" y2="34" gradientUnits="userSpaceOnUse"><stop stop-color="#2ea043"/><stop offset="1" stop-color="#56d364"/></linearGradient></defs><path d="M4 32V6h10.5c2.3 0 4.3.5 5.8 1.5 1.5 1 2.5 2.5 2.7 4.3v.4c0 2-0.8 3.6-2.2 4.8-1 .8-2.2 1.3-3.6 1.5l7.4 10.2.3.3H20l-6.5-9.6H10V32H4zm6-14.5h4.5c1.3 0 2.3-.3 3-1 .7-.7 1.1-1.6 1.1-2.7 0-1-.4-1.9-1.1-2.5-.7-.7-1.7-1-3-1H10v7.2z" fill="url(#lg2)"/><path d="M22.5 6L29 23.5 35.5 6h-3.2L29 15l-3.3-9h-3.2z" fill="url(#lg2)" opacity="0.85"/></svg>
+      <div>
+        <span style="font-size:14px;font-weight:600;color:var(--white);display:block">Rixvol</span>
+        <span style="font-size:11px;color:var(--fg-dim)">&copy; 2026 Rixvol. Web Scraping &amp; Data Extraction Infrastructure.</span>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="#custom-python">Python Scraping</a>
+      <a href="#data-extraction">Data Extraction</a>
+      <a href="#data-collection">Automated Collection</a>
+      <a href="#price-monitoring">Price Monitoring</a>
+      <a href="#price-intelligence">Price Intelligence</a>
+      <a href="#web-crawling">Web Crawling</a>
+    </div>
+  </div>
+</footer>
+
+</div><!-- .grain -->
+
+<script>
+// Desktop CTA visibility
+(function(){
+  var cta = document.getElementById('headerCta');
+  if (window.innerWidth >= 640) cta.style.display = 'inline-flex';
+  window.addEventListener('resize', function(){ cta.style.display = window.innerWidth >= 640 ? 'inline-flex' : 'none'; });
+})();
+
+// Solutions dropdown
+(function(){
+  var wrap = document.getElementById('solWrap');
+  var panel = document.getElementById('solPanel');
+  var btn = document.getElementById('solBtn');
+  var chev = document.getElementById('solChevron');
+  var timer = null;
+  function open(){ panel.classList.add('open'); btn.setAttribute('aria-expanded','true'); chev.style.transform='rotate(180deg)'; }
+  function close(){ panel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); chev.style.transform=''; }
+  btn.addEventListener('click', function(){ panel.classList.contains('open') ? close() : open(); });
+  wrap.addEventListener('mouseenter', function(){ clearTimeout(timer); open(); });
+  wrap.addEventListener('mouseleave', function(){ timer = setTimeout(close, 160); });
+  document.addEventListener('click', function(e){ if (!wrap.contains(e.target)) close(); });
+  panel.querySelectorAll('.sol-close').forEach(function(a){ a.addEventListener('click', close); });
+})();
+
+// Mobile menu
+(function(){
+  var drawer = document.getElementById('mobDrawer');
+  var openIcon = document.getElementById('mobOpen');
+  var closeIcon = document.getElementById('mobClose');
+  function toggle(){
+    var open = drawer.classList.contains('open');
+    if (open) { drawer.classList.remove('open'); openIcon.hidden=false; closeIcon.hidden=true; }
+    else { drawer.classList.add('open'); openIcon.hidden=true; closeIcon.hidden=false; }
   }
-}`;
+  document.getElementById('mobBtn').addEventListener('click', toggle);
+  drawer.querySelectorAll('.mob-close').forEach(function(a){
+    a.addEventListener('click', function(){ drawer.classList.remove('open'); openIcon.hidden=false; closeIcon.hidden=true; });
+  });
+})();
 
-        let currentView = 'raw';
-        const codeDisplay = document.getElementById('codeDisplay');
-        const windowTitle = document.getElementById('windowTitle');
-        const formatBadge = document.getElementById('formatBadge');
-        const viewRawBtn = document.getElementById('viewRawBtn');
-        const viewJsonBtn = document.getElementById('viewJsonBtn');
+// Scroll reveal
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(function(el){ obs.observe(el); });
+})();
 
-        function updateCodeDisplay() {
-            if (currentView === 'raw') {
-                codeDisplay.textContent = sampleRawHtml;
-                windowTitle.textContent = "source_dom_fragment.html";
-                formatBadge.textContent = "Unstructured Markup";
-                viewRawBtn.className = "px-3 sm:px-4 py-2 rounded-md transition-colors bg-white text-obsidian-950 font-semibold text-center";
-                viewJsonBtn.className = "px-3 sm:px-4 py-2 rounded-md transition-colors text-slatepro-400 hover:text-white text-center";
-            } else {
-                codeDisplay.textContent = sampleCleanJson;
-                windowTitle.textContent = "rixvol_validated_record.json";
-                formatBadge.textContent = "Schema Verified JSON";
-                viewJsonBtn.className = "px-3 sm:px-4 py-2 rounded-md transition-colors bg-white text-obsidian-950 font-semibold text-center";
-                viewRawBtn.className = "px-3 sm:px-4 py-2 rounded-md transition-colors text-slatepro-400 hover:text-white text-center";
-            }
+// Responsive norm table/cards
+(function(){
+  var tw = document.getElementById('normTableWrap');
+  var cw = document.getElementById('normCardsWrap');
+  function check(){ if(window.innerWidth>=768){tw.style.display='block';cw.style.display='none';}else{tw.style.display='none';cw.style.display='flex';} }
+  check(); window.addEventListener('resize', check);
+})();
+
+// Responsive 4-col grid for web crawling
+(function(){
+  var style = document.createElement('style');
+  style.textContent = '@media(max-width:1024px){#web-crawling .feature-grid-4{grid-template-columns:repeat(2,1fr)!important}}@media(max-width:640px){#web-crawling .feature-grid-4{grid-template-columns:1fr!important}}';
+  document.head.appendChild(style);
+  var g = document.querySelector('#web-crawling div[style*="grid-template-columns:repeat(4"]');
+  if(g) g.classList.add('feature-grid-4');
+})();
+
+// Responsive two-column sections
+(function(){
+  var style = document.createElement('style');
+  style.textContent = '@media(max-width:1024px){.article-body,.article-body.reverse{grid-template-columns:1fr!important}}@media(max-width:1024px){#capacity-estimator .card>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}@media(max-width:1024px){#sample-request .card>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}@media(max-width:640px){div[style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:1fr!important}}';
+  document.head.appendChild(style);
+})();
+
+// Playground
+(function(){
+  var rawHtml = '<!-- UNSTRUCTURED RETAIL MARKUP -->\n<div class="product-item-card" data-sku="SKU-892147">\n    <div class="lazy-image-box">\n        <img class="lazyload"\n             data-src="https://cdn.retail-source.com/p/991204_v2.webp"\n             alt="Pro Drone 4K" />\n    </div>\n    <div class="product-info-wrap">\n        <span class="badge in-stock">\n            In Stock (Fulfillment Hub #4)\n        </span>\n        <h2 class="title">\n            <a href="/item/pro-drone-4k?ref=grid">\n                Pro Drone 4K Dual Camera System\n            </a>\n        </h2>\n        <div class="price-container">\n            <span class="old-strike">$1,499.00</span>\n            <span class="current-price"\n                  data-currency="USD"\n                  data-amount="1249.00">$1,249.00</span>\n        </div>\n        <div class="rating-stars"\n             data-score="4.85"\n             data-reviews="312"></div>\n        <ul class="technical-specs">\n            <li>Battery: 5200 mAh LiPo</li>\n            <li>Max Range: 12.5 km</li>\n        </ul>\n    </div>\n</div>';
+
+  var cleanJson = '{\n  "schema_version": "3.2.0",\n  "extracted_at": "2026-11-24T12:00:00Z",\n  "source_domain": "retail-source.com",\n  "record": {\n    "sku": "SKU-892147",\n    "title": "Pro Drone 4K Dual Camera System",\n    "canonical_url": "https://retail-source.com/item/pro-drone-4k",\n    "inventory": {\n      "in_stock": true,\n      "fulfillment_hub": "Hub #4"\n    },\n    "pricing": {\n      "currency": "USD",\n      "active_price": 1249.00,\n      "list_price": 1499.00,\n      "discount_pct": 16.68\n    },\n    "metrics": {\n      "rating": 4.85,\n      "review_count": 312\n    },\n    "specifications": {\n      "battery_mah": 5200,\n      "max_range_km": 12.5\n    }\n  },\n  "validation": {\n    "status": "passed",\n    "null_fields": 0\n  }\n}';
+
+  var view = 'raw';
+  var code = document.getElementById('pgCode');
+  var title = document.getElementById('pgTitle');
+  var badge = document.getElementById('pgBadge');
+  var rawBtn = document.getElementById('pgRawBtn');
+  var jsonBtn = document.getElementById('pgJsonBtn');
+
+  function update(){
+    if(view==='raw'){
+      code.textContent = rawHtml; title.textContent = 'source_dom_fragment.html'; badge.textContent = 'Unstructured Markup';
+      rawBtn.classList.add('active'); jsonBtn.classList.remove('active');
+    } else {
+      code.textContent = cleanJson; title.textContent = 'rixvol_validated_record.json'; badge.textContent = 'Schema Verified JSON';
+      jsonBtn.classList.add('active'); rawBtn.classList.remove('active');
+    }
+  }
+  rawBtn.addEventListener('click', function(){ view='raw'; update(); });
+  jsonBtn.addEventListener('click', function(){ view='json'; update(); });
+  update();
+
+  document.getElementById('pgCopy').addEventListener('click', function(){
+    var text = view==='raw' ? rawHtml : cleanJson;
+    var btn = this;
+    try { navigator.clipboard.writeText(text).then(function(){ btn.textContent='Copied'; setTimeout(function(){ btn.textContent='Copy Snippet'; },1600); }); }
+    catch(e){ var ta=document.createElement('textarea'); document.body.appendChild(ta); ta.value=text; ta.select(); document.execCommand('copy'); document.body.removeChild(ta); btn.textContent='Copied'; setTimeout(function(){ btn.textContent='Copy Snippet'; },1600); }
+  });
+})();
+
+// Chart
+(function(){
+  var data30 = { labels:['Day 1','Day 5','Day 10','Day 15','Day 20','Day 25','Day 30'], market:[1980,1950,1920,1910,1900,1899,1899], comp:[1990,1940,1890,1850,1820,1799,1760], target:[1920,1900,1880,1880,1849,1849,1849] };
+  var data7 = { labels:['Nov 18','Nov 19','Nov 20','Nov 21','Nov 22','Nov 23','Nov 24'], market:[1910,1905,1900,1900,1899,1899,1899], comp:[1860,1840,1820,1800,1780,1760,1760], target:[1870,1850,1849,1849,1849,1849,1849] };
+  var chart = null;
+  var canvas = document.getElementById('priceChart');
+  if(!canvas) return;
+
+  chart = new Chart(canvas.getContext('2d'), {
+    type:'line',
+    data:{
+      labels: data30.labels,
+      datasets:[
+        { label:'Competitor Floor', data:data30.comp, borderColor:'#94A3B8', backgroundColor:'rgba(148,163,184,0.04)', borderWidth:2, tension:0.3, fill:true, pointRadius:3, pointBackgroundColor:'#94A3B8' },
+        { label:'Market Median', data:data30.market, borderColor:'#475569', borderWidth:1.5, borderDash:[4,4], tension:0.25, fill:false, pointRadius:2 },
+        { label:'Target Position', data:data30.target, borderColor:'#C8A97E', borderWidth:2.5, tension:0.3, fill:false, pointRadius:4, pointBackgroundColor:'#C8A97E' }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ labels:{ color:'#94A3B8', font:{ family:'Inter', size:11 }, boxWidth:12, padding:12 } },
+        tooltip:{ backgroundColor:'#07080b', titleColor:'#F8FAFC', bodyColor:'#CBD5E1', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, padding:10,
+          callbacks:{ label:function(c){ return c.dataset.label+': $'+c.parsed.y.toLocaleString(); } }
         }
+      },
+      scales:{
+        x:{ grid:{ color:'rgba(255,255,255,0.03)' }, ticks:{ color:'#64748B', font:{ family:'JetBrains Mono', size:10 } } },
+        y:{ grid:{ color:'rgba(255,255,255,0.03)' }, ticks:{ color:'#64748B', font:{ family:'JetBrains Mono', size:10 }, callback:function(v){ return '$'+v; } } }
+      }
+    }
+  });
 
-        function switchDataView(view) {
-            currentView = view;
-            updateCodeDisplay();
-        }
+  var btn30 = document.getElementById('btn30d');
+  var btn7 = document.getElementById('btn7d');
+  btn30.addEventListener('click', function(){ setRange('30d'); });
+  btn7.addEventListener('click', function(){ setRange('7d'); });
 
-        function copySnippet(e) {
-            const text = currentView === 'raw' ? sampleRawHtml : sampleCleanJson;
-            const dummy = document.createElement("textarea");
-            document.body.appendChild(dummy);
-            dummy.value = text;
-            dummy.select();
-            document.execCommand("copy");
-            document.body.removeChild(dummy);
+  function setRange(r){
+    var src = r==='7d' ? data7 : data30;
+    chart.data.labels = src.labels;
+    chart.data.datasets[0].data = src.comp;
+    chart.data.datasets[1].data = src.market;
+    chart.data.datasets[2].data = src.target;
+    chart.update();
+    if(r==='30d'){ btn30.classList.add('active'); btn7.classList.remove('active'); }
+    else { btn7.classList.add('active'); btn30.classList.remove('active'); }
+  }
+})();
 
-            const span = e.currentTarget.querySelector('span');
-            const orig = span.textContent;
-            span.textContent = "Copied";
-            setTimeout(() => { span.textContent = orig; }, 1600);
-        }
+// Estimator
+(function(){
+  var pagesInput = document.getElementById('pagesInput');
+  var freqSelect = document.getElementById('freqSelect');
+  function calc(){
+    var pages = parseInt(pagesInput.value);
+    var freq = parseFloat(freqSelect.value);
+    document.getElementById('pagesVal').textContent = pages.toLocaleString();
+    var runs = Math.round(720/freq);
+    var total = pages * runs;
+    var nodes = Math.max(8, Math.round(pages/15000));
+    document.getElementById('nodesCalc').textContent = nodes+' Dedicated Endpoints';
+    document.getElementById('hitsCalc').textContent = total.toLocaleString()+' requests';
+  }
+  pagesInput.addEventListener('input', calc);
+  freqSelect.addEventListener('change', calc);
+  calc();
+})();
 
-        updateCodeDisplay();
-
-        // Chart.js Configuration
-        let priceChart = null;
-        const data30Days = {
-            labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15', 'Day 20', 'Day 25', 'Day 30'],
-            marketAvg: [1980, 1950, 1920, 1910, 1900, 1899, 1899],
-            competitorA: [1990, 1940, 1890, 1850, 1820, 1799, 1760],
-            ourTarget: [1920, 1900, 1880, 1880, 1849, 1849, 1849]
-        };
-
-        const data7Days = {
-            labels: ['Nov 18', 'Nov 19', 'Nov 20', 'Nov 21', 'Nov 22', 'Nov 23', 'Nov 24'],
-            marketAvg: [1910, 1905, 1900, 1900, 1899, 1899, 1899],
-            competitorA: [1860, 1840, 1820, 1800, 1780, 1760, 1760],
-            ourTarget: [1870, 1850, 1849, 1849, 1849, 1849, 1849]
-        };
-
-        function initChart() {
-            const canvasEl = document.getElementById('priceChart');
-            if (!canvasEl) return;
-            const ctx = canvasEl.getContext('2d');
-            priceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data30Days.labels,
-                    datasets: [
-                        {
-                            label: 'Competitor Floor Price',
-                            data: data30Days.competitorA,
-                            borderColor: '#94A3B8',
-                            backgroundColor: 'rgba(148, 163, 184, 0.05)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 3,
-                            pointBackgroundColor: '#94A3B8'
-                        },
-                        {
-                            label: 'Market Median',
-                            data: data30Days.marketAvg,
-                            borderColor: '#475569',
-                            borderWidth: 1.5,
-                            borderDash: [4, 4],
-                            tension: 0.25,
-                            fill: false,
-                            pointRadius: 2
-                        },
-                        {
-                            label: 'Recommended Target Position',
-                            data: data30Days.ourTarget,
-                            borderColor: '#C8A97E',
-                            borderWidth: 2.5,
-                            tension: 0.3,
-                            fill: false,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#C8A97E'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#94A3B8',
-                                font: { family: 'Inter', size: 11 },
-                                boxWidth: 12,
-                                padding: 12
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#08090C',
-                            titleColor: '#F8FAFC',
-                            bodyColor: '#CBD5E1',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            padding: 10,
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: 'rgba(255, 255, 255, 0.03)' },
-                            ticks: { color: '#64748B', font: { family: 'JetBrains Mono', size: 10 } }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.03)' },
-                            ticks: {
-                                color: '#64748B',
-                                font: { family: 'JetBrains Mono', size: 10 },
-                                callback: function(value) { return '$' + value; }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updatePriceRange(range) {
-            if (!priceChart) return;
-            const source = range === '7d' ? data7Days : data30Days;
-            priceChart.data.labels = source.labels;
-            priceChart.data.datasets[0].data = source.competitorA;
-            priceChart.data.datasets[1].data = source.marketAvg;
-            priceChart.data.datasets[2].data = source.ourTarget;
-            priceChart.update();
-
-            const btn30 = document.getElementById('btn30d');
-            const btn7 = document.getElementById('btn7d');
-            if (range === '30d') {
-                btn30.className = "px-3 py-1.5 rounded-md bg-white text-obsidian-950 text-xs font-medium transition-colors";
-                btn7.className = "px-3 py-1.5 rounded-md bg-obsidian-950 text-slatepro-400 hover:text-white border border-white/10 text-xs font-medium transition-colors";
-            } else {
-                btn7.className = "px-3 py-1.5 rounded-md bg-white text-obsidian-950 text-xs font-medium transition-colors";
-                btn30.className = "px-3 py-1.5 rounded-md bg-obsidian-950 text-slatepro-400 hover:text-white border border-white/10 text-xs font-medium transition-colors";
-            }
-        }
-
-        function calculateEstimates() {
-            const pages = parseInt(document.getElementById('pagesInput').value);
-            const freqHours = parseFloat(document.getElementById('freqSelect').value);
-            document.getElementById('pagesVal').textContent = pages.toLocaleString();
-            
-            const runsPerMonth = Math.round(720 / freqHours);
-            const totalHits = pages * runsPerMonth;
-            const requiredNodes = Math.max(8, Math.round(pages / 15000));
-            
-            document.getElementById('nodesCalc').textContent = `${requiredNodes} Dedicated Endpoints`;
-            document.getElementById('hitsCalc').textContent = `${totalHits.toLocaleString()} requests`;
-        }
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            document.getElementById('formFeedback').classList.remove('hidden');
-            e.target.reset();
-        }
-
-        window.onload = function() {
-            initChart();
-            calculateEstimates();
-        };
-    </script>
-</body>
-</html>
+// Form
+(function(){
+  document.getElementById('contactForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    document.getElementById('formFeedback').hidden = false;
+    this.reset();
+  });
+})();
+</script>
